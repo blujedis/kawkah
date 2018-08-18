@@ -1,5 +1,7 @@
 # Examples
 
+[Back to Menu](../README.md/#table-of-contents)
+
 More examples will be added as time permits. ALWAYS double check the [docs]() to ensure the API hasn't changed as the project grows.
 
 ## Commands

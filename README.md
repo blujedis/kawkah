@@ -52,33 +52,19 @@ const result = {
 }
 ```
 
-## Options
+## Table of Contents
 
-List of all Kawkah options.
+The documentation listed in this table of contents is here for convenience. If you find an error we suggest heading over to the [Generated Docs](https://blujedis.github.io/kawkah/). These tend to be pretty accurate given the cannot be generated without the project building. We try to keep examples up to date but there's only so much time. Feel free to create a PR if you see a mistake!
 
-See [OPTIONS.md](/assets/OPTIONS.md)
-
-## API
-
-The majority of the API including links to examples of use. You should always favor [Docs](https://blujedis.github.io/kawkah/) for the full implementation as the API may change/improve. These docs are generated with each build so unlike the API examples/usage they are more accurate.
-
-See [API.md](/assets/API.md)
-
-## Middleaware
-
-Middleware allows for validation, modification and tracking. When creating middlware then injecting it into the Kawkah pipeline you're able to create hooks for tracking usage of your application or pre/post modify or validate properties.
-
-See [MIDDLEWARE.md](/assets/MIDDLEWARE.md)
-
-## Examples
-
-Examples of API usage and common use examples.
-
-See [EXAMPLES.md](/assets/EXAMPLES.md)
+* [API.md](/assets/API.md)
+* [OPTIONS.md](/assets/OPTIONS.md)
+* [MIDDLEWARE.md](/assets/MIDDLEWARE.md)
+* [EXAMPLES.md](/assets/EXAMPLES.md)
+* [Kawkah Parser](https://blujedis/github.io/kawkah-parser)
 
 ## Docs
 
-These are the generated docs from the Typescript code itself. These tend to be pretty accurate as the docs cannot be generated unless the project can build properly. It is your most trusted source for the current API.
+Documentation generated from source.
 
 See [https://blujedis.github.io/kawkah/](https://blujedis.github.io/kawkah/)
 

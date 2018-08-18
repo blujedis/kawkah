@@ -1,5 +1,7 @@
 # Options
 
+[Back to Menu](../README.md/#table-of-contents)
+
 When defining your CLI app you can set only core options which we'll cover first below or additionally provide commands and their options as well. This makes it easy to create your logic in separate files and then import for instantiation of Kawkah.
 
 ## Core Options

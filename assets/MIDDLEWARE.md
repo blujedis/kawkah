@@ -1,5 +1,7 @@
 # Middleware
 
+[Back to Menu](../README.md/#table-of-contents)
+
 Middleware consists of two basic types that are grouped into 5 groups that all run synchronously. **Result Middleware** injects the IKawkahResult into each iteration whereas **Option Middleware** injects the current option value on each interation.
 
 ## How It Works
