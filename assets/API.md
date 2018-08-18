@@ -1,6 +1,6 @@
 # API
 
-[Back to Menu](../)
+[Back to Menu](../README.md/#api)
 
 Kawkah is made up of four basic classes KawkahCore, KawkahComamnd & Kawkah. All classes interact with KawkahCore, it holds the context. You instantiate Kawkah passing in your initial options/config. This becomes the default command which has some special methods. When calling <code>kawkah.command()</code> It returns an instance of KawkahCommand.
 
