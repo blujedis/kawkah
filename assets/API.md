@@ -1,10 +1,8 @@
-# API
+# API [Back to Menu](/#api)
 
-Kawkah is made up of four basic classes KawkahCore, KawkahComamnd & Kawkah. All classes interact with KawkahCore,it holds the context. You instantiate Kawkah passing in your initial options/config. This becomes the default command which has some special methods. When calling <code>kawkah.command()</code> It returns an instance of KawkahCommand.
+Kawkah is made up of four basic classes KawkahCore, KawkahComamnd & Kawkah. All classes interact with KawkahCore, it holds the context. You instantiate Kawkah passing in your initial options/config. This becomes the default command which has some special methods. When calling <code>kawkah.command()</code> It returns an instance of KawkahCommand.
 
 It's import to note methods that end in **For** are methods meant to configure an option. This is because a command has for example the method <code>.alias()</code> to configure aliases. Options also can contain aliases, hence the method would be <code>.aliasFor()</code>.
-
-Looking for options? Please see [OPTIONS.md](OPTIONS.md)
 
 **NOTE:** Please review [docs](https://blujedis.github.io/kawkah/) for generated API. The generated docs tend to be more acurate as they are generated from built source.
 
@@ -678,7 +676,7 @@ kk.catch('Whoops maybe try: app --help'); // custom text.
 ```
 
 ```sh
-Whoops maybe try work try: app --help
+Whoops maybe try: app --help
 
 ✖ Too many arguments got: 1 expected: 0
 ```
@@ -699,6 +697,8 @@ Adds --trace flag or user defined flag to trigger stacktraces on errors. Useful 
 kk.trace(false); // enables/disables trace.
 ```
 
+Usage: <code>$ some-command --trace</code>
+
 ### .terminate()
 
 When true errors and help trigger caling process.exit() and terminate the app.
@@ -706,8 +706,6 @@ When true errors and help trigger caling process.exit() and terminate the app.
 ```ts
 kk.terminate(); // Enables/disables terminate.
 ```
-
-Usage: <code>$ some-command --trace</code>
 
 ### .parse()
 

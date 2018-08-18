@@ -56,7 +56,7 @@ The colorization theme to use for help.
 
 ### commands
 
-Object containing command configurations. See [Command Options](#CommandOptions) below.
+Object containing command configurations. See [Command Options](#Command-Options) below.
 
 <table>
   <tr><td>Type</td><td>IKawkahMap&lt;IKawkahCommand&gt;</td></tr>
