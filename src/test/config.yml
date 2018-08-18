@@ -1,0 +1,8 @@
+---
+# List of fruits
+fruits:
+    - Apple
+    - Orange
+    - Strawberry
+    - Mango
+...

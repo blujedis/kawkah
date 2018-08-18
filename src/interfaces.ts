@@ -1,0 +1,366 @@
+import { KawkahCore } from './core';
+import { IKawhakParserOptions, IKawkahParserResult, IKawhakParserBaseOptions, KawkahParserType } from 'kawkah-parser';
+import { IAnsiStyles } from 'colurs';
+import { ITablurColumn } from 'tablur';
+
+export { IKawhakParserOptions, IKawkahParserResult };
+export { IAnsiStyles } from 'colurs';
+
+export type AnsiStyles = keyof IAnsiStyles;
+
+// MAPS //
+
+export type RecordMap<K extends string, T, U> = T & Record<K, U>;
+export type JoinMap<T, U> = T & U;
+export interface IKawkahMap<T> {
+  [key: string]: T;
+}
+
+export interface ITest {
+
+}
+
+// ACTION & COERCION  //
+
+export type KawkahHandler = (val: any, context?: KawkahCore) => any;
+export type KawkahIsTypeHandler = (val: any) => boolean;
+export type KawkahAction = (...args: any[]) => void;
+export type KawkahResultAction = (result?: IKawkahResult, context?: KawkahCore) => void;
+export type KawkahOptionType = KawkahParserType;
+export type KawkahMiddlewareOld = (result?: IKawkahResult, command?: IKawkahCommandInternal, context?: KawkahCore) => any;
+
+// HANDLERS //
+
+export type KawkahCallback = (err?: Error, data?: any) => void;
+export type KawkahHelpHandler = (groups?: string[], context?: KawkahCore) => void;
+export type KawkahLogHandler = (type?: any, message?: any, ...args: any[]) => void;
+
+// COMPLETION TYPE //
+
+export type KawkahCompletionsCallback = (completions: any[]) => void;
+export type KawkahCompletionsHandler =
+  (query: IKawkahCompletionQuery, done?: KawkahCompletionsCallback) => any[];
+
+// VALIDATION/PARSER TYPES //
+
+export type KawkahValidateHandler = (val?: any, key?: string, option?: IKawkahOption, context?: KawkahCore) => string | boolean | Error;
+export type KawkahValidate = RegExp | KawkahValidateHandler | IKawkahValidateConfig;
+export type KawkahParser = (argv: string | string[], options?: IKawkahOptionsInternal) => IKawkahResult;
+export type KawkahFormatMessageCallback = (key: string, data: IKawkahFormatMessage) => string;
+export type KawkahReduceCallback = <T, U>(current: T, accumulator: U, index: number, array: T[]) => U;
+
+// KEYOF TYPES //
+
+export type KawkahCommandKeys = keyof IKawkahCommand;
+export type KawkahCommandInternalKeys = keyof IKawkahCommandInternal;
+
+export type KawkahOptionKeys = keyof IKawkahOption;
+export type KawkahOptionInternalKeys = keyof IKawkahOptionInternal;
+
+export type KawkahOptionsKeys = keyof IKawkahOptions;
+export type KawkahOptionsInternalKeys = keyof IKawkahOptionsInternal;
+
+export type KawkahHelpMetadataKeys = keyof IKawkahHelpMetadata;
+
+export type KawkahStyleKeys = keyof IKawkahStyles;
+export type KawkahThemeSytleKeys = keyof IKawkahTheme;
+export type KawkahThemeKeys = keyof IKawkahThemes;
+
+export type KawkahAnsiType = string | AnsiStyles | AnsiStyles[];
+
+////////////////
+// MIDDLEWARE //
+////////////////
+
+export type KawkahResultMiddlewareHandler = (result: IKawkahResult, event?: IKawkahMiddlewareEventGlobal, context?: KawkahCore) => IKawkahResult | Error;
+
+export type KawkahModifyMiddlewareHandler = (val: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => any;
+
+export type KawkahMiddleware = <T>(val: any, ...args: any[]) => T;
+
+export type KawkahMiddlwareHandler = KawkahResultMiddlewareHandler | KawkahModifyMiddlewareHandler | KawkahMiddleware;
+
+export enum KawkahMiddlewareGroup {
+  AfterParse = 'AfterParse',
+  BeforeValidate = 'BeforeValidate',
+  Validate = 'Validate',
+  AfterValidate = 'AfterValidate',
+  Finished = 'Finished'
+}
+
+export interface IKawkahMiddleware {
+  name: string;
+  group?: KawkahMiddlewareGroup;
+  commands?: string[];
+  enabled?: boolean;
+  extend?: boolean;
+  handler: KawkahMiddlwareHandler;
+  [key: string]: any;
+}
+
+// ENUMS //
+
+export enum KawkahHelpScheme {
+  None = 'none',
+  Default = 'default',
+  Commands = 'commands'
+}
+
+export enum KawkahGroupKeys {
+  Commands = 'Commands',
+  Arguments = 'Arguments',
+  Flags = 'Flags',
+  Examples = 'Examples'
+}
+
+export enum KawkahEvent {
+  Error = 'Error',
+  Warning = 'Warning',
+  Notify = 'Notify',
+  Ok = 'Ok',
+  Help = 'Help',
+  Catch = 'Catch'
+}
+
+// INTERFACES //
+
+export interface IKawkahValidateConfig {
+  message?: string;
+  handler?: RegExp | KawkahValidateHandler;
+}
+
+export interface IKawkahTheme {
+  header?: KawkahAnsiType;
+  label?: KawkahAnsiType;
+  title?: KawkahAnsiType;
+  usage?: KawkahAnsiType;
+  alias?: KawkahAnsiType;
+  argument?: KawkahAnsiType;
+  flag?: KawkahAnsiType;
+  describe?: KawkahAnsiType;
+  type?: KawkahAnsiType;
+  variadic?: KawkahAnsiType;
+  required?: KawkahAnsiType;
+  footer?: KawkahAnsiType;
+}
+
+export interface IKawkahThemes {
+  default: IKawkahTheme;
+  dim: IKawkahTheme;
+  bright: IKawkahTheme;
+}
+
+export interface IKawkahStyles {
+  primary?: KawkahAnsiType;
+  accent?: KawkahAnsiType;
+  muted?: KawkahAnsiType;
+  error?: KawkahAnsiType;
+  warning?: KawkahAnsiType;
+  notify?: KawkahAnsiType;
+  ok?: KawkahAnsiType;
+}
+
+export interface IKawkahLocaleMap {
+  toArray(...filters: any[]): any[];
+  format(str: string, ...args: any[]): string;
+}
+
+export interface IKawkahHelpMetadata {
+  header?: string | string[] | ITablurColumn | ITablurColumn[];
+  footer?: string | string[] | ITablurColumn | ITablurColumn[];
+}
+
+export interface IKawkahFormatMessage {
+  match: string;
+  key: string;
+  raw: any;
+  val: any;
+  obj: IKawkahMap<any>;
+  colorize: boolean;
+}
+
+export interface IKawkahCompletionQuery {
+  line?: string[];
+  words?: number;
+  point?: number;
+
+  // Following for tabtab, may use in future.
+  partial?: string;
+  lastPartial?: string;
+  prev?: string;
+  last?: string;
+}
+
+export interface IKawkahAssert {
+  type(val: any, type: string, err: string | Error);
+  equals(val: any, comparator: any, err: string | Error);
+  notEquals(val: any, comparator: any, err: string | Error);
+}
+
+export interface IKawkahGroup {
+  title?: string;
+  isCommand?: boolean;
+  items?: string | string[];
+  indent?: number;
+  enabled?: boolean;
+  sort?: boolean;
+}
+
+// COMMAND & OPTIONS //
+
+export interface IKawkahOptionBase {
+  type?: KawkahOptionType;
+  index?: true | number; // indicates is argument.
+  alias?: string | string[];
+  describe?: string;
+  demand?: string | string[];
+  deny?: string | string[];
+  default?: any;
+  required?: boolean;
+  coerce?: KawkahHandler;
+  validate?: KawkahValidate;
+  variadic?: number | boolean;
+  help?: string | boolean | KawkahHandler;
+  completions?: string | string[];
+  extend?: any;
+  skip?: boolean;
+}
+
+/**
+ * Contains all properties for arg and flag option types.
+ */
+export interface IKawkahOption extends IKawkahOptionBase {
+  // placeholder will breakout args vs. flag options in future.
+}
+
+export interface IKawkahOptionInternal extends IKawkahOption {
+  name?: string;
+  index?: number;
+  alias?: string[];
+  demand?: string[];
+  deny?: string[];
+  completions?: string[];
+  extend?: true | string[];
+  static?: any;
+  validate?: IKawkahValidateConfig;
+  action?: KawkahResultAction; // only avail for global command options.
+}
+
+export interface IKawkahCommand {
+  usage?: string;
+  describe?: string;
+  alias?: string | string[];
+  options?: IKawkahMap<string | IKawkahOption>;
+  help?: string | boolean | KawkahHandler;
+  spread?: boolean;
+  external?: string;
+  skip?: boolean;
+  abort?: boolean;
+  minArgs?: number;
+  maxArgs?: number;
+  minFlags?: number;
+  maxFlags?: number;
+  action?: KawkahAction;
+}
+
+export interface IKawkahCommandInternal extends IKawkahCommand {
+  name?: string;
+  args?: string[];
+  alias?: string[];
+  options?: IKawkahMap<IKawkahOptionInternal>;
+}
+
+// OPTIONS //
+
+export interface IKawkahOptionsBase {
+  name?: string;
+  locale?: string;
+  output?: NodeJS.WritableStream;
+  parser?: KawkahParser;
+  scheme?: KawkahHelpScheme;
+  theme?: KawkahThemeKeys | IKawkahTheme;
+  colorize?: boolean;
+  spread?: boolean;
+  stacktrace?: boolean;
+  throw?: boolean;
+  terminate?: boolean;
+  examples?: IKawkahMap<string>;
+  commands?: IKawkahMap<string | IKawkahCommand>;
+  timestampFormat?: string;
+  logFormat?: string;
+  middleware?: string[];
+  styles?: IKawkahStyles;
+  strict?: boolean;
+}
+
+/**
+ * All Kawkah options passed by user for configuration.
+ */
+export interface IKawkahOptions extends IKawkahOptionsBase, IKawkahCommand, IKawhakParserBaseOptions { }
+
+/**
+ * Internal options interface stripping out default command options.
+ */
+export interface IKawkahOptionsInternal extends IKawkahOptionsBase, IKawhakParserOptions {
+  theme?: {
+    header?: AnsiStyles[];
+    label?: AnsiStyles[];
+    title?: AnsiStyles[];
+    usage?: AnsiStyles[];
+    alias?: AnsiStyles[];
+    argument?: AnsiStyles[];
+    option?: AnsiStyles[];
+    describe?: AnsiStyles[];
+    type?: AnsiStyles[];
+    variadic?: AnsiStyles[];
+    required?: AnsiStyles[];
+    footer?: AnsiStyles[];
+  };
+  styles?: {
+    primary?: AnsiStyles[];
+    accent?: AnsiStyles[];
+    muted?: AnsiStyles[];
+    alert?: AnsiStyles[];
+    warning?: AnsiStyles[];
+    notify?: AnsiStyles[];
+  };
+}
+
+// RESULT & VALIDATION //
+
+export interface IKawkahNormalized {
+  first?: string;
+  command?: IKawkahCommandInternal;
+  defaultCommand?: IKawkahCommandInternal;
+  argv?: string[];
+  actionKeys?: string[];
+}
+
+export interface IKawkahValidateResult {
+  anonymous?: any[];
+  stripped?: any[];
+  spread?: any[];
+  variadics?: any[];
+  errors?: any[];
+  options?: IKawkahMap<any>;
+}
+
+export interface IKawkahResult extends IKawkahParserResult {
+  $0?: string;
+  $command?: string;
+}
+
+export interface IKawkahMiddlewareEventBase {
+  result?: IKawkahResult;
+  command?: IKawkahCommandInternal;
+}
+
+export interface IKawkahMiddlewareEventGlobal extends IKawkahMiddlewareEventBase { }
+
+export interface IKawkahMiddlewareEventOption extends IKawkahMiddlewareEventBase {
+  isArg?: boolean;            // indicates current config is an argument.
+  option?: IKawkahOptionInternal;
+}
+
+export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventGlobal, IKawkahMiddlewareEventOption { }
+

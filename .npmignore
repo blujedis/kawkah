@@ -1,0 +1,16 @@
+.tmp/
+test.js
+temp.js
+temp.ts
+test.ts
+temp.html
+test.html
+.vscode/
+tslint.json
+typedoc.json
+build/
+dist/test*
+dist/debug*
+wercker.yml
+.nyc_output
+dist/locales.js
