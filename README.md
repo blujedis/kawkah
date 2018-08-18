@@ -2,11 +2,11 @@
   <a href="http://github.com/blujedis/kawkah"><img src="https://cdn.rawgit.com/blujedis/kawkah/master/assets/logo.png"></a>
 </p>
 
-Kawkah is a Node command line parser written in Typescript. It's purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add a custom middleware handler. See [Middleware](#Middleware) below for more on that.
+Kawkah is a Node command line parser written in Typescript. It's purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add custom middleware. We'll get to that in a moment.
 
 ### NOTE
 
-This is a beta. It is not in use in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea. The readme is a bit light for now however the [Docs](#Docs) below are largely complete thanks to Typescript.
+Kawkah is not in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea.
 
 ## Install
 
@@ -24,7 +24,6 @@ import { Kawkah } from 'kawkah';
 // OR
 
 const Kawkah = require('kawkah').Kawkah;
-
 const kk = new Kawkah({ /* options */ });
 
 kk
