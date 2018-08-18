@@ -1,14 +1,7 @@
 import { KawkahCore } from './core';
-import { IKawkahMiddleware, KawkahMiddlwareHandler, IKawkahMiddlewareEventOption, IKawkahMiddlewareEventGlobal, IKawkahResult } from './interfaces';
+import { IKawkahMiddleware, KawkahMiddlwareHandler, IKawkahMiddlewareEventOption, IKawkahMiddlewareEventResult, IKawkahResult, KawkahMiddlewareGroup } from './interfaces';
 import { KawkahError } from './error';
-export declare enum KawkahMiddlewareGroup {
-    AfterParse = "AfterParse",
-    BeforeValidate = "BeforeValidate",
-    Validate = "Validate",
-    AfterValidate = "AfterValidate",
-    Finished = "Finished"
-}
-declare function minmax(result: IKawkahResult, event?: IKawkahMiddlewareEventGlobal, context?: KawkahCore): IKawkahResult | KawkahError;
+declare function minmax(result: IKawkahResult, event?: IKawkahMiddlewareEventResult, context?: KawkahCore): IKawkahResult | KawkahError;
 /**
  * Coerces value to a type.
  *
@@ -73,19 +66,19 @@ declare function deny(val: any, key: string, event: IKawkahMiddlewareEventOption
  */
 declare function aliases(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore): any;
 export declare const defaultMiddleware: {
-    AfterParse: {
+    AfterParsed: {
         minmax: {
             handler: typeof minmax;
             group: KawkahMiddlewareGroup;
         };
     };
     BeforeValidate: {
-        coerce: {
-            handler: typeof coerce;
-            group: KawkahMiddlewareGroup;
-        };
         extend: {
             handler: typeof extend;
+            group: KawkahMiddlewareGroup;
+        };
+        coerce: {
+            handler: typeof coerce;
             group: KawkahMiddlewareGroup;
         };
     };
@@ -113,7 +106,7 @@ export declare const defaultMiddleware: {
             group: KawkahMiddlewareGroup;
         };
     };
-    Finished: {};
+    BeforeAction: {};
 };
 export declare class KawkahMiddleware {
     private _middleware;
@@ -172,10 +165,48 @@ export declare class KawkahMiddleware {
      */
     add(group: string | KawkahMiddlewareGroup, name: string, commands: string | string[], handler: KawkahMiddlwareHandler, extend: boolean): KawkahMiddleware;
     /**
-     * Gets list of middleware groups.
+     * Remove middleware from collection.
      *
-     * @param group the group to add.
+     * @param names the names of middlware to be removed.
      */
+    remove(...names: string[]): this;
+    /**
+     * Enables middleware by name in the collection.
+     *
+     * @param names the names of middleware to be disabled.
+     */
+    enable(...names: string[]): this;
+    /**
+     * Disables middleware by name in the collection.
+     *
+     * @param names the names of middleware to be disabled.
+     */
+    disable(...names: string[]): this;
+    /**
+     * Returns all enabled middleware by name.
+     */
+    enabled(): string[];
+    /**
+     * Returns true if middleware is enabled.
+     *
+     * @param name the name of the middleware to inspect.
+     */
+    enabled(name: string): boolean;
+    /**
+     * Returns all disabled middleware.
+     */
+    disabled(): string[];
+    /**
+     * Returns name if middlware is disabled.
+     *
+     * @param name the name of the middleware to inspect.
+     */
+    disabled(name: string): boolean;
+    /**
+    * Gets list of middleware groups.
+    *
+    * @param group the group to add.
+    */
     group(group: string | KawkahMiddlewareGroup): string[];
     /**
      * Adds/updates middleware group.
@@ -191,55 +222,12 @@ export declare class KawkahMiddleware {
      */
     removeGroup(group: string): this;
     /**
-     * Remove middleware from collection.
+     * Removes existing group then creates with new order of middleware names.
      *
-     * @param names the names of middlware to be removed.
+     * @param group the name of the group to reset.
+     * @param names the middleware names to assign to the group.
      */
-    removeMiddleware(...names: string[]): this;
-    /**
-     * Enables middleware by name in the collection.
-     *
-     * @param names the names of middleware to be disabled.
-     */
-    enable(...names: string[]): this;
-    /**
-     * Disables middleware by name in the collection.
-     *
-     * @param names the names of middleware to be disabled.
-     */
-    disable(...names: string[]): this;
-    /**
-     * Returns all enabled middleware.
-     */
-    enabled(): string[];
-    /**
-     * Returns name if middlware is enabled.
-     *
-     * @param name the name of the middleware to inspect.
-     */
-    enabled(name: string): string;
-    /**
-     * Returns matching enabled middleware.
-     *
-     * @param names the names of middlware to inspect.
-     */
-    enabled(...names: string[]): string[];
-    /**
-     * Returns all disabled middleware.
-     */
-    disabled(): string[];
-    /**
-     * Returns name if middlware is disabled.
-     *
-     * @param name the name of the middleware to inspect.
-     */
-    disabled(name: string): string;
-    /**
-     * Returns matching disabled middleware.
-     *
-     * @param names the names of middlware to inspect.
-     */
-    disabled(...names: string[]): string[];
+    resetGroup(group: string | KawkahMiddlewareGroup, ...names: string[]): KawkahMiddleware;
     /**
      * Runs collection of middleware breaking on errors.
      *
@@ -263,7 +251,7 @@ export declare class KawkahMiddleware {
      * @param name the name or names to be run.
      * @param args the arguments to pass to middleware.
      */
-    runName(name: string | string[], ...args: any[]): {
+    runNames(name: string | string[], ...args: any[]): {
         command: (name: string) => any;
         force: (enabled: boolean) => any;
         run: <T>(...args: any[]) => T;

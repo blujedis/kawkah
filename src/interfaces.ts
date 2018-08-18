@@ -72,24 +72,24 @@ export type KawkahAnsiType = string | AnsiStyles | AnsiStyles[];
 // MIDDLEWARE //
 ////////////////
 
-export type KawkahResultMiddlewareHandler = (result: IKawkahResult, event?: IKawkahMiddlewareEventGlobal, context?: KawkahCore) => IKawkahResult | Error;
+export type KawkahResultMiddleware = (result: IKawkahResult, event?: IKawkahMiddlewareEventResult, context?: KawkahCore) => IKawkahResult | Error;
 
-export type KawkahModifyMiddlewareHandler = (val: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => any;
+export type KawkahOptionMiddleware = (val: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => any;
 
 export type KawkahMiddleware = <T>(val: any, ...args: any[]) => T;
 
-export type KawkahMiddlwareHandler = KawkahResultMiddlewareHandler | KawkahModifyMiddlewareHandler | KawkahMiddleware;
+export type KawkahMiddlwareHandler = KawkahResultMiddleware | KawkahOptionMiddleware | KawkahMiddleware;
 
 export enum KawkahMiddlewareGroup {
-  AfterParse = 'AfterParse',
+  AfterParsed = 'AfterParsed',
   BeforeValidate = 'BeforeValidate',
   Validate = 'Validate',
   AfterValidate = 'AfterValidate',
-  Finished = 'Finished'
+  BeforeAction = 'BeforeAction'
 }
 
 export interface IKawkahMiddleware {
-  name: string;
+  readonly name: string;
   group?: KawkahMiddlewareGroup;
   commands?: string[];
   enabled?: boolean;
@@ -351,16 +351,21 @@ export interface IKawkahResult extends IKawkahParserResult {
 }
 
 export interface IKawkahMiddlewareEventBase {
+  start?: number;
+  completed?: number;
+  elapsed?: number;
   result?: IKawkahResult;
   command?: IKawkahCommandInternal;
 }
 
-export interface IKawkahMiddlewareEventGlobal extends IKawkahMiddlewareEventBase { }
+export interface IKawkahMiddlewareEventResult extends IKawkahMiddlewareEventBase { }
 
 export interface IKawkahMiddlewareEventOption extends IKawkahMiddlewareEventBase {
-  isArg?: boolean;            // indicates current config is an argument.
+  isArg?: boolean;                // indicates current option is an argument.
+  isFlag?: boolean;               // indicates current option is a flag.
+  isPresent?: boolean;            // indicates option is present in result.
   option?: IKawkahOptionInternal;
 }
 
-export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventGlobal, IKawkahMiddlewareEventOption { }
+export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventResult, IKawkahMiddlewareEventOption { }
 

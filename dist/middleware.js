@@ -10,40 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("./core");
-const kawkah_parser_1 = require("kawkah-parser");
+const interfaces_1 = require("./interfaces");
 const decorators_1 = require("./decorators");
 const chek_1 = require("chek");
 const util_1 = require("util");
 const error_1 = require("./error");
 const constants_1 = require("./constants");
-var KawkahMiddlewareGroup;
-(function (KawkahMiddlewareGroup) {
-    KawkahMiddlewareGroup["AfterParse"] = "AfterParse";
-    KawkahMiddlewareGroup["BeforeValidate"] = "BeforeValidate";
-    KawkahMiddlewareGroup["Validate"] = "Validate";
-    KawkahMiddlewareGroup["AfterValidate"] = "AfterValidate";
-    KawkahMiddlewareGroup["Finished"] = "Finished";
-})(KawkahMiddlewareGroup = exports.KawkahMiddlewareGroup || (exports.KawkahMiddlewareGroup = {}));
 /////////////////////////
 // DEFAULT MIDDLEWARE //
 /////////////////////////
 // HELPERS //
-function isPresent(key, event) {
-    const option = event.option;
-    const result = event.result;
-    const args = result[constants_1.RESULT_ARGS_KEY];
-    if (event.isArg && chek_1.isValue(args[option.index]))
-        return true;
-    if (kawkah_parser_1.hasOwn(result, key))
-        return true;
-    return false;
-}
 function checkDemandDeny(val, key, type, event, context) {
-    const command = event.command;
     const option = event.option;
     const args = event.result[constants_1.RESULT_ARGS_KEY];
     const arr = option[type];
-    if (!arr.length || !isPresent(key, event))
+    if (!arr.length || !event.isPresent)
         return val;
     const u = context.utils;
     const argLabel = u.__ `Argument`;
@@ -55,8 +36,8 @@ function checkDemandDeny(val, key, type, event, context) {
         // Handle missing demands.
         if (type === 'demand') {
             // If matching option or arg doesn't exist set error.
-            if ((!isOption && !chek_1.isValue(args[option.index])) ||
-                (isOption && !kawkah_parser_1.hasOwn(event.result, k))) {
+            if ((!event.isFlag && !chek_1.isValue(args[option.index])) ||
+                (event.isFlag && !chek_1.has(event.result, k))) {
                 invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by demand'} (missing: ${k})`, context);
                 break;
             }
@@ -64,7 +45,7 @@ function checkDemandDeny(val, key, type, event, context) {
         // Handle existing must denies.
         else {
             // If matching option or arg does exist set error.
-            if ((!isOption && chek_1.isValue(args[option.index])) || (isOption && kawkah_parser_1.hasOwn(event.result, k))) {
+            if ((!event.isFlag && chek_1.isValue(args[option.index])) || (event.isFlag && chek_1.has(event.result, k))) {
                 invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by deny'} (exists: ${k})`, context);
                 break;
             }
@@ -160,19 +141,18 @@ function extend(val, key, event, context) {
  */
 function required(val, key, event, context) {
     const option = event.option;
-    // Option should skip validation middleware.
-    if (option.skip)
-        return val;
     const u = context.utils;
     const label = event.isArg ? u.__ `Argument` : u.__ `Flag`;
-    const isOption = !event.isArg;
+    // const isOption = !event.isArg;
     // If required and option by none specified or
     // is argument but no arg at index return error.
-    if (option.required &&
-        ((isOption && !kawkah_parser_1.hasOwn(event.result, key)) ||
-            (!isOption && !event.result[constants_1.RESULT_ARGS_KEY][option.index]))) {
+    // if (option.required &&
+    //   ((isOption && !hasOwn(event.result, key)) ||
+    //     (!isOption && !event.result[RESULT_ARGS_KEY][option.index]))) {
+    //   return new KawkahError(u.__`${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
+    // }
+    if (option.required && !event.isPresent)
         return new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
-    }
     return val;
 }
 /**
@@ -185,7 +165,7 @@ function required(val, key, event, context) {
  */
 function validator(val, key, event, context) {
     const option = event.option;
-    if (!chek_1.isValue(option.validate) || option.skip || !isPresent(key, event))
+    if (!chek_1.isValue(option.validate) || !event.isPresent)
         return val;
     let invalid = null;
     let exp;
@@ -245,8 +225,6 @@ function validator(val, key, event, context) {
  * @param context the core context.
  */
 function demand(val, key, event, context) {
-    if (event.option.skip)
-        return val;
     return checkDemandDeny(val, key, 'demand', event, context);
 }
 /**
@@ -258,8 +236,6 @@ function demand(val, key, event, context) {
  * @param context the core context.
  */
 function deny(val, key, event, context) {
-    if (event.option.skip)
-        return val;
     return checkDemandDeny(val, key, 'deny', event, context);
 }
 /**
@@ -276,34 +252,38 @@ function aliases(val, key, event, context) {
     if (!option.alias || !option.alias.length)
         return val;
     // Otherwise add for each alias key.
-    if (!event.isArg)
-        option.alias.forEach(k => chek_1.set(event.result, k, val));
+    if (!event.isArg) {
+        const _keys = option.alias;
+        if (!~_keys.indexOf(option.name))
+            _keys.unshift(option.name);
+        _keys.forEach(k => chek_1.set(event.result, k, val));
+    }
     // Always return the value for chaining.
     return val;
 }
 exports.defaultMiddleware = {
     // Runs before option configs are validated.
-    AfterParse: {
-        minmax: { handler: minmax, group: KawkahMiddlewareGroup.AfterParse }
+    AfterParsed: {
+        minmax: { handler: minmax, group: interfaces_1.KawkahMiddlewareGroup.AfterParsed }
     },
     // The below three groups all run on each
     // option passing the key, val, event and context.
     BeforeValidate: {
-        coerce: { handler: coerce, group: KawkahMiddlewareGroup.BeforeValidate },
-        extend: { handler: extend, group: KawkahMiddlewareGroup.BeforeValidate }
+        extend: { handler: extend, group: interfaces_1.KawkahMiddlewareGroup.BeforeValidate },
+        coerce: { handler: coerce, group: interfaces_1.KawkahMiddlewareGroup.BeforeValidate }
     },
     Validate: {
-        required: { handler: required, group: KawkahMiddlewareGroup.Validate },
-        validator: { handler: validator, group: KawkahMiddlewareGroup.Validate },
-        demand: { handler: demand, group: KawkahMiddlewareGroup.Validate },
-        deny: { handler: deny, group: KawkahMiddlewareGroup.Validate },
+        required: { handler: required, group: interfaces_1.KawkahMiddlewareGroup.Validate },
+        validator: { handler: validator, group: interfaces_1.KawkahMiddlewareGroup.Validate },
+        demand: { handler: demand, group: interfaces_1.KawkahMiddlewareGroup.Validate },
+        deny: { handler: deny, group: interfaces_1.KawkahMiddlewareGroup.Validate },
     },
     AfterValidate: {
-        aliases: { handler: aliases, group: KawkahMiddlewareGroup.AfterValidate }
+        aliases: { handler: aliases, group: interfaces_1.KawkahMiddlewareGroup.AfterValidate }
     },
     // Below group runs after each
     // option config has been validated.
-    Finished: {}
+    BeforeAction: {}
 };
 class KawkahMiddleware {
     constructor(core) {
@@ -314,7 +294,7 @@ class KawkahMiddleware {
     add(group, name, commands, handler, extend) {
         let obj;
         // no group passed first arg is name.
-        if (!KawkahMiddlewareGroup[group]) {
+        if (!interfaces_1.KawkahMiddlewareGroup[group]) {
             extend = handler;
             handler = commands;
             commands = name;
@@ -338,36 +318,18 @@ class KawkahMiddleware {
                 handler: handler
             };
         }
-        obj = Object.assign({
+        const tmp = Object.assign({
             commands: [],
             enabled: true,
             merge: false
         }, obj);
-        obj.name = obj.name || name;
-        obj.commands = chek_1.toArray(commands);
-        obj.group = obj.group || group;
-        this._middleware[obj.name] = obj;
+        tmp.name = tmp.name || name;
+        tmp.commands = chek_1.toArray(commands);
+        tmp.group = tmp.group || group;
+        this._middleware[tmp.name] = tmp;
         // Add to group if present.
-        if (obj.group)
-            this.group(obj.group, obj.name);
-        return this;
-    }
-    group(group, ...names) {
-        if (!names.length)
-            return this._groups[group] || [];
-        this._groups[group] = this._groups[group] || [];
-        this._groups[group] = this.core.utils.arrayExtend(this._groups[group], names);
-        return this;
-    }
-    /**
-     * Remove a group.
-     *
-     * @param group the group to be removed.
-     */
-    removeGroup(group) {
-        if (!group)
-            return this;
-        delete this._groups[group];
+        if (tmp.group)
+            this.group(tmp.group, tmp.name);
         return this;
     }
     /**
@@ -375,7 +337,7 @@ class KawkahMiddleware {
      *
      * @param names the names of middlware to be removed.
      */
-    removeMiddleware(...names) {
+    remove(...names) {
         names.forEach(k => {
             delete this._middleware[k];
             for (const n in this._groups) {
@@ -420,23 +382,47 @@ class KawkahMiddleware {
         }
         return this;
     }
-    enabled(...names) {
+    enabled(name) {
         const arr = chek_1.keys(this._middleware);
-        if (!names.length)
-            return arr.filter(k => this._middleware[k].enabled);
-        let enabled = arr.filter(k => ~names.indexOf(k));
-        if (names.length === 1)
-            return enabled[0];
-        return enabled;
+        let enabled = arr.filter(k => this._middleware[k].enabled);
+        if (!name)
+            return enabled;
+        return !!~enabled.indexOf(name);
     }
-    disabled(...names) {
+    disabled(name) {
         const arr = chek_1.keys(this._middleware);
+        let disabled = arr.filter(k => !this._middleware[k].enabled);
+        if (!name)
+            return disabled;
+        return !!~disabled.indexOf(name);
+    }
+    group(group, ...names) {
         if (!names.length)
-            return arr.filter(k => !this._middleware[k].enabled);
-        let disabled = arr.filter(k => ~names.indexOf(k));
-        if (names.length === 1)
-            return disabled[0];
-        return disabled;
+            return this._groups[group] || [];
+        this._groups[group] = this._groups[group] || [];
+        this._groups[group] = this.core.utils.arrayExtend(this._groups[group], names);
+        return this;
+    }
+    /**
+     * Remove a group.
+     *
+     * @param group the group to be removed.
+     */
+    removeGroup(group) {
+        if (!group)
+            return this;
+        delete this._groups[group];
+        return this;
+    }
+    /**
+     * Removes existing group then creates with new order of middleware names.
+     *
+     * @param group the name of the group to reset.
+     * @param names the middleware names to assign to the group.
+     */
+    resetGroup(group, ...names) {
+        return this.removeGroup(group)
+            .group(group, ...names);
     }
     run(collection, val, ...args) {
         // If an error simply return
@@ -508,7 +494,7 @@ class KawkahMiddleware {
      * @param name the name or names to be run.
      * @param args the arguments to pass to middleware.
      */
-    runName(name, ...args) {
+    runNames(name, ...args) {
         let middleware = [];
         let command = undefined;
         let force = false;

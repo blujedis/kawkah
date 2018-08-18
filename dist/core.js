@@ -76,7 +76,6 @@ class KawkahCore extends events_1.EventEmitter {
         this.options.styles = this.normalizeStyles(this.options.styles);
         // Enable error and log handlers.
         this.setLogHandler();
-        // this._errorHandler = this.handleError.bind(this);
         // wire up the parser error handler hook.
         this.options.onParserError = (err, template, args) => {
             template = this.utils.__(template); // localize.
@@ -1891,19 +1890,19 @@ class KawkahCore extends events_1.EventEmitter {
         const command = event.command;
         // Apply before validate.
         val = this.middleware
-            .runGroup(middleware_1.KawkahMiddlewareGroup.BeforeValidate)
+            .runGroup(interfaces_1.KawkahMiddlewareGroup.BeforeValidate)
             .command(command.name)
             .run(val, key, event, this);
         if (!event.option.skip && !command.skip) {
             // Apply validation.
             val = this.middleware
-                .runGroup(middleware_1.KawkahMiddlewareGroup.Validate)
+                .runGroup(interfaces_1.KawkahMiddlewareGroup.Validate)
                 .command(command.name)
                 .run(val, key, event, this);
         }
         // Apply middleware.
         val = this.middleware
-            .runGroup(middleware_1.KawkahMiddlewareGroup.AfterValidate)
+            .runGroup(interfaces_1.KawkahMiddlewareGroup.AfterValidate)
             .command(command.name)
             .run(val, key, event, this);
         return val;
@@ -1922,16 +1921,29 @@ class KawkahCore extends events_1.EventEmitter {
         let command = event.command;
         // Merge in default option configs with command options.
         let configs = Object.assign({}, defaultCommand.options, command.options);
+        const args = event.result[constants_1.RESULT_ARGS_KEY];
+        // Finds result key by alias.
+        function getKey(aliases) {
+            return aliases.reduce((a, c) => {
+                if (a === undefined && chek_1.has(event.result, c))
+                    return c;
+                return a;
+            }, undefined);
+        }
         // Iterate each command option configuration.
         for (const k in configs) {
             // Set the current configuration.
             const config = event.option = configs[k];
             // Check if is an argument or option.
             const isArgument = event.isArg = kawkah_parser_1.hasOwn(config, 'index');
+            event.isFlag = !event.isArg;
+            const flagKey = !isArgument ? getKey([k, ...config.alias]) : undefined;
+            const key = isArgument ? k : flagKey || k;
             // Set the initial value.
-            let val = isArgument ? event.result[constants_1.RESULT_ARGS_KEY][config.index] : chek_1.get(event.result, k);
+            let val = isArgument ? args[config.index] : chek_1.get(event.result, key);
+            event.isPresent = event.isArg && chek_1.isValue(args[config.index]) ? true : !!flagKey;
             // Run all validation middleware.
-            val = this.validateMiddleware(val, k, event);
+            val = this.validateMiddleware(val, key, event);
             if (chek_1.isError(val)) {
                 event.result = val;
                 break;
@@ -2027,12 +2039,12 @@ class KawkahCore extends events_1.EventEmitter {
         const matches = this.utils.arrayMatch(actionKeys, truthyOptions);
         // Check if actionable global option was passed.
         let actionOption = matches[0] ? this.getOption(matches[0]) : null;
-        const event = { result: parsed, command: command || defaultCommand };
+        const event = { start: Date.now(), result: parsed, command: command || defaultCommand };
         let result = parsed;
         // Run before middleware.
         event.result =
             this.middleware
-                .runGroup(middleware_1.KawkahMiddlewareGroup.AfterParse)
+                .runGroup(interfaces_1.KawkahMiddlewareGroup.AfterParsed)
                 .run(parsed, event, this);
         // If not calling for example help, version etc
         // then we need to validate the parsed result.
@@ -2040,14 +2052,15 @@ class KawkahCore extends events_1.EventEmitter {
             event.result = this.validate(event);
         event.result =
             this.middleware
-                .runGroup(middleware_1.KawkahMiddlewareGroup.Finished)
+                .runGroup(interfaces_1.KawkahMiddlewareGroup.BeforeAction)
                 .run(event.result, event, this);
+        event.completed = Date.now();
+        event.elapsed = event.completed - event.start;
         if (chek_1.isError(event.result)) {
             this.error(event.result);
             return;
         }
-        // Middlware/validation done set
-        // result to tmpResult.
+        // Middlware successful no errors.
         result = event.result;
         if (commandName) {
             let actionArgs = [result, this];

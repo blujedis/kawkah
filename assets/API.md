@@ -1,4 +1,4 @@
-# Kawkah
+# API
 
 Kawkah is made up of four basic classes KawkahCore, KawkahComamnd & Kawkah. All classes interact with KawkahCore,it holds the context. You instantiate Kawkah passing in your initial options/config. This becomes the default command which has some special methods. When calling <code>kawkah.command()</code> It returns an instance of KawkahCommand.
 
@@ -15,7 +15,7 @@ import { Kawkah } from 'kawkah'; // or const Kawkah = require('kawkah').Kawkah;
 const kk = new Kawkah({ /* options here */ });
 ```
 
-## Base Command Methods
+## Base
 
 This section contains API methods that are base methods to both the Kawkah instance and any KawkahCommand instance.
 
@@ -209,7 +209,7 @@ Adds an example to be displayed in help.
 kk.example('install.simple', 'This is the simplest way to install');
 ```
 
-## Options Methods
+## Options
 
 This section contains API methods that are base methods for options on both the Kawkah instance and any KawkahCommand instance.
 
@@ -415,7 +415,7 @@ Enables/disables skipping validation for the specified option.
 kk.skip('toppings'); // or kk.skip('toppings', false);
 ```
 
-## Kawkah Instance Methods
+## Instance
 
 This section contains API methods that are base methods to both the Kawkah instance and any KawkahCommand instance.
 
@@ -498,6 +498,14 @@ Configure a custom log handler to capture all log messages.
 kk.configLogger((type: string, message: string, ...args: any[]) => {
   // Handle
 });
+```
+
+### .middleware()
+
+Creates or updates a help group.
+
+```ts
+kk.middleware('Commands:', false); // enable/disable group
 ```
 
 ### .group()

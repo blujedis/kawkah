@@ -1,19 +1,11 @@
 import { KawkahCore } from './core';
 import { hasOwn } from 'kawkah-parser';
-import { IKawkahMap, KawkahValidateHandler, IKawkahMiddleware, KawkahMiddlwareHandler, IKawkahMiddlewareEventOption, IKawkahMiddlewareEventGlobal, IKawkahResult, KawkahModifyMiddlewareHandler } from './interfaces';
+import { IKawkahMap, KawkahValidateHandler, IKawkahMiddleware, KawkahMiddlwareHandler, IKawkahMiddlewareEventOption, IKawkahMiddlewareEventResult, IKawkahResult, KawkahMiddlewareGroup } from './interfaces';
 import { nonenumerable } from './decorators';
-import { keys, toArray, isString, isValue, set, get, omit, isBoolean, isPlainObject, isObject } from 'chek';
+import { keys, toArray, isString, isValue, set, get, omit, isPlainObject, isObject, has } from 'chek';
 import { isFunction, isError, isRegExp, isArray, isUndefined } from 'util';
 import { KawkahError } from './error';
 import { RESULT_ARGS_KEY } from './constants';
-
-export enum KawkahMiddlewareGroup {
-  AfterParse = 'AfterParse',
-  BeforeValidate = 'BeforeValidate',
-  Validate = 'Validate',
-  AfterValidate = 'AfterValidate',
-  Finished = 'Finished'
-}
 
 /////////////////////////
 // DEFAULT MIDDLEWARE //
@@ -21,34 +13,14 @@ export enum KawkahMiddlewareGroup {
 
 // HELPERS //
 
-function isPresent(key: string, event: IKawkahMiddlewareEventOption) {
-
-  const option = event.option;
-  const result = event.result;
-
-  const args = result[RESULT_ARGS_KEY];
-
-  if (event.isArg && isValue(args[option.index]))
-    return true;
-
-  if (hasOwn(result, key))
-    return true;
-
-  return false;
-
-
-}
-
 function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: IKawkahMiddlewareEventOption, context: KawkahCore) {
 
-  const command = event.command;
   const option = event.option;
 
   const args = event.result[RESULT_ARGS_KEY];
-
   const arr = option[type] as string[];
 
-  if (!arr.length || !isPresent(key, event))
+  if (!arr.length || !event.isPresent)
     return val;
 
   const u = context.utils;
@@ -67,8 +39,8 @@ function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: 
 
       // If matching option or arg doesn't exist set error.
       if (
-        (!isOption && !isValue(args[option.index])) ||
-        (isOption && !hasOwn(event.result, k))) {
+        (!event.isFlag && !isValue(args[option.index])) ||
+        (event.isFlag && !has(event.result, k))) {
         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by demand'} (missing: ${k})`, context);
         break;
       }
@@ -79,7 +51,7 @@ function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: 
     else {
 
       // If matching option or arg does exist set error.
-      if ((!isOption && isValue(args[option.index])) || (isOption && hasOwn(event.result, k))) {
+      if ((!event.isFlag && isValue(args[option.index])) || (event.isFlag && has(event.result, k))) {
         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by deny'} (exists: ${k})`, context);
         break;
       }
@@ -97,7 +69,7 @@ function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: 
 
 // BEFORE MIDDLEWARE //
 
-function minmax(result: IKawkahResult, event?: IKawkahMiddlewareEventGlobal, context?: KawkahCore) {
+function minmax(result: IKawkahResult, event?: IKawkahMiddlewareEventResult, context?: KawkahCore) {
 
   const command = event.command;
   const minArgs = command.minArgs;
@@ -216,22 +188,21 @@ function extend(val: any, key: string, event: IKawkahMiddlewareEventOption, cont
 function required(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore) {
 
   const option = event.option;
-
-  // Option should skip validation middleware.
-  if (option.skip) return val;
-
   const u = context.utils;
 
   const label = event.isArg ? u.__`Argument` : u.__`Flag`;
-  const isOption = !event.isArg;
+  // const isOption = !event.isArg;
 
   // If required and option by none specified or
   // is argument but no arg at index return error.
-  if (option.required &&
-    ((isOption && !hasOwn(event.result, key)) ||
-      (!isOption && !event.result[RESULT_ARGS_KEY][option.index]))) {
+  // if (option.required &&
+  //   ((isOption && !hasOwn(event.result, key)) ||
+  //     (!isOption && !event.result[RESULT_ARGS_KEY][option.index]))) {
+  //   return new KawkahError(u.__`${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
+  // }
+
+  if (option.required && !event.isPresent)
     return new KawkahError(u.__`${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
-  }
 
   return val;
 
@@ -249,7 +220,7 @@ function validator(val: any, key: string, event: IKawkahMiddlewareEventOption, c
 
   const option = event.option;
 
-  if (!isValue(option.validate) || option.skip || !isPresent(key, event)) return val;
+  if (!isValue(option.validate) || !event.isPresent) return val;
 
   let invalid: string | boolean | Error = null;
   let exp: string;
@@ -331,7 +302,6 @@ function validator(val: any, key: string, event: IKawkahMiddlewareEventOption, c
  * @param context the core context.
  */
 function demand(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore) {
-  if (event.option.skip) return val;
   return checkDemandDeny(val, key, 'demand', event, context);
 }
 
@@ -344,7 +314,6 @@ function demand(val: any, key: string, event: IKawkahMiddlewareEventOption, cont
  * @param context the core context.
  */
 function deny(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore) {
-  if (event.option.skip) return val;
   return checkDemandDeny(val, key, 'deny', event, context);
 }
 
@@ -365,8 +334,12 @@ function aliases(val: any, key: string, event: IKawkahMiddlewareEventOption, con
     return val;
 
   // Otherwise add for each alias key.
-  if (!event.isArg)
-    option.alias.forEach(k => set(event.result, k, val));
+  if (!event.isArg) {
+    const _keys = option.alias;
+    if (!~_keys.indexOf(option.name))
+      _keys.unshift(option.name);
+    _keys.forEach(k => set(event.result, k, val));
+  }
 
   // Always return the value for chaining.
   return val;
@@ -377,16 +350,16 @@ export const defaultMiddleware = {
 
   // Runs before option configs are validated.
 
-  AfterParse: {
-    minmax: { handler: minmax, group: KawkahMiddlewareGroup.AfterParse }
+  AfterParsed: {
+    minmax: { handler: minmax, group: KawkahMiddlewareGroup.AfterParsed }
   },
 
   // The below three groups all run on each
   // option passing the key, val, event and context.
 
   BeforeValidate: {
-    coerce: { handler: coerce, group: KawkahMiddlewareGroup.BeforeValidate },
-    extend: { handler: extend, group: KawkahMiddlewareGroup.BeforeValidate }
+    extend: { handler: extend, group: KawkahMiddlewareGroup.BeforeValidate },
+    coerce: { handler: coerce, group: KawkahMiddlewareGroup.BeforeValidate }
   },
 
   Validate: {
@@ -403,7 +376,7 @@ export const defaultMiddleware = {
   // Below group runs after each
   // option config has been validated.
 
-  Finished: {}
+  BeforeAction: {}
 
 };
 
@@ -514,59 +487,25 @@ export class KawkahMiddleware {
 
     }
 
-    obj = Object.assign({
+
+    const tmp: any = Object.assign({
       commands: [],
       enabled: true,
       merge: false
     }, obj);
 
-    obj.name = obj.name || <string>name;
-    obj.commands = toArray(commands);
-    obj.group = obj.group || <KawkahMiddlewareGroup>group;
+    tmp.name = tmp.name || <string>name;
+    tmp.commands = toArray(commands);
+    tmp.group = tmp.group || <KawkahMiddlewareGroup>group;
 
-    this._middleware[obj.name] = obj;
+    this._middleware[tmp.name] = tmp;
 
     // Add to group if present.
-    if (obj.group)
-      this.group(obj.group, obj.name);
+    if (tmp.group)
+      this.group(tmp.group, tmp.name);
 
     return this;
 
-  }
-
-  /**
-   * Gets list of middleware groups.
-   *
-   * @param group the group to add.
-   */
-  group(group: string | KawkahMiddlewareGroup): string[];
-
-  /**
-   * Adds/updates middleware group.
-   *
-   * @param group the group to add.
-   * @param names the middleware to assign to the group.
-   */
-  group(group: string | KawkahMiddlewareGroup, ...names: string[]): KawkahMiddleware;
-
-  group(group: KawkahMiddlewareGroup, ...names: string[]): string[] | KawkahMiddleware {
-    if (!names.length)
-      return this._groups[group] || [];
-    this._groups[group] = this._groups[group] || [];
-    this._groups[group] = this.core.utils.arrayExtend(this._groups[group], names);
-    return this;
-  }
-
-  /**
-   * Remove a group.
-   *
-   * @param group the group to be removed.
-   */
-  removeGroup(group: string) {
-    if (!group)
-      return this;
-    delete this._groups[group];
-    return this;
   }
 
   /**
@@ -574,7 +513,7 @@ export class KawkahMiddleware {
    *
    * @param names the names of middlware to be removed.
    */
-  removeMiddleware(...names: string[]) {
+  remove(...names: string[]) {
     names.forEach(k => {
       delete this._middleware[k];
       for (const n in this._groups) {
@@ -623,32 +562,23 @@ export class KawkahMiddleware {
   }
 
   /**
-   * Returns all enabled middleware.
+   * Returns all enabled middleware by name.
    */
   enabled(): string[];
 
   /**
-   * Returns name if middlware is enabled.
+   * Returns true if middleware is enabled.
    *
    * @param name the name of the middleware to inspect.
    */
-  enabled(name: string): string;
+  enabled(name: string): boolean;
 
-  /**
-   * Returns matching enabled middleware.
-   *
-   * @param names the names of middlware to inspect.
-   */
-  enabled(...names: string[]): string[];
-
-  enabled(...names: string[]) {
+  enabled(name?: string): string[] | boolean {
     const arr = keys(this._middleware);
-    if (!names.length)
-      return arr.filter(k => this._middleware[k].enabled);
-    let enabled: any = arr.filter(k => ~names.indexOf(k));
-    if (names.length === 1)
-      return enabled[0];
-    return enabled;
+    let enabled = arr.filter(k => this._middleware[k].enabled);
+    if (!name)
+      return enabled;
+    return !!~enabled.indexOf(name);
   }
 
   /**
@@ -661,23 +591,60 @@ export class KawkahMiddleware {
    *
    * @param name the name of the middleware to inspect.
    */
-  disabled(name: string): string;
+  disabled(name: string): boolean;
+
+  disabled(name?: string): boolean | string[] {
+    const arr = keys(this._middleware);
+    let disabled = arr.filter(k => !this._middleware[k].enabled);
+    if (!name)
+      return disabled;
+    return !!~disabled.indexOf(name);
+  }
 
   /**
-   * Returns matching disabled middleware.
-   *
-   * @param names the names of middlware to inspect.
-   */
-  disabled(...names: string[]): string[];
+  * Gets list of middleware groups.
+  *
+  * @param group the group to add.
+  */
+  group(group: string | KawkahMiddlewareGroup): string[];
 
-  disabled(...names: string[]) {
-    const arr = keys(this._middleware);
+  /**
+   * Adds/updates middleware group.
+   *
+   * @param group the group to add.
+   * @param names the middleware to assign to the group.
+   */
+  group(group: string | KawkahMiddlewareGroup, ...names: string[]): KawkahMiddleware;
+
+  group(group: KawkahMiddlewareGroup, ...names: string[]): string[] | KawkahMiddleware {
     if (!names.length)
-      return arr.filter(k => !this._middleware[k].enabled);
-    let disabled: any = arr.filter(k => ~names.indexOf(k));
-    if (names.length === 1)
-      return disabled[0];
-    return disabled;
+      return this._groups[group] || [];
+    this._groups[group] = this._groups[group] || [];
+    this._groups[group] = this.core.utils.arrayExtend(this._groups[group], names);
+    return this;
+  }
+
+  /**
+   * Remove a group.
+   *
+   * @param group the group to be removed.
+   */
+  removeGroup(group: string) {
+    if (!group)
+      return this;
+    delete this._groups[group];
+    return this;
+  }
+
+  /**
+   * Removes existing group then creates with new order of middleware names.
+   *
+   * @param group the name of the group to reset.
+   * @param names the middleware names to assign to the group.
+   */
+  resetGroup(group: string | KawkahMiddlewareGroup, ...names: string[]) {
+    return this.removeGroup(group)
+      .group(group, ...names);
   }
 
   /**
@@ -784,7 +751,7 @@ export class KawkahMiddleware {
    * @param name the name or names to be run.
    * @param args the arguments to pass to middleware.
    */
-  runName(name: string | string[], ...args: any[]) {
+  runNames(name: string | string[], ...args: any[]) {
 
     let middleware: IKawkahMiddleware[] = [];
     let command = undefined;

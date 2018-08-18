@@ -36,7 +36,6 @@ kk
     validate: /(cheese|mushroom|ham)/
   })
   .flag('deep-dish')
-  // parse or listen MUST be called last.
   .listen('order --toppings cheese --toppings ham --deep-dish');
 
 // RESULT

@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var KawkahMiddlewareGroup;
 (function (KawkahMiddlewareGroup) {
-    KawkahMiddlewareGroup["AfterParse"] = "AfterParse";
+    KawkahMiddlewareGroup["AfterParsed"] = "AfterParsed";
     KawkahMiddlewareGroup["BeforeValidate"] = "BeforeValidate";
     KawkahMiddlewareGroup["Validate"] = "Validate";
     KawkahMiddlewareGroup["AfterValidate"] = "AfterValidate";
-    KawkahMiddlewareGroup["Finished"] = "Finished";
+    KawkahMiddlewareGroup["BeforeAction"] = "BeforeAction";
 })(KawkahMiddlewareGroup = exports.KawkahMiddlewareGroup || (exports.KawkahMiddlewareGroup = {}));
 // ENUMS //
 var KawkahHelpScheme;

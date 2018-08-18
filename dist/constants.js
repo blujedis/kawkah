@@ -150,7 +150,7 @@ exports.DEFAULT_OPTIONS = {
     timestampFormat: 'MM-dd-yyyy hh:mm:ss',
     // Format/template for log messages.
     logFormat: '{{symbol}} {{message}}',
-    // Array of MODIFY middleware names.
+    // Array of enabled middleware.
     middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],
     // map of colors used when outputting to console.
     styles: {

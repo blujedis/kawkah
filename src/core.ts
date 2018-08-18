@@ -6,14 +6,14 @@ import { Tablur, TablurAlign, ITablurColumn } from 'tablur';
 import * as spawn from 'cross-spawn';
 import { ChildProcess, SpawnOptions } from 'child_process';
 
-import { isString, toArray, isValue, isObject, isArray, toDefault, isBoolean, getType, isFunction, isPlainObject, last, isEmpty, keys, first, capitalize, get, isDebug, includes, isTruthy, isWindows, omit, pick, isUndefined, set, isError, noop } from 'chek';
-import { parse, expandArgs, isFlag, IKawhakParserOptions, SUPPORTED_TYPES, hasOwn } from 'kawkah-parser';
+import { isString, toArray, isValue, isObject, isArray, toDefault, isBoolean, getType, isFunction, isPlainObject, last, isEmpty, keys, first, capitalize, get, isDebug, includes, isTruthy, isWindows, omit, pick, isUndefined, set, isError, noop, has } from 'chek';
+import { parse, expandArgs, isFlag, IKawhakParserOptions, SUPPORTED_TYPES, hasOwn, isArg } from 'kawkah-parser';
 import { nonenumerable } from './decorators';
 import * as exec from './exec';
-import { KawkahMiddleware, defaultMiddleware, KawkahMiddlewareGroup } from './middleware';
+import { KawkahMiddleware, defaultMiddleware } from './middleware';
 import { KawkahUtils } from './utils';
 
-import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHandler, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahHelpScheme, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, KawkahResultAction, KawkahGroupKeys, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, KawkahThemeSytleKeys, IKawkahMiddlewareEventOption, KawkahOptionType, KawkahValidateHandler } from './interfaces';
+import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHandler, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahHelpScheme, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, KawkahResultAction, KawkahGroupKeys, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, KawkahThemeSytleKeys, IKawkahMiddlewareEventOption, KawkahOptionType, KawkahValidateHandler, KawkahMiddlewareGroup, IKawkahMiddlewareEventBase } from './interfaces';
 
 import { DEFAULT_COMMAND_NAME, DEFAULT_OPTIONS, DEFAULT_GROUP, RESULT_NAME_KEY, MESSAGE_FORMAT_EXP, DEFAULT_THEMES, DEFAULT_THEME, RESULT_ARGS_KEY, RESULT_COMMAND_KEY, RESULT_ABORT_KEY, DEFAULT_PARSER_OPTIONS, DEFAULT_COMMAND } from './constants';
 import { KawkahError } from './error';
@@ -135,7 +135,6 @@ export class KawkahCore extends EventEmitter {
 
     // Enable error and log handlers.
     this.setLogHandler();
-    // this._errorHandler = this.handleError.bind(this);
 
     // wire up the parser error handler hook.
     this.options.onParserError = (err: Error, template: string, args: any[]) => {
@@ -2973,6 +2972,17 @@ export class KawkahCore extends EventEmitter {
     // Merge in default option configs with command options.
     let configs = Object.assign({}, defaultCommand.options, command.options);
 
+    const args = event.result[RESULT_ARGS_KEY];
+
+    // Finds result key by alias.
+    function getKey(aliases) {
+      return aliases.reduce((a, c) => {
+        if (a === undefined && has(event.result, c))
+          return c;
+        return a;
+      }, undefined);
+    }
+
     // Iterate each command option configuration.
     for (const k in configs) {
 
@@ -2981,12 +2991,18 @@ export class KawkahCore extends EventEmitter {
 
       // Check if is an argument or option.
       const isArgument = event.isArg = hasOwn(config, 'index');
+      event.isFlag = !event.isArg;
+
+      const flagKey = !isArgument ? getKey([k, ...config.alias]) : undefined;
+      const key = isArgument ? k : flagKey || k;
 
       // Set the initial value.
-      let val = isArgument ? event.result[RESULT_ARGS_KEY][config.index] : get(event.result, k);
+      let val = isArgument ? args[config.index] : get(event.result, key);
+
+      event.isPresent = event.isArg && isValue(args[config.index]) ? true : !!flagKey;
 
       // Run all validation middleware.
-      val = this.validateMiddleware(val, k, event);
+      val = this.validateMiddleware(val, key, event);
 
       if (isError(val)) {
         event.result = val;
@@ -3115,14 +3131,14 @@ export class KawkahCore extends EventEmitter {
     // Check if actionable global option was passed.
     let actionOption = matches[0] ? this.getOption(matches[0]) : null;
 
-    const event = { result: parsed, command: command || defaultCommand };
+    const event: IKawkahMiddlewareEventBase = { start: Date.now(), result: parsed, command: command || defaultCommand };
 
     let result = parsed;
 
     // Run before middleware.
     event.result =
       this.middleware
-        .runGroup(KawkahMiddlewareGroup.AfterParse)
+        .runGroup(KawkahMiddlewareGroup.AfterParsed)
         .run(parsed, event, this);
 
     // If not calling for example help, version etc
@@ -3133,16 +3149,18 @@ export class KawkahCore extends EventEmitter {
 
     event.result =
       this.middleware
-        .runGroup(KawkahMiddlewareGroup.Finished)
+        .runGroup(KawkahMiddlewareGroup.BeforeAction)
         .run(event.result, event, this);
+
+    event.completed = Date.now();
+    event.elapsed = event.completed - event.start;
 
     if (isError(event.result)) {
       this.error(<KawkahError>event.result);
       return;
     }
 
-    // Middlware/validation done set
-    // result to tmpResult.
+    // Middlware successful no errors.
     result = event.result;
 
     if (commandName) {

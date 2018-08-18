@@ -40,19 +40,19 @@ export declare type KawkahStyleKeys = keyof IKawkahStyles;
 export declare type KawkahThemeSytleKeys = keyof IKawkahTheme;
 export declare type KawkahThemeKeys = keyof IKawkahThemes;
 export declare type KawkahAnsiType = string | AnsiStyles | AnsiStyles[];
-export declare type KawkahResultMiddlewareHandler = (result: IKawkahResult, event?: IKawkahMiddlewareEventGlobal, context?: KawkahCore) => IKawkahResult | Error;
-export declare type KawkahModifyMiddlewareHandler = (val: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => any;
+export declare type KawkahResultMiddleware = (result: IKawkahResult, event?: IKawkahMiddlewareEventResult, context?: KawkahCore) => IKawkahResult | Error;
+export declare type KawkahOptionMiddleware = (val: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => any;
 export declare type KawkahMiddleware = <T>(val: any, ...args: any[]) => T;
-export declare type KawkahMiddlwareHandler = KawkahResultMiddlewareHandler | KawkahModifyMiddlewareHandler | KawkahMiddleware;
+export declare type KawkahMiddlwareHandler = KawkahResultMiddleware | KawkahOptionMiddleware | KawkahMiddleware;
 export declare enum KawkahMiddlewareGroup {
-    AfterParse = "AfterParse",
+    AfterParsed = "AfterParsed",
     BeforeValidate = "BeforeValidate",
     Validate = "Validate",
     AfterValidate = "AfterValidate",
-    Finished = "Finished"
+    BeforeAction = "BeforeAction"
 }
 export interface IKawkahMiddleware {
-    name: string;
+    readonly name: string;
     group?: KawkahMiddlewareGroup;
     commands?: string[];
     enabled?: boolean;
@@ -277,14 +277,19 @@ export interface IKawkahResult extends IKawkahParserResult {
     $command?: string;
 }
 export interface IKawkahMiddlewareEventBase {
+    start?: number;
+    completed?: number;
+    elapsed?: number;
     result?: IKawkahResult;
     command?: IKawkahCommandInternal;
 }
-export interface IKawkahMiddlewareEventGlobal extends IKawkahMiddlewareEventBase {
+export interface IKawkahMiddlewareEventResult extends IKawkahMiddlewareEventBase {
 }
 export interface IKawkahMiddlewareEventOption extends IKawkahMiddlewareEventBase {
     isArg?: boolean;
+    isFlag?: boolean;
+    isPresent?: boolean;
     option?: IKawkahOptionInternal;
 }
-export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventGlobal, IKawkahMiddlewareEventOption {
+export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventResult, IKawkahMiddlewareEventOption {
 }
