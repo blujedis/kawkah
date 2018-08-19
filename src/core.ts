@@ -2069,24 +2069,24 @@ export class KawkahCore extends EventEmitter {
   /**
    * Sets version with custom option keys with description and custom version.
    *
-   * @param options the option keys to use for version.
+   * @param name the option keys to use for version.
    * @param describe the description for help.
    * @param version a custom value to set version to.
    */
-  setVersion(options: string[], describe?: string, version?: string): IKawkahOptionInternal;
+  setVersion(name: string[], describe?: string, version?: string): IKawkahOptionInternal;
 
-  setVersion(option: string | string[] | boolean = true, describe?: string, version?: string) {
+  setVersion(name: string | string[] | boolean = true, describe?: string, version?: string) {
 
-    this.assert('.setVersion()', '<string|array|boolean> [string] [string]', [option, describe, version]);
+    this.assert('.setVersion()', '<string|array|boolean> [string] [string]', [name, describe, version]);
 
     let key = this.utils.__`version`;
 
     // Disable version.
-    if (option === false)
+    if (name === false)
       return this.removeOption(DEFAULT_COMMAND_NAME, key);
 
-    let aliases = isArray(option) || (arguments.length > 1 && isString(option)) ? option : undefined;
-    let ver = arguments.length === 1 && isString(option) ? option : version;
+    let aliases = isArray(name) || (arguments.length > 1 && isString(name)) ? name : undefined;
+    let ver = arguments.length === 1 && isString(name) ? name : version;
 
     describe = describe || this.utils.__`Displays ${this.$0} ${key}`;
 
@@ -2469,43 +2469,43 @@ export class KawkahCore extends EventEmitter {
   /**
    * Enables help with custom option(s) names with optional help handler.
    *
-   * @param options a string or array of string option names.
+   * @param name a string or array of string option names.
    * @param fn optional help handler method for displaying help.
    */
-  setHelp(options: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
+  setHelp(name: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
 
   /**
    * Enables help with custom option(s) names with optional help handler.
    *
-   * @param options a string or array of string option names.
+   * @param name a string or array of string option names.
    * @param describe the description for help option.
    * @param fn optional help handler method for displaying help.
    */
-  setHelp(options: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
+  setHelp(name: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
 
-  setHelp(options: string | string[] | boolean | KawkahHelpHandler = true, describe?: string | KawkahHelpHandler, fn?: KawkahHelpHandler) {
+  setHelp(name: string | string[] | boolean | KawkahHelpHandler = true, describe?: string | KawkahHelpHandler, fn?: KawkahHelpHandler) {
 
-    this.assert('.setHelp()', '<string|array|boolean|function> [string|function] [function]', [options, describe, fn]);
+    this.assert('.setHelp()', '<string|array|boolean|function> [string|function] [function]', [name, describe, fn]);
 
     const key = this.utils.__`help`;
     const defHelpHandler = this.handleHelp.bind(this);
 
     // If false ensure option doesn't exist.
-    if (options === false) {
+    if (name === false) {
       this.removeOption(DEFAULT_COMMAND_NAME, key);
       this._helpHandler = undefined;
       return this;
     }
 
-    else if (options === true) {
+    else if (name === true) {
       fn = defHelpHandler.bind(this);
-      options = undefined;
+      name = undefined;
     }
 
     // If function shift args.
-    else if (isFunction(options)) {
-      fn = <KawkahHelpHandler>options;
-      options = undefined;
+    else if (isFunction(name)) {
+      fn = <KawkahHelpHandler>name;
+      name = undefined;
     }
 
     if (isFunction(describe)) {
@@ -2542,7 +2542,7 @@ export class KawkahCore extends EventEmitter {
 
     return this.setOption(DEFAULT_COMMAND_NAME, key, {
       type: 'boolean',
-      alias: <string[]>options,
+      alias: <string[]>name,
       describe: <string>describe,
       action: action.bind(this)
     });
@@ -2974,15 +2974,6 @@ export class KawkahCore extends EventEmitter {
 
     const args = event.result[RESULT_ARGS_KEY];
 
-    // Finds result key by alias.
-    function getKey(aliases) {
-      return aliases.reduce((a, c) => {
-        if (a === undefined && has(event.result, c))
-          return c;
-        return a;
-      }, undefined);
-    }
-
     // Iterate each command option configuration.
     for (const k in configs) {
 
@@ -2993,16 +2984,13 @@ export class KawkahCore extends EventEmitter {
       const isArgument = event.isArg = hasOwn(config, 'index');
       event.isFlag = !event.isArg;
 
-      const flagKey = !isArgument ? getKey([k, ...config.alias]) : undefined;
-      const key = isArgument ? k : flagKey || k;
-
       // Set the initial value.
-      let val = isArgument ? args[config.index] : get(event.result, key);
+      let val = isArgument ? args[config.index] : get(event.result, k);
 
-      event.isPresent = event.isArg && isValue(args[config.index]) ? true : !!flagKey;
+      event.isPresent = event.isArg && isValue(args[config.index]) ? true : has(event.result, k);
 
       // Run all validation middleware.
-      val = this.validateMiddleware(val, key, event);
+      val = this.validateMiddleware(val, k, event);
 
       if (isError(val)) {
         event.result = val;

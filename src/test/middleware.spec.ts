@@ -2,8 +2,7 @@ import * as chai from 'chai';
 import * as mocha from 'mocha';
 import * as MuteStream from 'mute-stream';
 import { Kawkah } from '../';
-import { KawkahMiddlewareGroup } from '../middleware';
-import { KawkahResultMiddlewareHandler } from '../interfaces';
+import { KawkahResultMiddleware, KawkahMiddlewareGroup } from '../interfaces';
 
 const expect = chai.expect;
 const should = chai.should;
@@ -20,31 +19,31 @@ const kk = new Kawkah({
 const $0 = kk.name();
 const mw = kk.core.middleware;
 
-const handlerBefore: KawkahResultMiddlewareHandler = (result, event, context) => {
+const handlerBefore: KawkahResultMiddleware = (result, event, context) => {
   result.before = true;
   return result;
 };
 
-mw.add(KawkahMiddlewareGroup.AfterParse, 'before:test', handlerBefore, true);
+mw.add(KawkahMiddlewareGroup.AfterParsed, 'before:test', handlerBefore, true);
 
 const handlerAfter = (result, event, context) => {
   result.after = true;
   return result;
 };
 
-mw.add(KawkahMiddlewareGroup.Finished, 'after:test', handlerAfter, true);
+mw.add(KawkahMiddlewareGroup.BeforeAction, 'after:test', handlerAfter, true);
 
 describe('Kawkah:Middleware', () => {
 
   it('should disable before and after check enabled.', () => {
-    const expected = ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'];
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases'];
     mw.disable('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
   });
 
   it('should enable before and after middleware.', () => {
-    const expected = ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases', 'before:test', 'after:test'];
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases', 'before:test', 'after:test'];
     mw.enable('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
@@ -57,15 +56,15 @@ describe('Kawkah:Middleware', () => {
   });
 
   it('should remove before and after middleware.', () => {
-    const expected = ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'];
-    mw.removeMiddleware('before:test', 'after:test');
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases'];
+    mw.remove('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
   });
 
   it('should add before validation middleware.', () => {
 
-    let expected: any = ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases', 'modify:test'];
+    let expected: any = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases', 'modify:test'];
 
     const handlerModify = (val) => {
       if (val === 'Milton Waddams')

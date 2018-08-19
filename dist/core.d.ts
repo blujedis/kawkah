@@ -541,18 +541,18 @@ export declare class KawkahCore extends EventEmitter {
     /**
      * Enables help with custom option(s) names with optional help handler.
      *
-     * @param options a string or array of string option names.
+     * @param name a string or array of string option names.
      * @param fn optional help handler method for displaying help.
      */
-    setHelp(options: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
+    setHelp(name: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
     /**
      * Enables help with custom option(s) names with optional help handler.
      *
-     * @param options a string or array of string option names.
+     * @param name a string or array of string option names.
      * @param describe the description for help option.
      * @param fn optional help handler method for displaying help.
      */
-    setHelp(options: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
+    setHelp(name: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
     /**
      * Calls help handler if enabled.
      *

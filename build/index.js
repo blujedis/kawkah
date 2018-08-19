@@ -111,8 +111,14 @@ const actions = {
   },
 
   test: () => {
-    let args = 'mocha --opts ./src/mocha.opts';
-    args = normalize(args);
+    let glob = 'src/**/*.spec.ts*';
+    let opts = ['--require', 'source-map-support/register', '--bail'];
+    let testName = parsed.flags.name;
+    if (testName)
+      testName = `src/**/${testName}.spec.ts*`;
+    glob = parsed.commands[0] ? parsed.commands[0] : testName ? testName : glob;
+    opts = ['mocha', glob, ...opts];
+    const args = opts.join(' '); // 'mocha --opts ./src/mocha.opts';
     stiks.exec.command('nyc', args);
   },
 

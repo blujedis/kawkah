@@ -19,18 +19,6 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
 
   // GETTERS //
 
-  get configureHelp() {
-    return this.configHelp;
-  }
-
-  get configureVersion() {
-    return this.configVersion;
-  }
-
-  get configureCompletions() {
-    return this.configCompletions;
-  }
-
   get middleware() {
     return this.core.middleware;
   }
@@ -74,84 +62,82 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   }
 
   /**
-   * Enables help with default options.
-   *
-   * @example .helpConfig() disables help.
+   * Sets version option with all defaults.
    */
-  configHelp(): Kawkah;
-
-  /**
-   * Provide a custom callback function to be called on help.
-   *
-   * @example .helpConfig((result, context) => { // handle help here. });
-   *
-   * @param fn the help handler called to display help.
-   */
-  configHelp(fn: KawkahHelpHandler): Kawkah;
-
-  /**
-   * Enables/disables help.
-   *
-   * @example .helpConfig(false) disables help.
-   *
-   * @param enabled bool indicating if help is enabled.
-   */
-  configHelp(enabled: boolean): Kawkah;
-
-  /**
-   * Provide the option(s) to be used for displaying help.
-   *
-   * @example .helpConfig('--help').
-   * @example .helpConfig(['--help', '--other']).
-   *
-   * @param options the option(s) to be used for help.
-   * @param fn optional custom help handler.
-   */
-  configHelp(options: string | string[], fn?: KawkahHelpHandler): Kawkah;
-
-  configHelp(options?: string | string[] | boolean | KawkahHelpHandler, fn?: KawkahHelpHandler) {
-    this.assert('.configHelp()', '[string|array|boolean|function] [function]', arguments);
-    this.core.setHelp(<any>options, fn);
-    return this;
-  }
-
-  /**
-  * Enables version option displaying version from package.json
-  */
   configVersion(): Kawkah;
 
   /**
-   * Enables version with custom value.
+   * Sets version with custom version value.
    *
-   * @example .version(1.0.0-alpha);
+   * @example .setVersion('1.2.6-alpha');
    *
-   * @param version the custom value to display for version option.
+   * @param version the value to set version to.
    */
   configVersion(version: string): Kawkah;
 
   /**
-   * Enables or disables version option.
+   * Enables or disables version.
    *
-   * @example .version(false);
+   * @example .setVersion(false);
    *
-   * @param enabled bool to enable/disable.
+   * @param enabled bool value to enable/disable version.
    */
   configVersion(enabled: boolean): Kawkah;
 
   /**
-   * Enables version option with custom option names and description.
+   * Sets version with custom option keys with description and custom version.
    *
-   * @example .version('ver', 'Display application version.', '1.2.0');
-   *
-   * @param options the custom option name or names.
-   * @param describe a description to be displayed in help.
-   * @param version a custom value to be displayed for version.
+   * @param name the option keys to use for version.
+   * @param describe the description for help.
+   * @param version a custom value to set version to.
    */
-  configVersion(options: string | string[], describe: string, version?: string);
+  configVersion(name: string[], describe?: string, version?: string): Kawkah;
 
-  configVersion(options?: string | string[] | boolean, describe?: string, version?: string) {
-    this.assert('.configVersion()', '[string|array|boolean] [string] [string]', arguments);
-    this.core.setVersion(<any>options, describe, version);
+  configVersion(name: string | string[] | boolean = true, describe?: string, version?: string) {
+    this.assert('.configVersion()', '<string|array|boolean> [string] [string]', [name, describe, version]);
+    this.core.setVersion(<any>name, describe, version);
+    return this;
+  }
+
+  /**
+  * Enables help with defaults.
+  */
+  configHelp(): Kawkah;
+
+  /**
+  * Toggles help option enabled or disabled.
+  *
+  * @param enabled bool value to enable/disable help.
+  */
+  configHelp(enabled: boolean): Kawkah;
+
+  /**
+   * Enables help with default option using custom help handler.
+   *
+   * @param fn help handler callback function.
+   */
+  configHelp(fn: KawkahHelpHandler): Kawkah;
+
+  /**
+   * Enables help with custom option(s) names with optional help handler.
+   *
+   * @param name a string or array of string option names.
+   * @param fn optional help handler method for displaying help.
+   */
+  configHelp(name: string | string[], fn?: KawkahHelpHandler): Kawkah;
+
+  /**
+   * Enables help with custom option(s) names with optional help handler.
+   *
+   * @param name a string or array of string option names.
+   * @param describe the description for help option.
+   * @param fn optional help handler method for displaying help.
+   */
+  configHelp(name: string | string[], describe: string, fn?: KawkahHelpHandler): Kawkah;
+
+  configHelp(name: string | string[] | boolean | KawkahHelpHandler = true, describe?: string | KawkahHelpHandler, fn?: KawkahHelpHandler) {
+    this.assert('.configHelp()', '<string|array|boolean|function> [string|function] [function]', [name, describe, fn]);
+    this.core.setHelp(<any>name, <any>describe, fn);
     return this;
   }
 
@@ -159,6 +145,15 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
    * Adds tab completions to your app using all defaults.
    */
   configCompletions(): Kawkah;
+
+  /**
+   * Adds tab completions with defaults or disables.
+   *
+   * @example .completions(false);
+   *
+   * @param enabled enables with defaults or disables completions.
+   */
+  configCompletions(enabled: boolean): Kawkah;
 
   /**
    * Adds tab completions to app with custom name.
@@ -172,12 +167,12 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   /**
   * Adds tab completions to app with name and custom handler function for generating completions.
   *
-  * @example .completions('completions', Function);
+  * @example .completions('completions', HandlerFunction);
   *
   * @param name the name of the completions command.
-  * @param handler optional custom handler for building completions.
+  * @param fn optional custom handler for building completions.
   */
-  configCompletions(name: string, handler: KawkahCompletionsHandler): Kawkah;
+  configCompletions(name: string, fn: KawkahCompletionsHandler): Kawkah;
 
   /**
    * Adds tab completions to your app with named completions command, custom description, custom handler and bash script template.
@@ -185,18 +180,18 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
    * @example
    * Function: a custom completions handler function.
    * Template: a custom template for generating completions script.
-   * .completions('completions', 'Some description', Function, 'Template')
+   * .completions('completions', 'Some description', HandlerFunction, 'Template')
    *
    * @param name the name of the completions command.
    * @param describe the help description for completions.
-   * @param handler optional custom handler for building completions.
+   * @param fn optional custom handler for building completions.
    * @param template a custom template for generating completions script.
    */
-  configCompletions(name: string, describe: string, handler?: KawkahCompletionsHandler, template?: string): Kawkah;
+  configCompletions(name: string, describe: string, fn?: KawkahCompletionsHandler, template?: string): Kawkah;
 
-  configCompletions(name?: string, describe?: string | KawkahCompletionsHandler, fn?: KawkahCompletionsHandler, template?: string) {
-    this.assert('.configCompletions()', '[string] [string|function] [function] [string]', arguments);
-    this.core.setCompletions(name, <string>describe, fn, template);
+  configCompletions(name?: string | boolean, describe?: string | KawkahCompletionsHandler, fn?: KawkahCompletionsHandler, template?: string) {
+    this.assert('.configCompletions()', '[string|boolean] [string|function] [function] [string]', arguments);
+    this.core.setCompletions(<any>name, <any>describe, fn, template);
     return this;
   }
 
@@ -206,7 +201,7 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   * @param fn a log/event handler function.
   */
   configLogger(fn?: KawkahLogHandler) {
-    this.assert('.logger()', '[function]', arguments);
+    this.assert('.configLogger()', '[function]', arguments);
     this.core.setLogHandler(fn);
     return this;
   }

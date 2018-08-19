@@ -9,17 +9,20 @@ class Kawkah extends base_1.KawkahCommandBase {
         super(constants_1.DEFAULT_COMMAND_NAME, usage, options);
     }
     // GETTERS //
-    get configureHelp() {
-        return this.configHelp;
-    }
-    get configureVersion() {
-        return this.configVersion;
-    }
-    get configureCompletions() {
-        return this.configCompletions;
-    }
     get middleware() {
         return this.core.middleware;
+    }
+    get configHelp() {
+        return this.core.setHelp;
+    }
+    get configVersion() {
+        return this.core.setVersion;
+    }
+    get configCompletions() {
+        return this.core.setCompletions;
+    }
+    get ok() {
+        return this.core.ok;
     }
     context(name) {
         return this._command;
@@ -27,21 +30,6 @@ class Kawkah extends base_1.KawkahCommandBase {
     contextFor(name, command) {
         name = this.utils.stripTokens(name);
         return this.core.getOption(command || this._name, name);
-    }
-    configHelp(options, fn) {
-        this.assert('.configHelp()', '[string|array|boolean|function] [function]', arguments);
-        this.core.setHelp(options, fn);
-        return this;
-    }
-    configVersion(options, describe, version) {
-        this.assert('.configVersion()', '[string|array|boolean] [string] [string]', arguments);
-        this.core.setVersion(options, describe, version);
-        return this;
-    }
-    configCompletions(name, describe, fn, template) {
-        this.assert('.configCompletions()', '[string] [string|function] [function] [string]', arguments);
-        this.core.setCompletions(name, describe, fn, template);
-        return this;
     }
     /**
     * Sets a custom log/event handler.
@@ -173,10 +161,10 @@ class Kawkah extends base_1.KawkahCommandBase {
      * @param message a message to be logged.
      * @param args optional format arguments.
      */
-    ok(message, ...args) {
-        this.core.ok(message, ...args);
-        return this;
-    }
+    // ok(message: any, ...args: any[]): Kawkah {
+    //   this.core.ok(message, ...args);
+    //   return this;
+    // }
     /**
      * Sets a header for help.
      *

@@ -4,25 +4,28 @@ import { KawkahCommand } from './command';
 export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     constructor(options?: IKawkahOptions);
     constructor(usage: string, options?: IKawkahOptions);
-    readonly configureHelp: {
-        (): Kawkah;
-        (fn: KawkahHelpHandler): Kawkah;
-        (enabled: boolean): Kawkah;
-        (options: string | string[], fn?: KawkahHelpHandler): Kawkah;
-    };
-    readonly configureVersion: {
-        (): Kawkah;
-        (version: string): Kawkah;
-        (enabled: boolean): Kawkah;
-        (options: string | string[], describe: string, version?: string): any;
-    };
-    readonly configureCompletions: {
-        (): Kawkah;
-        (name: string): Kawkah;
-        (name: string, handler: KawkahCompletionsHandler): Kawkah;
-        (name: string, describe: string, handler?: KawkahCompletionsHandler, template?: string): Kawkah;
-    };
     readonly middleware: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/middleware").KawkahMiddleware;
+    readonly configHelp: {
+        (): IKawkahOptionInternal;
+        (enabled: boolean): IKawkahOptionInternal;
+        (fn: KawkahHelpHandler): IKawkahOptionInternal;
+        (name: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
+        (name: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
+    };
+    readonly configVersion: {
+        (): IKawkahOptionInternal;
+        (version: string): IKawkahOptionInternal;
+        (enabled: boolean): IKawkahOptionInternal;
+        (options: string[], describe?: string, version?: string): IKawkahOptionInternal;
+    };
+    readonly configCompletions: {
+        (): IKawkahCommandInternal;
+        (enabled: boolean): IKawkahCommandInternal;
+        (name: string): IKawkahCommandInternal;
+        (name: string, fn: KawkahCompletionsHandler): IKawkahCommandInternal;
+        (name: string, describe: string, fn?: KawkahCompletionsHandler, template?: string): IKawkahCommandInternal;
+    };
+    readonly ok: (message: string, ...args: any[]) => void;
     /**
      * Gets the current command's context.
      */
@@ -46,103 +49,6 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param command the option's command name.
      */
     contextFor(name: string, command: string): IKawkahOptionInternal;
-    /**
-     * Enables help with default options.
-     *
-     * @example .helpConfig() disables help.
-     */
-    configHelp(): Kawkah;
-    /**
-     * Provide a custom callback function to be called on help.
-     *
-     * @example .helpConfig((result, context) => { // handle help here. });
-     *
-     * @param fn the help handler called to display help.
-     */
-    configHelp(fn: KawkahHelpHandler): Kawkah;
-    /**
-     * Enables/disables help.
-     *
-     * @example .helpConfig(false) disables help.
-     *
-     * @param enabled bool indicating if help is enabled.
-     */
-    configHelp(enabled: boolean): Kawkah;
-    /**
-     * Provide the option(s) to be used for displaying help.
-     *
-     * @example .helpConfig('--help').
-     * @example .helpConfig(['--help', '--other']).
-     *
-     * @param options the option(s) to be used for help.
-     * @param fn optional custom help handler.
-     */
-    configHelp(options: string | string[], fn?: KawkahHelpHandler): Kawkah;
-    /**
-    * Enables version option displaying version from package.json
-    */
-    configVersion(): Kawkah;
-    /**
-     * Enables version with custom value.
-     *
-     * @example .version(1.0.0-alpha);
-     *
-     * @param version the custom value to display for version option.
-     */
-    configVersion(version: string): Kawkah;
-    /**
-     * Enables or disables version option.
-     *
-     * @example .version(false);
-     *
-     * @param enabled bool to enable/disable.
-     */
-    configVersion(enabled: boolean): Kawkah;
-    /**
-     * Enables version option with custom option names and description.
-     *
-     * @example .version('ver', 'Display application version.', '1.2.0');
-     *
-     * @param options the custom option name or names.
-     * @param describe a description to be displayed in help.
-     * @param version a custom value to be displayed for version.
-     */
-    configVersion(options: string | string[], describe: string, version?: string): any;
-    /**
-     * Adds tab completions to your app using all defaults.
-     */
-    configCompletions(): Kawkah;
-    /**
-     * Adds tab completions to app with custom name.
-     *
-     * @example .completions('completions');
-     *
-     * @param name the name of the completions command.
-     */
-    configCompletions(name: string): Kawkah;
-    /**
-    * Adds tab completions to app with name and custom handler function for generating completions.
-    *
-    * @example .completions('completions', Function);
-    *
-    * @param name the name of the completions command.
-    * @param handler optional custom handler for building completions.
-    */
-    configCompletions(name: string, handler: KawkahCompletionsHandler): Kawkah;
-    /**
-     * Adds tab completions to your app with named completions command, custom description, custom handler and bash script template.
-     *
-     * @example
-     * Function: a custom completions handler function.
-     * Template: a custom template for generating completions script.
-     * .completions('completions', 'Some description', Function, 'Template')
-     *
-     * @param name the name of the completions command.
-     * @param describe the help description for completions.
-     * @param handler optional custom handler for building completions.
-     * @param template a custom template for generating completions script.
-     */
-    configCompletions(name: string, describe: string, handler?: KawkahCompletionsHandler, template?: string): Kawkah;
     /**
     * Sets a custom log/event handler.
     *
@@ -361,7 +267,6 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param message a message to be logged.
      * @param args optional format arguments.
      */
-    ok(message: any, ...args: any[]): Kawkah;
     /**
      * Sets a header for help.
      *

@@ -15,7 +15,7 @@ import { Kawkah } from 'kawkah'; // or const Kawkah = require('kawkah').Kawkah;
 const kk = new Kawkah({ /* options here */ });
 ```
 
-## Base
+## Base Methods
 
 This section contains API methods that are base methods to both the Kawkah instance and any KawkahCommand instance.
 
@@ -209,7 +209,7 @@ Adds an example to be displayed in help.
 kk.example('install.simple', 'This is the simplest way to install');
 ```
 
-## Options
+## Option Methods
 
 This section contains API methods that are base methods for options on both the Kawkah instance and any KawkahCommand instance.
 
@@ -415,7 +415,7 @@ Enables/disables skipping validation for the specified option.
 kk.skip('toppings'); // or kk.skip('toppings', false);
 ```
 
-## Instance
+## Instance Methods
 
 This section contains API methods that are base methods to both the Kawkah instance and any KawkahCommand instance.
 
@@ -429,6 +429,40 @@ kk.name('app'); // sets the value.
 
 ```ts
 kk.name(); // gets the value.
+```
+
+### .command()
+
+Generates an instance of Kawkah command which includes all [Base Methods](#base-methods) and [Option Methods](#option-methods). For more on commands head over to the [Examples](EXAMPLES.md/#commands)
+
+The following creates a command that requires both a source and a destination.
+
+```ts
+const cmd = kk.command('copy <source> <dest>', 'Copies file to destination');
+```
+
+Configuring an external command.
+
+```ts
+kk.command('ls', 'List files.', true);
+```
+
+Same as above but we use a custom command name.
+
+```ts
+kk.command('list', 'List files.', 'ls');
+```
+
+External command that runs file executable by NodeJS.
+
+```ts
+kk.command('mycmd', 'Calls executable file using node', './some/path/command.js');
+```
+
+External command which calls a bash script.
+
+```ts
+kk.command('mybash', 'Calls bash script.', './some/path/to/bash.sh');
 ```
 
 ### .configHelp()

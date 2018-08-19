@@ -108,7 +108,6 @@ describe('Kawkah', () => {
 
   });
 
-
   it('should set an EXAMPLE.', () => {
 
     kk.example('test', 'Test example.');
@@ -146,7 +145,5 @@ describe('Kawkah', () => {
     assert.deepEqual(kk.core.groups.test, expectedFalse);
 
   });
-
-
 
 });

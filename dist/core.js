@@ -1600,24 +1600,24 @@ class KawkahCore extends events_1.EventEmitter {
         groups = chek_1.toArray(groups);
         return this.buildHelp(groups);
     }
-    setHelp(options = true, describe, fn) {
-        this.assert('.setHelp()', '<string|array|boolean|function> [string|function] [function]', [options, describe, fn]);
+    setHelp(name = true, describe, fn) {
+        this.assert('.setHelp()', '<string|array|boolean|function> [string|function] [function]', [name, describe, fn]);
         const key = this.utils.__ `help`;
         const defHelpHandler = this.handleHelp.bind(this);
         // If false ensure option doesn't exist.
-        if (options === false) {
+        if (name === false) {
             this.removeOption(constants_1.DEFAULT_COMMAND_NAME, key);
             this._helpHandler = undefined;
             return this;
         }
-        else if (options === true) {
+        else if (name === true) {
             fn = defHelpHandler.bind(this);
-            options = undefined;
+            name = undefined;
         }
         // If function shift args.
-        else if (chek_1.isFunction(options)) {
-            fn = options;
-            options = undefined;
+        else if (chek_1.isFunction(name)) {
+            fn = name;
+            name = undefined;
         }
         if (chek_1.isFunction(describe)) {
             fn = describe;
@@ -1643,7 +1643,7 @@ class KawkahCore extends events_1.EventEmitter {
         };
         return this.setOption(constants_1.DEFAULT_COMMAND_NAME, key, {
             type: 'boolean',
-            alias: options,
+            alias: name,
             describe: describe,
             action: action.bind(this)
         });
@@ -1922,14 +1922,6 @@ class KawkahCore extends events_1.EventEmitter {
         // Merge in default option configs with command options.
         let configs = Object.assign({}, defaultCommand.options, command.options);
         const args = event.result[constants_1.RESULT_ARGS_KEY];
-        // Finds result key by alias.
-        function getKey(aliases) {
-            return aliases.reduce((a, c) => {
-                if (a === undefined && chek_1.has(event.result, c))
-                    return c;
-                return a;
-            }, undefined);
-        }
         // Iterate each command option configuration.
         for (const k in configs) {
             // Set the current configuration.
@@ -1937,13 +1929,11 @@ class KawkahCore extends events_1.EventEmitter {
             // Check if is an argument or option.
             const isArgument = event.isArg = kawkah_parser_1.hasOwn(config, 'index');
             event.isFlag = !event.isArg;
-            const flagKey = !isArgument ? getKey([k, ...config.alias]) : undefined;
-            const key = isArgument ? k : flagKey || k;
             // Set the initial value.
-            let val = isArgument ? args[config.index] : chek_1.get(event.result, key);
-            event.isPresent = event.isArg && chek_1.isValue(args[config.index]) ? true : !!flagKey;
+            let val = isArgument ? args[config.index] : chek_1.get(event.result, k);
+            event.isPresent = event.isArg && chek_1.isValue(args[config.index]) ? true : chek_1.has(event.result, k);
             // Run all validation middleware.
-            val = this.validateMiddleware(val, key, event);
+            val = this.validateMiddleware(val, k, event);
             if (chek_1.isError(val)) {
                 event.result = val;
                 break;

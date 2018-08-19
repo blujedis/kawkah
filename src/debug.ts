@@ -2,14 +2,16 @@ import { Kawkah } from '.';
 
 const kk = new Kawkah();
 
+kk.middleware.disable('aliases');
+
 kk.arg('order', {
   required: true,
   coerce: v => (v || '').toUpperCase()
 })
   .flag('toppings', {
     type: 'array',
-    validate: /(cheese|mushroom|ham)/
+    validate: /(cheese|mushroom|ham)/,
+    alias: 't'
   })
   .flag('deep-dish')
-  .maxArgs(0)
-  .listen('order --toppings cheese --toppings ham --deep-dish', true);
+  .listen('order -t mushroom', true);
