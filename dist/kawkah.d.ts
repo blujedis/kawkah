@@ -5,27 +5,6 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     constructor(options?: IKawkahOptions);
     constructor(usage: string, options?: IKawkahOptions);
     readonly middleware: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/middleware").KawkahMiddleware;
-    readonly configHelp: {
-        (): IKawkahOptionInternal;
-        (enabled: boolean): IKawkahOptionInternal;
-        (fn: KawkahHelpHandler): IKawkahOptionInternal;
-        (name: string | string[], fn?: KawkahHelpHandler): IKawkahOptionInternal;
-        (name: string | string[], describe: string, fn?: KawkahHelpHandler): IKawkahOptionInternal;
-    };
-    readonly configVersion: {
-        (): IKawkahOptionInternal;
-        (version: string): IKawkahOptionInternal;
-        (enabled: boolean): IKawkahOptionInternal;
-        (options: string[], describe?: string, version?: string): IKawkahOptionInternal;
-    };
-    readonly configCompletions: {
-        (): IKawkahCommandInternal;
-        (enabled: boolean): IKawkahCommandInternal;
-        (name: string): IKawkahCommandInternal;
-        (name: string, fn: KawkahCompletionsHandler): IKawkahCommandInternal;
-        (name: string, describe: string, fn?: KawkahCompletionsHandler, template?: string): IKawkahCommandInternal;
-    };
-    readonly ok: (message: string, ...args: any[]) => void;
     /**
      * Gets the current command's context.
      */
@@ -50,6 +29,108 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      */
     contextFor(name: string, command: string): IKawkahOptionInternal;
     /**
+     * Sets version option with all defaults.
+     */
+    configVersion(): Kawkah;
+    /**
+     * Sets version with custom version value.
+     *
+     * @example .setVersion('1.2.6-alpha');
+     *
+     * @param version the value to set version to.
+     */
+    configVersion(version: string): Kawkah;
+    /**
+     * Enables or disables version.
+     *
+     * @example .setVersion(false);
+     *
+     * @param enabled bool value to enable/disable version.
+     */
+    configVersion(enabled: boolean): Kawkah;
+    /**
+     * Sets version with custom option keys with description and custom version.
+     *
+     * @param name the option keys to use for version.
+     * @param describe the description for help.
+     * @param version a custom value to set version to.
+     */
+    configVersion(name: string[], describe?: string, version?: string): Kawkah;
+    /**
+    * Enables help with defaults.
+    */
+    configHelp(): Kawkah;
+    /**
+    * Toggles help option enabled or disabled.
+    *
+    * @param enabled bool value to enable/disable help.
+    */
+    configHelp(enabled: boolean): Kawkah;
+    /**
+     * Enables help with default option using custom help handler.
+     *
+     * @param fn help handler callback function.
+     */
+    configHelp(fn: KawkahHelpHandler): Kawkah;
+    /**
+     * Enables help with custom option(s) names with optional help handler.
+     *
+     * @param name a string or array of string option names.
+     * @param fn optional help handler method for displaying help.
+     */
+    configHelp(name: string | string[], fn?: KawkahHelpHandler): Kawkah;
+    /**
+     * Enables help with custom option(s) names with optional help handler.
+     *
+     * @param name a string or array of string option names.
+     * @param describe the description for help option.
+     * @param fn optional help handler method for displaying help.
+     */
+    configHelp(name: string | string[], describe: string, fn?: KawkahHelpHandler): Kawkah;
+    /**
+     * Adds tab completions to your app using all defaults.
+     */
+    configCompletions(): Kawkah;
+    /**
+     * Adds tab completions with defaults or disables.
+     *
+     * @example .completions(false);
+     *
+     * @param enabled enables with defaults or disables completions.
+     */
+    configCompletions(enabled: boolean): Kawkah;
+    /**
+     * Adds tab completions to app with custom name.
+     *
+     * @example .completions('completions');
+     *
+     * @param name the name of the completions command.
+     */
+    configCompletions(name: string): Kawkah;
+    /**
+    * Adds tab completions to app with name and custom handler function for generating completions.
+    *
+    * @example .completions('completions', HandlerFunction);
+    *
+    * @param name the name of the completions command.
+    * @param fn optional custom handler for building completions.
+    */
+    configCompletions(name: string, fn: KawkahCompletionsHandler): Kawkah;
+    /**
+     * Adds tab completions to your app with named completions command, custom description, custom handler and bash script template.
+     *
+     * @example
+     * Function: a custom completions handler function.
+     * Template: a custom template for generating completions script.
+     * .completions('completions', 'Some description', HandlerFunction, 'Template')
+     *
+     * @param name the name of the completions command.
+     * @param describe the help description for completions.
+     * @param fn optional custom handler for building completions.
+     * @param template a custom template for generating completions script.
+     */
+    configCompletions(name: string, describe: string, fn?: KawkahCompletionsHandler, template?: string): Kawkah;
+    /**
     * Sets a custom log/event handler.
     *
     * @param fn a log/event handler function.
@@ -66,11 +147,11 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      */
     name(name: string): Kawkah;
     /**
-     * Creates command with usage tokens.
+     * Creates command with usage tokens or gets existing by name.
      *
-     * @param usage usage tokens to be parsed.
+     * @param nameOrUsage usage tokens to be parsed.
      */
-    command(usage: string): KawkahCommand;
+    command(nameOrUsage: string): KawkahCommand;
     /**
      * Creates a new command using config object.
      *
@@ -143,81 +224,6 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      */
     actionFor(option: string, fn: KawkahResultAction): this;
     /**
-     * Enables catch handler called showing help on errors.
-     *
-     * @example .catch();
-     */
-    catch(): Kawkah;
-    /**
-     * Enables/Disables catch handler called showing help on errors.
-     *
-     * @example .catch(false);
-     */
-    catch(enabled: boolean): Kawkah;
-    /**
-     * Enables catch handler with custom string on errors.
-     *
-     * @param text the string to be displayed.
-     */
-    catch(text: string): Kawkah;
-    /**
-     * A Kawkah callback action to be called when no command is found.
-     *
-     * @example .catch((result, context) => { // do something on no command/option });
-     *
-     * @param fn an action method to be called.
-     */
-    catch(fn: KawkahAction): Kawkah;
-    /**
-     * Enables catch handler on errors calling an existing command.
-     *
-     * @example .catch('some_known_command_name', true);
-     *
-     * @param command an existing command name.
-     * @param isCommand indicates should lookup as a command name.
-     */
-    catch(command: string, isCommand: boolean): Kawkah;
-    /**
-     * Parses process.argv arguments with validation enabled.
-     *
-     * @example .parse();
-     */
-    parse(): IKawkahResult;
-    /**
-     * Parses specified arguments optionally enabling or disabling validation.
-     *
-     * @example .parse(['command', '--dir', '/some/dir']);
-     * @example .parse(['command', '--dir', '/some/dir'], false);
-     *
-     * @param argv the arguments to be parsed.
-     * @param validate whether to validate the parsed arguments.
-     */
-    parse(argv: string | string[]): IKawkahResult;
-    /**
-     * Parse arguments and listen for known command actions.
-     *
-     * @example .listen();
-     */
-    listen(): IKawkahResult;
-    /**
-     * Parse arguments and listen for known command actions, show result.
-     *
-     * @example .listen(true);
-     *
-     * @param show when true result is output to console helpful when testing.
-     */
-    listen(show: boolean): IKawkahResult;
-    /**
-     * Listens for matching commands after parsing arguments.
-     *
-     * @example .listen(['command', '--dir', '/some/dir']);
-     * @example .listen(['command', '--dir', '/some/dir'], true);
-     *
-     * @param argv the optional arguments to be parsed.
-     * @param show when true result is output to console helpful when testing.
-     */
-    listen(argv: string | string[], show?: boolean): IKawkahResult;
-    /**
      * Enables --trace option to enable stacktrace for errors on the fly.
      *
      * @param option the name of the trace option.
@@ -267,6 +273,7 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param message a message to be logged.
      * @param args optional format arguments.
      */
+    ok(message: any, ...args: any[]): Kawkah;
     /**
      * Sets a header for help.
      *
@@ -301,6 +308,95 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param locale the locale used for messaging.
      */
     locale(locale: string): Kawkah;
+    /**
+     * Enforces option descriptions, requires command or option on input and also outputs error on anonymous values.
+     *
+     * @param eanbled enables/disables strict.
+     */
+    strict(enabled?: boolean): Kawkah;
+    /**
+     * Enables catch handler called showing help on errors.
+     *
+     * @example .catch();
+     */
+    catch(): Kawkah;
+    /**
+     * Enables/Disables catch handler called showing help on errors.
+     *
+     * @example
+     * .catch(false);
+     *
+     * @param enabled boolean value to enable or disable handler.›
+     */
+    catch(enabled: boolean): Kawkah;
+    /**
+     * Enables catch handler with custom string on errors.
+     *
+     * @param text the string to be displayed.
+     */
+    catch(text: string): Kawkah;
+    /**
+     * A Kawkah callback action to be called when no command is found.
+     *
+     * @example .catch((result, context) => { // do something on no command/option });
+     *
+     * @param fn an action method to be called.
+     */
+    catch(fn: KawkahAction): Kawkah;
+    /**
+     * Enables catch handler on errors calling an existing command.
+     *
+     * @example .catch('some_known_command_name', true);
+     *
+     * @param command an existing command name.
+     * @param isCommand indicates should lookup as a command name.
+     */
+    catch(command: string, isCommand: boolean): Kawkah;
+    /**
+     * Parses process.argv arguments with validation enabled.
+     *
+     * @example .parse();
+     */
+    parse(): IKawkahResult;
+    /**
+     * Parses specified arguments optionally enabling or disabling validation.
+     *
+     * @example
+     * .parse(['command', '--dir', '/some/dir']);
+     * .parse(['command', '--dir', '/some/dir'], false);
+     *
+     *
+     * @param argv the arguments to be parsed.
+     * @param validate whether to validate the parsed arguments.
+     */
+    parse(argv: string | string[]): IKawkahResult;
+    /**
+     * Parse arguments and listen for known command actions.
+     *
+     * @example
+     * .listen();
+     */
+    listen(): IKawkahResult;
+    /**
+     * Parse arguments and listen for known command actions, show result.
+     *
+     * @example
+     * .listen(true);
+     *
+     * @param show when true result is output to console helpful when testing.
+     */
+    listen(show: boolean): IKawkahResult;
+    /**
+     * Listens for matching commands after parsing arguments.
+     *
+     * @example
+     * .listen(['command', '--dir', '/some/dir']);
+     * .listen(['command', '--dir', '/some/dir'], true);
+     *
+     * @param argv the optional arguments to be parsed.
+     * @param show when true result is output to console helpful when testing.
+     */
+    listen(argv: string | string[], show?: boolean): IKawkahResult;
     /**
      * Returns the parsed result generated from .listen();
      */

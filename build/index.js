@@ -5,6 +5,7 @@ const {
 const log = stiks.log;
 const pkg = stiks.pkg();
 const build = pkg && pkg.build;
+const { join } = require('path');
 
 // Ensure build info.
 if (!build)
@@ -22,6 +23,8 @@ const input = parsed.normalized.slice(1);
 // Don't merge in command line args automatically
 // as will blow up spawn'd process.
 const noMergeCmds = ['build', 'release'];
+
+let docsDir = build.docs || './docs';
 
 // Merges default args with any input args.
 function normalize(def) {
@@ -58,10 +61,12 @@ const actions = {
   },
 
   docs: () => {
-    let args = './node_modules/typedoc/bin/typedoc --out ./docs ./src --options ./typedoc.json';
+
+    let args = './node_modules/typedoc/bin/typedoc ./src --options ./typedoc.json --out ';
+    args += docsDir;
     args = normalize(args);
     stiks.exec.node(args);
-    stiks.exec.command('touch', './docs/.nojekyll');
+    stiks.exec.command('touch', join(docsDir, '.nojekyll'));
     return actions;
   },
 
@@ -128,8 +133,9 @@ const actions = {
   },
 
   open: (url) => {
-    url = url || commands[0] || flags.url || flags.u || resolve('docs/index.html'); // docs url.
+    url = url || commands[0] || flags.url || flags.u || resolve(join(docsDir, 'index.html'));
     const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+    log.notify('Opening url %s', url);
     require('child_process').exec(start + ' ' + url);
   },
 

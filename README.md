@@ -2,11 +2,9 @@
   <a href="http://github.com/blujedis/kawkah"><img src="https://cdn.rawgit.com/blujedis/kawkah/master/assets/logo.png"></a>
 </p>
 
-Kawkah is a Node command line parser written in Typescript. It's purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add custom middleware. We'll get to that in a moment.
+An extensible command line parsing utility with middleware.
 
-### NOTE
-
-Kawkah is not in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea.
+<img src="assets/help.png" />
 
 ## Install
 
@@ -55,11 +53,12 @@ const result = {
 
 The documentation listed in this table of contents is here for convenience. If you find an error we suggest heading over to the [Generated Docs](https://blujedis.github.io/kawkah/). These tend to be pretty accurate given the cannot be generated without the project building. We try to keep examples up to date but there's only so much time. Feel free to create a PR if you see a mistake!
 
-* [API](/assets/API.md)
-* [Options](/assets/OPTIONS.md)
-* [Defining Middleware](/assets/MIDDLEWARE.md)
-* [Examples](/assets/EXAMPLES.md)
+* [API](/assets/api.md)
+* [Options](/assets/options.md)
+* [Defining Middleware](/assets/middleware.md)
+* [Examples](/assets/examples.md)
 * [Kawkah Parser](https://blujedis/github.io/kawkah-parser)
+* [Coverage](/coverage/index.html)
 
 ## Docs
 

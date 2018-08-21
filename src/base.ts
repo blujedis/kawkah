@@ -1,9 +1,7 @@
 import { nonenumerable } from './decorators';
 import { KawkahCore } from './core';
 import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions } from './interfaces';
-import { isObject, isPlainObject, isValue, camelcase } from 'chek';
-import { EventEmitter } from 'events';
-import { hasOwn } from 'kawkah-parser';
+import { isObject, isPlainObject, isValue } from 'chek';
 
 export class KawkahCommandBase<T> {
 
@@ -502,6 +500,7 @@ export class KawkahCommandBase<T> {
    */
   example(name: string, text: string) {
     this.assert('.example()', '<string> <string>', arguments);
+    name = `${this._name}.${name}`;
     this.core.setExample(name, text);
     return this;
   }
@@ -581,12 +580,6 @@ export class KawkahCommandBase<T> {
    */
   aliasFor(name: string, ...alias: string[]): T & KawkahCommandBase<T> {
     this.assert('.aliasFor()', '<string> <string...>', arguments);
-    const opt = this.core.getOption(this._name, name);
-    const __ = this.utils.__;
-    if (opt && hasOwn(opt, 'index')) {
-      this.core.error(__`Argument option ${name} cannot contain alias`);
-      return <any>this;
-    }
     this.core.setOption(this._name, name, 'alias', alias);
     return <any>this;
   }
@@ -665,7 +658,7 @@ export class KawkahCommandBase<T> {
    * @param name the name of the option.
    * @param fn a coerce handler function.
    */
-  coerceFor(name: string, fn: KawkahHandler) {
+  coerceFor(name: string, fn: KawkahHandler): T & KawkahCommandBase<T> {
     this.assert('.coerceFor()', '<string> <function>', [name, fn]);
     this.core.setOption(this._name, name, 'coerce', fn);
     return <any>this;

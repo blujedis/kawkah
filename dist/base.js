@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("./decorators");
 const core_1 = require("./core");
 const chek_1 = require("chek");
-const kawkah_parser_1 = require("kawkah-parser");
 class KawkahCommandBase {
     constructor(name, usage, core) {
         this._name = name;
@@ -320,6 +319,7 @@ class KawkahCommandBase {
      */
     example(name, text) {
         this.assert('.example()', '<string> <string>', arguments);
+        name = `${this._name}.${name}`;
         this.core.setExample(name, text);
         return this;
     }
@@ -392,12 +392,6 @@ class KawkahCommandBase {
      */
     aliasFor(name, ...alias) {
         this.assert('.aliasFor()', '<string> <string...>', arguments);
-        const opt = this.core.getOption(this._name, name);
-        const __ = this.utils.__;
-        if (opt && kawkah_parser_1.hasOwn(opt, 'index')) {
-            this.core.error(__ `Argument option ${name} cannot contain alias`);
-            return this;
-        }
         this.core.setOption(this._name, name, 'alias', alias);
         return this;
     }

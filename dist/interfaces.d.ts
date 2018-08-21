@@ -1,9 +1,9 @@
 /// <reference types="node" />
 import { KawkahCore } from './core';
-import { IKawhakParserOptions, IKawkahParserResult, IKawhakParserBaseOptions, KawkahParserType } from 'kawkah-parser';
+import { IKawkahParserOptions, IKawkahParserResult, IKawhakParserBaseOptions, KawkahParserType } from 'kawkah-parser';
 import { IAnsiStyles } from 'colurs';
 import { ITablurColumn } from 'tablur';
-export { IKawhakParserOptions, IKawkahParserResult };
+export { IKawkahParserOptions, IKawkahParserResult };
 export { IAnsiStyles } from 'colurs';
 export declare type AnsiStyles = keyof IAnsiStyles;
 export declare type RecordMap<K extends string, T, U> = T & Record<K, U>;
@@ -86,6 +86,7 @@ export interface IKawkahValidateConfig {
 export interface IKawkahTheme {
     header?: KawkahAnsiType;
     label?: KawkahAnsiType;
+    command?: KawkahAnsiType;
     title?: KawkahAnsiType;
     usage?: KawkahAnsiType;
     alias?: KawkahAnsiType;
@@ -96,6 +97,7 @@ export interface IKawkahTheme {
     variadic?: KawkahAnsiType;
     required?: KawkahAnsiType;
     footer?: KawkahAnsiType;
+    example?: KawkahAnsiType;
 }
 export interface IKawkahThemes {
     default: IKawkahTheme;
@@ -145,9 +147,11 @@ export interface IKawkahGroup {
     title?: string;
     isCommand?: boolean;
     items?: string | string[];
+    examples?: string | string[];
     indent?: number;
-    enabled?: boolean;
+    parent?: string;
     sort?: boolean;
+    enabled?: boolean;
 }
 export interface IKawkahOptionBase {
     type?: KawkahOptionType;
@@ -183,8 +187,12 @@ export interface IKawkahOptionInternal extends IKawkahOption {
     validate?: IKawkahValidateConfig;
     action?: KawkahResultAction;
 }
+export interface IKawkahCommandOptions {
+    [key: string]: IKawkahOption | IKawkahOptionInternal;
+}
 export interface IKawkahCommand {
-    usage?: string;
+    readonly usage?: string;
+    readonly args?: string[];
     describe?: string;
     alias?: string | string[];
     options?: IKawkahMap<string | IKawkahOption>;
@@ -198,12 +206,17 @@ export interface IKawkahCommand {
     minFlags?: number;
     maxFlags?: number;
     action?: KawkahAction;
+    examples?: IKawkahMap<string>;
 }
 export interface IKawkahCommandInternal extends IKawkahCommand {
+    usage?: string;
     name?: string;
     args?: string[];
     alias?: string[];
     options?: IKawkahMap<IKawkahOptionInternal>;
+}
+export interface IKawkahCommands {
+    [key: string]: IKawkahCommand | IKawkahCommandInternal;
 }
 export interface IKawkahOptionsBase {
     name?: string;
@@ -212,6 +225,8 @@ export interface IKawkahOptionsBase {
     parser?: KawkahParser;
     scheme?: KawkahHelpScheme;
     theme?: KawkahThemeKeys | IKawkahTheme;
+    header?: string;
+    footer?: string;
     colorize?: boolean;
     spread?: boolean;
     stacktrace?: boolean;
@@ -229,11 +244,12 @@ export interface IKawkahOptionsBase {
  * All Kawkah options passed by user for configuration.
  */
 export interface IKawkahOptions extends IKawkahOptionsBase, IKawkahCommand, IKawhakParserBaseOptions {
+    usage?: string;
 }
 /**
  * Internal options interface stripping out default command options.
  */
-export interface IKawkahOptionsInternal extends IKawkahOptionsBase, IKawhakParserOptions {
+export interface IKawkahOptionsInternal extends IKawkahOptionsBase, IKawkahParserOptions {
     theme?: {
         header?: AnsiStyles[];
         label?: AnsiStyles[];

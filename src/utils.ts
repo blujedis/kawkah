@@ -6,11 +6,11 @@ import { Lokales } from 'lokales';
 import { resolve } from 'path';
 import * as yaml from 'js-yaml';
 import * as formatr from 'formatr';
-import { configure as argsert, IArgsert, IArgsertResult } from 'argsert';
+import { configure as argsert, IArgsert } from 'argsert';
 
-import { isError, isString, isFunction, toArray, isValue, flatten, decamelcase, isArray, split, isObject, isWindows, camelcase, isNumber, } from 'chek';
+import { isError, isString, isFunction, toArray, isValue, flatten, decamelcase, isArray, split, isObject, isWindows, isNumber, } from 'chek';
 
-import { isFlag, expandOptions, expandArgs, isArg, isArgDotNotation, isArgRequired, isFlagPrev, stripFlag, stripTokens, isArgVariadic, isArgVariadicRequired, isNegateFlag, isType, toType, isArgAny, isFlagAny } from 'kawkah-parser';
+import { isFlag, expandOptions, expandArgs, isArg, isArgDotNotation, isArgRequired, isFlagPrev, stripFlag, stripTokens, isArgVariadic, isArgVariadicRequired, isNegateFlag, isType, toType, isArgAny, isFlagAny, toCamelcase } from 'kawkah-parser';
 
 import { KawkahStyleKeys, AnsiStyles, IKawkahMap, KawkahReduceCallback } from './interfaces';
 
@@ -70,7 +70,7 @@ export class KawkahUtils {
 
       timestamp: (v, k) => {
         v = logTransforms.bracket(v);
-        return colurs.applyAnsi(v, styles.warning) + ':';
+        return colurs.applyAnsi(v, styles.warning);
       },
 
       event: (v, k) => {
@@ -78,7 +78,7 @@ export class KawkahUtils {
         v = logTransforms.bracket(v);
         if (styles[key])
           v = colurs.applyAnsi(v, styles[key]);
-        return v + ':';
+        return v;
       },
 
       symbol: (v, k, o) => {
@@ -179,7 +179,7 @@ export class KawkahUtils {
       'no-undefined-tokens': (v) => command === DEFAULT_COMMAND_NAME ? false : !v,
       'no-multiple-commands': this.checkMultipleCommand.bind(this),
       'no-optional-preceeding-required-args': this.checkInvalidSequence.bind(this),
-      'no-required-variadic-args': this.checkArgVariadicRequired.bind(this),
+      // 'no-required-variadic-args': this.checkArgVariadicRequired.bind(this),
       'no-dot-notation-args': this.checkDotnotationArg.bind(this)
     };
 
@@ -693,9 +693,7 @@ export class KawkahUtils {
    * @param strict when true dot notation values ignored.
    */
   toCamelcase(val: string, strict: boolean = true) {
-    if (!strict || !/\S+\.[^\.]\S+/.test(val))
-      return camelcase(val);
-    return val;
+    return toCamelcase(val, strict);
   }
 
   // TOKENS & PARSING //
@@ -821,12 +819,37 @@ export class KawkahUtils {
    */
   expandTokens(tokens: string | string[], ...filter: any[]) {
     filter = ['', ...(filter || [])];
-    // if (isArray(tokens))
-    //   return (tokens as string[]).filter(t => !~filter.indexOf(t));
+    if (isArray(tokens))
+      return (tokens as string[]).filter(t => !~filter.indexOf(t));
     return expandOptions(
       expandArgs((tokens as string).trim()
         .replace(/('|")/g, '')))
       .filter(t => !~filter.indexOf(t));
+  }
+
+  /**
+   * Splits usage string or tokens array separating the
+   * prefix from the actual usage string.
+   *
+   * @param tokens the tokens containing usage.
+   */
+  splitUsage(tokens: string) {
+
+    let prefix = undefined;
+    let usage;
+
+    if (!~tokens.indexOf(RESULT_NAME_KEY))
+      return { prefix, usage: tokens };
+
+    const tmp = (tokens as string).split(RESULT_NAME_KEY);
+    usage = (tmp[0] || '').trim();
+    if (tmp.length && tmp.length > 1) {
+      prefix = tmp[0].trim();
+      usage = tmp[1].trim();
+    }
+
+    return { prefix, usage };
+
   }
 
   /**
@@ -838,6 +861,19 @@ export class KawkahUtils {
    */
   hasTokens(val: string) {
     return isArgAny(val) || isFlagAny(val);
+  }
+
+  /**
+   * Strips tokens and ensures camelcase.
+   *
+   * @param name the name to be normalized.
+   */
+  parseName(name: string) {
+    if (!name) return name;
+    name = this.stripTokens(name);
+    if (!this.options.allowCamelcase)
+      return name;
+    return this.toCamelcase(name);
   }
 
   /**
@@ -951,7 +987,7 @@ export class KawkahUtils {
     const origTokens = tokens;
 
     // Check if tokens are usage string.
-    const isUsage = ~tokens.indexOf(RESULT_NAME_KEY);
+    const isUsage = !!~tokens.indexOf(RESULT_NAME_KEY);
 
     // Break out tokens to an array.
     tokens = this.expandTokens(<string>tokens, RESULT_NAME_KEY);

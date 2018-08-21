@@ -2,7 +2,7 @@ import { KawkahCore } from './core';
 import { hasOwn } from 'kawkah-parser';
 import { IKawkahMap, KawkahValidateHandler, IKawkahMiddleware, KawkahMiddlwareHandler, IKawkahMiddlewareEventOption, IKawkahMiddlewareEventResult, IKawkahResult, KawkahMiddlewareGroup } from './interfaces';
 import { nonenumerable } from './decorators';
-import { keys, toArray, isString, isValue, set, get, omit, isPlainObject, isObject, has } from 'chek';
+import { keys, toArray, isString, isValue, set, get, omit, isPlainObject, isObject, has, isNumber } from 'chek';
 import { isFunction, isError, isRegExp, isArray, isUndefined } from 'util';
 import { KawkahError } from './error';
 import { RESULT_ARGS_KEY } from './constants';
@@ -120,7 +120,7 @@ function coerce(val: any, key: string, event: IKawkahMiddlewareEventOption, cont
 
   const option = event.option;
 
-  if (!option.coerce)
+  if (!option.coerce || !event.isPresent)
     return val;
 
   return option.coerce(val, context);
@@ -191,15 +191,6 @@ function required(val: any, key: string, event: IKawkahMiddlewareEventOption, co
   const u = context.utils;
 
   const label = event.isArg ? u.__`Argument` : u.__`Flag`;
-  // const isOption = !event.isArg;
-
-  // If required and option by none specified or
-  // is argument but no arg at index return error.
-  // if (option.required &&
-  //   ((isOption && !hasOwn(event.result, key)) ||
-  //     (!isOption && !event.result[RESULT_ARGS_KEY][option.index]))) {
-  //   return new KawkahError(u.__`${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
-  // }
 
   if (option.required && !event.isPresent)
     return new KawkahError(u.__`${label} ${key} failed: ${'invalidated by required'} (value: ${'undefined'})`, context);
@@ -220,7 +211,7 @@ function validator(val: any, key: string, event: IKawkahMiddlewareEventOption, c
 
   const option = event.option;
 
-  if (!isValue(option.validate) || !event.isPresent) return val;
+  if (!isValue(option.validate) || !event.isPresent || isUndefined(val)) return val;
 
   let invalid: string | boolean | Error = null;
   let exp: string;
@@ -260,12 +251,16 @@ function validator(val: any, key: string, event: IKawkahMiddlewareEventOption, c
     exp = `user function`;
 
     const validity = (option.validate.handler as KawkahValidateHandler)(val, key, option, context);
+
     // If string is returned create error.
     if (isString(validity))
       invalid = new KawkahError(<string>invalid, 1, context);
 
-    if (validity === false)
+    else if (validity === false)
       invalid = new KawkahError(option.validate.message || u.__`${label} ${key} failed: ${'invalidated by ' + exp} (value: ${val})`, context);
+
+    else if (isError(validity))
+      invalid = validity;
 
   }
 
@@ -330,7 +325,7 @@ function aliases(val: any, key: string, event: IKawkahMiddlewareEventOption, con
   const option = event.option;
 
   // If no aliases just return value.
-  if (!option.alias || !option.alias.length)
+  if (!option.alias || !option.alias.length || !event.isPresent)
     return val;
 
   // Otherwise add for each alias key.

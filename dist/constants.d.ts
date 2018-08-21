@@ -1,4 +1,4 @@
-import { IKawkahOptions, IKawkahGroup, IKawkahCommandInternal, IKawkahOptionInternal, IKawkahTheme, IKawkahThemes } from './interfaces';
+import { IKawkahOptions, IKawkahGroup, IKawkahOptionInternal, IKawkahTheme, IKawkahThemes, IKawkahCommand } from './interfaces';
 export declare const ROOT_DIR: string;
 export declare const HOME_DIR: string;
 export declare const DEFAULT_COMMAND_NAME = "@Default";
@@ -19,7 +19,7 @@ export declare const DEFAULT_THEME: IKawkahTheme;
 export declare const DEFAULT_THEMES: IKawkahThemes;
 export declare const DEFAULT_OPTION: IKawkahOptionInternal;
 export declare const DEFAULT_GROUP: IKawkahGroup;
-export declare const DEFAULT_COMMAND: IKawkahCommandInternal;
+export declare const DEFAULT_COMMAND: IKawkahCommand;
 export declare const DEFAULT_PARSER_OPTIONS: {
     charVariadic: string;
     charAbort: string;
@@ -39,5 +39,6 @@ export declare const DEFAULT_PARSER_OPTIONS: {
     allowPlaceholderArgs: boolean;
     allowPlaceholderOptions: boolean;
     allowExtendArgs: boolean;
+    onParserError: any;
 };
 export declare const DEFAULT_OPTIONS: IKawkahOptions;

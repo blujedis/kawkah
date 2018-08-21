@@ -67,9 +67,9 @@
 				<p align="left">
 					<a href="http://github.com/blujedis/kawkah"><img src="https://cdn.rawgit.com/blujedis/kawkah/master/assets/logo.png"></a>
 				</p>
-				<p>Kawkah is a Node command line parser written in Typescript. It&#39;s purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add a custom middleware handler. See <a href="#Middleware">Middleware</a> below for more on that.</p>
+				<p>Kawkah is a Node command line parser written in Typescript. It&#39;s purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add custom middleware. We&#39;ll get to that in a moment.</p>
 				<h3 id="note">NOTE</h3>
-				<p>This is a beta. It is not in use in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea. The readme is a bit light for now however the <a href="#Docs">Docs</a> below are largely complete thanks to Typescript.</p>
+				<p>Kawkah is not in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea.</p>
 				<h2 id="install">Install</h2>
 				<pre><code class="lang-sh">$ npm install kawkah
 </code></pre>
@@ -80,7 +80,6 @@
 <span class="hljs-comment">// OR</span>
 
 <span class="hljs-keyword">const</span> Kawkah = <span class="hljs-built_in">require</span>(<span class="hljs-string">'kawkah'</span>).Kawkah;
-
 <span class="hljs-keyword">const</span> kk = <span class="hljs-keyword">new</span> Kawkah({ <span class="hljs-comment">/* options */</span> });
 
 kk
@@ -92,7 +91,6 @@ kk
     validate: <span class="hljs-regexp">/(cheese|mushroom|ham)/</span>
   })
   .flag(<span class="hljs-string">'deep-dish'</span>)
-  <span class="hljs-comment">// parse or listen MUST be called last.</span>
   .listen(<span class="hljs-string">'order --toppings cheese --toppings ham --deep-dish'</span>);
 
 <span class="hljs-comment">// RESULT</span>
@@ -108,20 +106,18 @@ kk
   }
 }
 </code></pre>
-				<h2 id="options">Options</h2>
-				<p>List of all Kawkah options.</p>
-				<p>See <a href="/assets/OPTIONS.md">OPTIONS.md</a></p>
-				<h2 id="api">API</h2>
-				<p>The majority of the API including links to examples of use. You should always favor <a href="https://blujedis.github.io/kawkah/">Docs</a> for the full implementation as the API may change/improve. These docs are generated with each build so unlike the API examples/usage they are more accurate.</p>
-				<p>See <a href="/assets/API.md">API.md</a></p>
-				<h2 id="middleaware">Middleaware</h2>
-				<p>Middleware allows for validation, modification and tracking. When creating middlware then injecting it into the Kawkah pipeline you&#39;re able to create hooks for tracking usage of your application or pre/post modify or validate properties.</p>
-				<p>See <a href="/assets/MIDDLEWARE.md">MIDDLEWARE.md</a></p>
-				<h2 id="examples">Examples</h2>
-				<p>Examples of API usage and common use examples.</p>
-				<p>See <a href="/assets/EXAMPLES.md">EXAMPLES.md</a></p>
+				<h2 id="table-of-contents">Table of Contents</h2>
+				<p>The documentation listed in this table of contents is here for convenience. If you find an error we suggest heading over to the <a href="https://blujedis.github.io/kawkah/">Generated Docs</a>. These tend to be pretty accurate given the cannot be generated without the project building. We try to keep examples up to date but there&#39;s only so much time. Feel free to create a PR if you see a mistake!</p>
+				<ul>
+					<li><a href="/assets/api.md">API</a></li>
+					<li><a href="/assets/options.md">Options</a></li>
+					<li><a href="/assets/middleware.md">Defining Middleware</a></li>
+					<li><a href="/assets/examples.md">Examples</a></li>
+					<li><a href="https://blujedis/github.io/kawkah-parser">Kawkah Parser</a></li>
+					<li><a href="/coverage/index.html">Coverage</a></li>
+				</ul>
 				<h2 id="docs">Docs</h2>
-				<p>These are the generated docs from the Typescript code itself. These tend to be pretty accurate as the docs cannot be generated unless the project can build properly. It is your most trusted source for the current API.</p>
+				<p>Documentation generated from source.</p>
 				<p>See <a href="https://blujedis.github.io/kawkah/">https://blujedis.github.io/kawkah/</a></p>
 				<h2 id="change">Change</h2>
 				<p>See <a href="CHANGE.md">CHANGE.md</a></p>

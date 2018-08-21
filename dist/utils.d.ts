@@ -1,6 +1,6 @@
 import { KawkahCore } from './core';
 import { Lokales } from 'lokales';
-import { IArgsert, IArgsertResult } from 'argsert';
+import { IArgsert } from 'argsert';
 import { KawkahStyleKeys, AnsiStyles, IKawkahMap, KawkahReduceCallback } from './interfaces';
 export declare class KawkahUtils {
     private core;
@@ -54,10 +54,10 @@ export declare class KawkahUtils {
     readonly __: any;
     readonly __n: any;
     readonly assert: {
-        (map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): IArgsertResult;
-        (name: string, map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): IArgsertResult;
-        (map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): IArgsertResult;
-        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): IArgsertResult;
+        (map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
+        (map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
     };
     /**
      * Pluralizes a string.
@@ -291,6 +291,16 @@ export declare class KawkahUtils {
      */
     expandTokens(tokens: string | string[], ...filter: any[]): any[];
     /**
+     * Splits usage string or tokens array separating the
+     * prefix from the actual usage string.
+     *
+     * @param tokens the tokens containing usage.
+     */
+    splitUsage(tokens: string): {
+        prefix: any;
+        usage: any;
+    };
+    /**
      * Checks if a string contains tokens used in commands or options.
      *
      * @example .hasTokens('--flag:f [value]') >> true
@@ -298,6 +308,12 @@ export declare class KawkahUtils {
      * @param val the value to inspect.
      */
     hasTokens(val: string): boolean;
+    /**
+     * Strips tokens and ensures camelcase.
+     *
+     * @param name the name to be normalized.
+     */
+    parseName(name: string): string;
     /**
      * Parses arg into options arguments.
      *

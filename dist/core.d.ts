@@ -4,7 +4,7 @@ import { Tablur, TablurAlign } from 'tablur';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import { KawkahMiddleware } from './middleware';
 import { KawkahUtils } from './utils';
-import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, IKawkahMiddlewareEventOption } from './interfaces';
+import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahCommandInternal, KawkahEvent, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, IKawkahMiddlewareEventOption } from './interfaces';
 import { KawkahError } from './error';
 export declare class KawkahCore extends EventEmitter {
     private _logHandler;
@@ -21,7 +21,6 @@ export declare class KawkahCore extends EventEmitter {
     commands: IKawkahMap<IKawkahCommandInternal>;
     middleware: KawkahMiddleware;
     aliases: IKawkahMap<string>;
-    examples: IKawkahMap<string>;
     groups: IKawkahMap<IKawkahGroup>;
     package: {
         pkg: IKawkahMap<any>;
@@ -72,17 +71,11 @@ export declare class KawkahCore extends EventEmitter {
      */
     protected normalizeStyles(style: KawkahAnsiType): AnsiStyles[];
     /**
-     * Adds examples to Examples help group.
-     *
-     * @param examples the collection of examples to be added to help.
-     */
-    protected groupifyExamples(examples?: string | IKawkahMap<string>): void;
-    /**
      * Adds options to help groups by scheme set in options.
      *
      * @param options the options object to add to help groups.
      */
-    protected groupifyOptions(options: IKawkahMap<IKawkahOption>): void;
+    protected groupifyDefault(command: IKawkahCommandInternal): void;
     /**
      * Adds command and options to help groups by scheme.
      *
@@ -96,24 +89,30 @@ export declare class KawkahCore extends EventEmitter {
      */
     protected groupifyCommands(commands?: IKawkahMap<IKawkahCommandInternal>): void;
     /**
+     * Gets array of argument option keys.
+     *
+     * @param command the command name.
+     */
+    protected argKeys(command: string): string[];
+    /**
+     * Gets array of flag option keys.
+     *
+     * @param command the command name.
+     */
+    protected flagKeys(command: string): string[];
+    /**
+     * Checks if flag name conflicts with global flag.
+     *
+     * @param name the name of the flag option.
+     */
+    protected isDuplicateFlag(command: string, name: string): boolean;
+    /**
      * Gets actionable options for a command.
      * Currently only supports default command.
      *
      * @param command the command name or command.
      */
     protected actionKeys(command?: string | IKawkahCommand): any[];
-    /**
-     * Breaks out options into args verses stand options/flags.
-     *
-     * @param command the command or command name.
-     */
-    protected commandToOptionTypes(command: string | IKawkahCommandInternal): {
-        keys: any[];
-        argKeys: any[];
-        optionKeys: any[];
-        args: {};
-        options: {};
-    };
     /**
      * Verifies the option and it's properties are valid.
      *
@@ -127,7 +126,7 @@ export declare class KawkahCore extends EventEmitter {
      *
      * @param option a string or option object.
      */
-    protected toOptionNormalize(option: string | IKawkahOptionInternal): IKawkahOptionInternal;
+    protected toOptionNormalize(option: string | IKawkahOptionInternal, name?: string): IKawkahOptionInternal;
     /**
      * Normalize option ensuring correct values and defaults.
      *
@@ -286,19 +285,33 @@ export declare class KawkahCore extends EventEmitter {
      */
     showCatch(): void;
     /**
-     * Gets example text.
+     * Gets example for default command.
      *
-     * @param name the name of the example.
-     * @param text the example text.
+     * @param name the example name to lookup.
      */
-    getExample(name: string, def?: string): string;
+    getExample(name: string): string;
+    /**
+     * Gets example text by command and name.
+     *
+     * @param command the command the example belongs to.
+     * @param name the example name to lookup.
+     */
+    getExample(command: string, name: string): string;
     /**
      * Stores example text.
      *
      * @param name the name of the example.
      * @param text the example text.
      */
-    setExample(name: string, text: string, groupify?: boolean): string;
+    setExample(name: string, text?: string): any;
+    /**
+     * Stores example text.
+     *
+     * @param command the command name the example is assigned to.
+     * @param name the name of the example.
+     * @param text the example text.
+     */
+    setExample(command: string, name: string, text?: string): any;
     /**
      * Removes an example from the collection.
      *
@@ -351,13 +364,19 @@ export declare class KawkahCore extends EventEmitter {
       * @param key the key in the command object to be updated.
       * @param val the value to be updated.
       */
-    setCommand(command: string, key?: KawkahCommandInternalKeys, val?: any, groupify?: boolean): IKawkahCommandInternal;
+    setCommand(command: string, key?: KawkahCommandInternalKeys, val?: any): IKawkahCommandInternal;
     /**
      * Removes a command from the collection.
      *
      * @param command the command to be removed.
      */
     removeCommand(command: string): void;
+    /**
+     * Checks if command exists in collection.
+     *
+     * @param command the command name to check.
+     */
+    hasCommand(command: string): boolean;
     /**
      * Gets options by dot notation or lookup.
      *
@@ -402,7 +421,7 @@ export declare class KawkahCore extends EventEmitter {
      * @param key the key within the option to be updated.
      * @param val the key's value to be updated.
      */
-    setOption(command: string, name: string, key: KawkahOptionInternalKeys, val: any, groupify?: boolean): IKawkahOptionInternal;
+    setOption(command: string, name: string, key: KawkahOptionInternalKeys, val: any): IKawkahOptionInternal;
     /**
      * Remove an option from a command.
      *
@@ -498,11 +517,11 @@ export declare class KawkahCore extends EventEmitter {
     /**
      * Sets version with custom option keys with description and custom version.
      *
-     * @param options the option keys to use for version.
+     * @param name the option keys to use for version.
      * @param describe the description for help.
      * @param version a custom value to set version to.
      */
-    setVersion(options: string[], describe?: string, version?: string): IKawkahOptionInternal;
+    setVersion(name: string[], describe?: string, version?: string): IKawkahOptionInternal;
     /**
      * When true and --trace is present in args
      * enabled/disable stack tracing for errors.

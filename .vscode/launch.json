@@ -10,7 +10,7 @@
     "request": "launch",
     "program": "${workspaceFolder}/src/debug.ts",
     "stopOnEntry": false,
-    "args": [],
+    "args": ["--help"],
     "cwd": "${workspaceFolder}",
     "runtimeExecutable": null,
     "runtimeArgs": [

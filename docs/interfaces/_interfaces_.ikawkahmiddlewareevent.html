@@ -73,7 +73,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="_interfaces_.ikawkahmiddlewareeventglobal.html" class="tsd-signature-type">IKawkahMiddlewareEventGlobal</a>
+						<a href="_interfaces_.ikawkahmiddlewareeventresult.html" class="tsd-signature-type">IKawkahMiddlewareEventResult</a>
 					</li>
 					<li>
 						<a href="_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a>
@@ -93,9 +93,14 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#command" class="tsd-kind-icon">command</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#completed" class="tsd-kind-icon">completed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#elapsed" class="tsd-kind-icon">elapsed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#isarg" class="tsd-kind-icon">is<wbr>Arg</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#isflag" class="tsd-kind-icon">is<wbr>Flag</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#ispresent" class="tsd-kind-icon">is<wbr>Present</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#option" class="tsd-kind-icon">option</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#result" class="tsd-kind-icon">result</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="_interfaces_.ikawkahmiddlewareevent.html#start" class="tsd-kind-icon">start</a></li>
 							</ul>
 						</section>
 					</div>
@@ -111,7 +116,31 @@
 						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#command">command</a></p>
 						<p>Overrides <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#command">command</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/b05808a/src/interfaces.ts#L355">interfaces.ts:355</a></li>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L363">interfaces.ts:363</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+					<a name="completed" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> completed</h3>
+					<div class="tsd-signature tsd-kind-icon">completed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#completed">completed</a></p>
+						<p>Overrides <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#completed">completed</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L360">interfaces.ts:360</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+					<a name="elapsed" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> elapsed</h3>
+					<div class="tsd-signature tsd-kind-icon">elapsed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#elapsed">elapsed</a></p>
+						<p>Overrides <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#elapsed">elapsed</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L361">interfaces.ts:361</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -122,7 +151,29 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventoption.html">IKawkahMiddlewareEventOption</a>.<a href="_interfaces_.ikawkahmiddlewareeventoption.html#isarg">isArg</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/b05808a/src/interfaces.ts#L361">interfaces.ts:361</a></li>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L369">interfaces.ts:369</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="isflag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Flag</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Flag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventoption.html">IKawkahMiddlewareEventOption</a>.<a href="_interfaces_.ikawkahmiddlewareeventoption.html#isflag">isFlag</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L370">interfaces.ts:370</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="ispresent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Present</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Present<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventoption.html">IKawkahMiddlewareEventOption</a>.<a href="_interfaces_.ikawkahmiddlewareeventoption.html#ispresent">isPresent</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L371">interfaces.ts:371</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -133,7 +184,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventoption.html">IKawkahMiddlewareEventOption</a>.<a href="_interfaces_.ikawkahmiddlewareeventoption.html#option">option</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/b05808a/src/interfaces.ts#L362">interfaces.ts:362</a></li>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L372">interfaces.ts:372</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -145,7 +196,19 @@
 						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#result">result</a></p>
 						<p>Overrides <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#result">result</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/b05808a/src/interfaces.ts#L354">interfaces.ts:354</a></li>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L362">interfaces.ts:362</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+					<a name="start" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> start</h3>
+					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#start">start</a></p>
+						<p>Overrides <a href="_interfaces_.ikawkahmiddlewareeventbase.html">IKawkahMiddlewareEventBase</a>.<a href="_interfaces_.ikawkahmiddlewareeventbase.html#start">start</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/interfaces.ts#L359">interfaces.ts:359</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -205,14 +268,29 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
 								<a href="_interfaces_.ikawkahmiddlewareevent.html#command" class="tsd-kind-icon">command</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+								<a href="_interfaces_.ikawkahmiddlewareevent.html#completed" class="tsd-kind-icon">completed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+								<a href="_interfaces_.ikawkahmiddlewareevent.html#elapsed" class="tsd-kind-icon">elapsed</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_interfaces_.ikawkahmiddlewareevent.html#isarg" class="tsd-kind-icon">is<wbr>Arg</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="_interfaces_.ikawkahmiddlewareevent.html#isflag" class="tsd-kind-icon">is<wbr>Flag</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="_interfaces_.ikawkahmiddlewareevent.html#ispresent" class="tsd-kind-icon">is<wbr>Present</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_interfaces_.ikawkahmiddlewareevent.html#option" class="tsd-kind-icon">option</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
 								<a href="_interfaces_.ikawkahmiddlewareevent.html#result" class="tsd-kind-icon">result</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited">
+								<a href="_interfaces_.ikawkahmiddlewareevent.html#start" class="tsd-kind-icon">start</a>
 							</li>
 						</ul>
 					</li>

@@ -52,14 +52,14 @@ class KawkahUtils {
             },
             timestamp: (v, k) => {
                 v = logTransforms.bracket(v);
-                return colurs.applyAnsi(v, styles.warning) + ':';
+                return colurs.applyAnsi(v, styles.warning);
             },
             event: (v, k) => {
                 const key = v;
                 v = logTransforms.bracket(v);
                 if (styles[key])
                     v = colurs.applyAnsi(v, styles[key]);
-                return v + ':';
+                return v;
             },
             symbol: (v, k, o) => {
                 if (!chek_1.isObject(o) || !o.event)
@@ -147,7 +147,7 @@ class KawkahUtils {
             'no-undefined-tokens': (v) => command === constants_1.DEFAULT_COMMAND_NAME ? false : !v,
             'no-multiple-commands': this.checkMultipleCommand.bind(this),
             'no-optional-preceeding-required-args': this.checkInvalidSequence.bind(this),
-            'no-required-variadic-args': this.checkArgVariadicRequired.bind(this),
+            // 'no-required-variadic-args': this.checkArgVariadicRequired.bind(this),
             'no-dot-notation-args': this.checkDotnotationArg.bind(this)
         };
         const tokenStr = tokens.join(' ');
@@ -527,9 +527,7 @@ class KawkahUtils {
      * @param strict when true dot notation values ignored.
      */
     toCamelcase(val, strict = true) {
-        if (!strict || !/\S+\.[^\.]\S+/.test(val))
-            return chek_1.camelcase(val);
-        return val;
+        return kawkah_parser_1.toCamelcase(val, strict);
     }
     // TOKENS & PARSING //
     /**
@@ -633,11 +631,30 @@ class KawkahUtils {
      */
     expandTokens(tokens, ...filter) {
         filter = ['', ...(filter || [])];
-        // if (isArray(tokens))
-        //   return (tokens as string[]).filter(t => !~filter.indexOf(t));
+        if (chek_1.isArray(tokens))
+            return tokens.filter(t => !~filter.indexOf(t));
         return kawkah_parser_1.expandOptions(kawkah_parser_1.expandArgs(tokens.trim()
             .replace(/('|")/g, '')))
             .filter(t => !~filter.indexOf(t));
+    }
+    /**
+     * Splits usage string or tokens array separating the
+     * prefix from the actual usage string.
+     *
+     * @param tokens the tokens containing usage.
+     */
+    splitUsage(tokens) {
+        let prefix = undefined;
+        let usage;
+        if (!~tokens.indexOf(constants_1.RESULT_NAME_KEY))
+            return { prefix, usage: tokens };
+        const tmp = tokens.split(constants_1.RESULT_NAME_KEY);
+        usage = (tmp[0] || '').trim();
+        if (tmp.length && tmp.length > 1) {
+            prefix = tmp[0].trim();
+            usage = tmp[1].trim();
+        }
+        return { prefix, usage };
     }
     /**
      * Checks if a string contains tokens used in commands or options.
@@ -648,6 +665,19 @@ class KawkahUtils {
      */
     hasTokens(val) {
         return kawkah_parser_1.isArgAny(val) || kawkah_parser_1.isFlagAny(val);
+    }
+    /**
+     * Strips tokens and ensures camelcase.
+     *
+     * @param name the name to be normalized.
+     */
+    parseName(name) {
+        if (!name)
+            return name;
+        name = this.stripTokens(name);
+        if (!this.options.allowCamelcase)
+            return name;
+        return this.toCamelcase(name);
     }
     /**
      * Parses arg into options arguments.
@@ -740,7 +770,7 @@ class KawkahUtils {
             obj._name = command;
         const origTokens = tokens;
         // Check if tokens are usage string.
-        const isUsage = ~tokens.indexOf(constants_1.RESULT_NAME_KEY);
+        const isUsage = !!~tokens.indexOf(constants_1.RESULT_NAME_KEY);
         // Break out tokens to an array.
         tokens = this.expandTokens(tokens, constants_1.RESULT_NAME_KEY);
         // Validate the tokens.

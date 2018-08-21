@@ -1,4 +1,4 @@
-# API
+ # API
 
 [Back to Menu](../README.md/#table-of-contents)
 
@@ -583,6 +583,14 @@ kk.group('MyGroup:', {
 });
 ```
 
+### .strict()
+
+When enabled errors are output if input is missing a command or option, a missing description or the argument is missing a configuration.
+
+```ts
+kk.strict(true);
+```
+
 ### .actionFor()
 
 Sets an action handler for an option. This is ONLY available on the Kawkah instance or default command. It is this feature that is used to fire off --help and --version options.
@@ -737,7 +745,7 @@ Usage: <code>$ some-command --trace</code>
 
 ### .terminate()
 
-When true errors and help trigger caling process.exit() and terminate the app.
+When true errors and help trigger process.exit() terminating the app.
 
 ```ts
 kk.terminate(); // Enables/disables terminate.

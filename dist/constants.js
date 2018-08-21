@@ -24,6 +24,7 @@ exports.MESSAGE_BRACE_EXP = /({{|}})/g;
 exports.MESSAGE_KEY_EXP = /[\w\d-\$\.\|]+/;
 exports.DEFAULT_THEME = {
     header: null,
+    command: null,
     title: null,
     label: null,
     usage: null,
@@ -39,6 +40,7 @@ exports.DEFAULT_THEME = {
 exports.DEFAULT_THEMES = {
     default: {
         header: null,
+        command: 'primary',
         title: 'accent',
         label: 'accent',
         usage: null,
@@ -47,12 +49,14 @@ exports.DEFAULT_THEMES = {
         flag: null,
         describe: null,
         type: null,
-        variadic: 'warning',
+        variadic: 'primary',
         required: 'error',
         footer: 'muted',
+        example: null
     },
     dim: {
         header: 'cyan.dim',
+        command: 'blue.dim',
         title: 'cyan.dim',
         label: 'cyan.dim',
         usage: 'white.dim',
@@ -64,20 +68,23 @@ exports.DEFAULT_THEMES = {
         variadic: 'yellow.dim',
         required: 'redBright.dim',
         footer: 'gray',
+        example: 'gray'
     },
     bright: {
         header: 'greenBright',
+        command: 'greenBright',
         title: 'greenBright',
         label: 'greenBright',
         usage: 'magentaBright',
-        alias: 'magentaBright',
+        alias: 'blueBright',
         argument: 'magentaBright',
         flag: 'magentaBright',
         describe: 'blueBright',
-        type: 'magenta',
+        type: 'magentaBright',
         variadic: 'blueBright',
         required: 'redBright',
         footer: 'magentaBright',
+        example: null
     }
 };
 exports.DEFAULT_OPTION = {
@@ -94,7 +101,7 @@ exports.DEFAULT_OPTION = {
     completions: [],
     extend: undefined,
     skip: false,
-    action: undefined,
+    action: undefined // for use with option actions like help or version.
 };
 exports.DEFAULT_GROUP = {
     title: undefined,
@@ -103,7 +110,7 @@ exports.DEFAULT_GROUP = {
     enabled: true // toggles visibility.
 };
 exports.DEFAULT_COMMAND = {
-    usage: '$0',
+    usage: undefined,
     describe: '',
     alias: [],
     help: true,
@@ -112,7 +119,8 @@ exports.DEFAULT_COMMAND = {
     maxArgs: undefined,
     minFlags: undefined,
     maxFlags: undefined,
-    options: undefined // object containing option configs.
+    options: undefined,
+    examples: {} // object of examples for the command.
 };
 exports.DEFAULT_PARSER_OPTIONS = {
     charVariadic: exports.VARIADIC_TOKEN,
@@ -132,7 +140,8 @@ exports.DEFAULT_PARSER_OPTIONS = {
     allowAliases: false,
     allowPlaceholderArgs: false,
     allowPlaceholderOptions: false,
-    allowExtendArgs: false // when true config'd index args added to result.
+    allowExtendArgs: false,
+    onParserError: null
 };
 exports.DEFAULT_OPTIONS = {
     name: undefined,
@@ -140,12 +149,15 @@ exports.DEFAULT_OPTIONS = {
     output: process.stderr,
     scheme: interfaces_1.KawkahHelpScheme.Default,
     theme: 'default',
+    header: undefined,
+    footer: undefined,
     commands: undefined,
     examples: undefined,
     stacktrace: false,
     terminate: true,
     throw: false,
     colorize: true,
+    strict: false,
     // timestamp format to use.
     timestampFormat: 'MM-dd-yyyy hh:mm:ss',
     // Format/template for log messages.
@@ -157,7 +169,7 @@ exports.DEFAULT_OPTIONS = {
         primary: 'blueBright',
         accent: 'cyan',
         muted: 'gray',
-        error: 'redBright.bold',
+        error: 'redBright',
         warning: 'yellow',
         notify: 'blue',
         ok: 'green'

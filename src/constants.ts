@@ -1,5 +1,5 @@
 import * as escape from 'escape-string-regexp';
-import { IKawkahOptions, IKawkahGroup, IKawkahCommandInternal, IKawkahOptionInternal, IKawkahTheme, IKawkahThemes, KawkahHelpScheme } from './interfaces';
+import { IKawkahOptions, IKawkahGroup, IKawkahCommandInternal, IKawkahOptionInternal, IKawkahTheme, IKawkahThemes, KawkahHelpScheme, IKawkahCommand } from './interfaces';
 import { dirname } from 'path';
 import { homedir } from 'os';
 
@@ -30,6 +30,7 @@ export const MESSAGE_KEY_EXP = /[\w\d-\$\.\|]+/;
 export const DEFAULT_THEME: IKawkahTheme = {
 
   header: null,
+  command: null,
   title: null,
   label: null,
   usage: null,
@@ -48,6 +49,7 @@ export const DEFAULT_THEMES: IKawkahThemes = {
 
   default: {
     header: null,
+    command: 'primary',
     title: 'accent',
     label: 'accent',
     usage: null,
@@ -56,13 +58,15 @@ export const DEFAULT_THEMES: IKawkahThemes = {
     flag: null,
     describe: null,
     type: null,
-    variadic: 'warning',
+    variadic: 'primary',
     required: 'error',
     footer: 'muted',
+    example: null
   },
 
   dim: {
     header: 'cyan.dim',
+    command: 'blue.dim',
     title: 'cyan.dim',
     label: 'cyan.dim',
     usage: 'white.dim',
@@ -74,21 +78,26 @@ export const DEFAULT_THEMES: IKawkahThemes = {
     variadic: 'yellow.dim',
     required: 'redBright.dim',
     footer: 'gray',
+    example: 'gray'
+
   },
 
   bright: {
     header: 'greenBright',
+    command: 'greenBright',
     title: 'greenBright',
     label: 'greenBright',
     usage: 'magentaBright',
-    alias: 'magentaBright',
+    alias: 'blueBright',
     argument: 'magentaBright',
     flag: 'magentaBright',
     describe: 'blueBright',
-    type: 'magenta',
+    type: 'magentaBright',
     variadic: 'blueBright',
     required: 'redBright',
     footer: 'magentaBright',
+    example: null
+
   }
 
 };
@@ -108,7 +117,7 @@ export const DEFAULT_OPTION: IKawkahOptionInternal = {
   completions: [],                  // array of custom completion values.
   extend: undefined,                // handles extending option with config values.
   skip: false,                      // when true skip validation for this option.
-  action: undefined,                // for use with option actions like help or version.
+  action: undefined                // for use with option actions like help or version.
 
 };
 
@@ -121,9 +130,9 @@ export const DEFAULT_GROUP: IKawkahGroup = {
 
 };
 
-export const DEFAULT_COMMAND: IKawkahCommandInternal = {
+export const DEFAULT_COMMAND: IKawkahCommand = {
 
-  usage: '$0',                       // usage map string.
+  usage: undefined,                  // usage map string.
   describe: '',                      // command description.
   alias: [],                         // command aliases.
   help: true,                        // enables/disables help for command.
@@ -132,7 +141,8 @@ export const DEFAULT_COMMAND: IKawkahCommandInternal = {
   maxArgs: undefined,                // max args allowed for the command.
   minFlags: undefined,               // mininum flags allowed for command.
   maxFlags: undefined,               // maximum flags allowd for command.
-  options: undefined                 // object containing option configs.
+  options: undefined,                // object containing option configs.
+  examples: {}                        // object of examples for the command.
 
 };
 
@@ -157,7 +167,8 @@ export const DEFAULT_PARSER_OPTIONS = {
   allowAliases: false,                 // Kawkkah will handle aliases after middleware.
   allowPlaceholderArgs: false,         // when true indexed args set to null if undefined.
   allowPlaceholderOptions: false,      // when true options set to default if missing.
-  allowExtendArgs: false               // when true config'd index args added to result.
+  allowExtendArgs: false,              // when true config'd index args added to result.
+  onParserError: null
 
 };
 
@@ -168,12 +179,15 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   output: process.stderr,            // the output stream for log/error messages.
   scheme: KawkahHelpScheme.Default,  // scheme for displaying help.
   theme: 'default',                  // theme for help.
+  header: undefined,                 // header text.
+  footer: undefined,                 // footer text.
   commands: undefined,               // object containing defined commands.
   examples: undefined,               // object containing example usage.
   stacktrace: false,                 // when true full stack traces are show for errors.
   terminate: true,                   // when true process.exit is called on errors.
   throw: false,                      // when true errors are thrown instead of handled.
   colorize: true,                    // when true colorize console message.
+  strict: false,
 
   // timestamp format to use.
   timestampFormat: 'MM-dd-yyyy hh:mm:ss',
@@ -189,7 +203,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
     primary: 'blueBright',
     accent: 'cyan',
     muted: 'gray',
-    error: 'redBright.bold',
+    error: 'redBright',
     warning: 'yellow',
     notify: 'blue',
     ok: 'green'

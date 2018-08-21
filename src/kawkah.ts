@@ -1,7 +1,6 @@
-import { KawkahCore } from './core';
-import { isBoolean, isString, isObject, isValue } from 'chek';
+import { isBoolean, isString, isObject } from 'chek';
 
-import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandler, IKawkahCommand, IKawkahOptions, KawkahEvent, KawkahResultAction, IKawkahCommandInternal, KawkahLogHandler, KawkahThemeKeys, IKawkahTheme, IKawkahOptionInternal, KawkahAction, KawkahMiddlewareGroup, KawkahMiddlwareHandler, IKawkahMiddleware } from './interfaces';
+import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandler, IKawkahCommand, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, KawkahLogHandler, KawkahThemeKeys, IKawkahTheme, IKawkahOptionInternal, KawkahAction } from './interfaces';
 
 import { DEFAULT_COMMAND_NAME } from './constants';
 import { KawkahCommandBase } from './base';
@@ -38,6 +37,8 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   context(name: string): IKawkahCommandInternal;
 
   context(name?: string) {
+    if (name)
+      return this.core.getCommand(name);
     return this._command;
   }
 
@@ -229,11 +230,11 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   }
 
   /**
-   * Creates command with usage tokens.
+   * Creates command with usage tokens or gets existing by name.
    *
-   * @param usage usage tokens to be parsed.
+   * @param nameOrUsage usage tokens to be parsed.
    */
-  command(usage: string): KawkahCommand;
+  command(nameOrUsage: string): KawkahCommand;
 
   /**
    * Creates a new command using config object.
@@ -264,6 +265,13 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   command(name: string, describe?: string | IKawkahCommand | boolean, external?: string | boolean) {
 
     this.assert('.command()', '<string> [string|object|boolean] [string|boolean]', arguments);
+
+    // If just name was passed try to load existing command.
+    // Otherwise continue and create the command.
+    if (arguments.length === 1 && !this.utils.hasTokens(name)) {
+      if (this.core.hasCommand(name))
+        return new KawkahCommand(name, this.core);
+    }
 
     let config: IKawkahCommandInternal;
 
@@ -357,116 +365,6 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
     this.assert('.actionFor()', '<string> [function]', arguments);
     this.core.setOption(this._name, option, 'action', fn);
     return this;
-  }
-
-  /**
-   * Enables catch handler called showing help on errors.
-   *
-   * @example .catch();
-   */
-  catch(): Kawkah;
-
-  /**
-   * Enables/Disables catch handler called showing help on errors.
-   *
-   * @example .catch(false);
-   */
-  catch(enabled: boolean): Kawkah;
-
-  /**
-   * Enables catch handler with custom string on errors.
-   *
-   * @param text the string to be displayed.
-   */
-  catch(text: string): Kawkah;
-
-  /**
-   * A Kawkah callback action to be called when no command is found.
-   *
-   * @example .catch((result, context) => { // do something on no command/option });
-   *
-   * @param fn an action method to be called.
-   */
-  catch(fn: KawkahAction): Kawkah;
-
-  /**
-   * Enables catch handler on errors calling an existing command.
-   *
-   * @example .catch('some_known_command_name', true);
-   *
-   * @param command an existing command name.
-   * @param isCommand indicates should lookup as a command name.
-   */
-  catch(command: string, isCommand: boolean): Kawkah;
-
-  catch(fn: string | boolean | KawkahAction = true, isCommand: boolean = false): Kawkah {
-    this.assert('.catch()', '<string|boolean|function> <boolean>', [fn, isCommand]);
-    this.core.setCatchHandler(fn, isCommand);
-    return this;
-  }
-
-  /**
-   * Parses process.argv arguments with validation enabled.
-   *
-   * @example .parse();
-   */
-  parse(): IKawkahResult;
-
-  /**
-   * Parses specified arguments optionally enabling or disabling validation.
-   *
-   * @example .parse(['command', '--dir', '/some/dir']);
-   * @example .parse(['command', '--dir', '/some/dir'], false);
-   *
-   * @param argv the arguments to be parsed.
-   * @param validate whether to validate the parsed arguments.
-   */
-  parse(argv: string | string[]): IKawkahResult;
-
-  parse(argv?: string | string[]): IKawkahResult {
-    this.assert('.parse()', '[string|array]', arguments);
-    return this.core.parse(<any>argv);
-  }
-
-  /**
-   * Parse arguments and listen for known command actions.
-   *
-   * @example .listen();
-   */
-  listen(): IKawkahResult;
-
-  /**
-   * Parse arguments and listen for known command actions, show result.
-   *
-   * @example .listen(true);
-   *
-   * @param show when true result is output to console helpful when testing.
-   */
-  listen(show: boolean): IKawkahResult;
-
-  /**
-   * Listens for matching commands after parsing arguments.
-   *
-   * @example .listen(['command', '--dir', '/some/dir']);
-   * @example .listen(['command', '--dir', '/some/dir'], true);
-   *
-   * @param argv the optional arguments to be parsed.
-   * @param show when true result is output to console helpful when testing.
-   */
-  listen(argv: string | string[], show?: boolean): IKawkahResult;
-
-  listen(argv?: string | string[] | boolean, show?: boolean) {
-    this.assert('.listen()', '[string|array|boolean] [boolean]', arguments);
-    if (isBoolean(argv)) {
-      show = <boolean>argv;
-      argv = undefined;
-    }
-    const result = this.core.listen(<any>argv);
-    if (this.core.abort())
-      return;
-    if (show)
-      this.log(result);
-    return result;
   }
 
   /**
@@ -613,6 +511,135 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   }
 
   /**
+   * Enforces option descriptions, requires command or option on input and also outputs error on anonymous values.
+   *
+   * @param eanbled enables/disables strict.
+   */
+  strict(enabled: boolean = true): Kawkah {
+    this.assert('.strict()', '<boolean>', [enabled]);
+    this.core.options.strict = enabled;
+    return this;
+  }
+
+  /**
+   * Enables catch handler called showing help on errors.
+   *
+   * @example .catch();
+   */
+  catch(): Kawkah;
+
+  /**
+   * Enables/Disables catch handler called showing help on errors.
+   *
+   * @example
+   * .catch(false);
+   *
+   * @param enabled boolean value to enable or disable handler.›
+   */
+  catch(enabled: boolean): Kawkah;
+
+  /**
+   * Enables catch handler with custom string on errors.
+   *
+   * @param text the string to be displayed.
+   */
+  catch(text: string): Kawkah;
+
+  /**
+   * A Kawkah callback action to be called when no command is found.
+   *
+   * @example .catch((result, context) => { // do something on no command/option });
+   *
+   * @param fn an action method to be called.
+   */
+  catch(fn: KawkahAction): Kawkah;
+
+  /**
+   * Enables catch handler on errors calling an existing command.
+   *
+   * @example .catch('some_known_command_name', true);
+   *
+   * @param command an existing command name.
+   * @param isCommand indicates should lookup as a command name.
+   */
+  catch(command: string, isCommand: boolean): Kawkah;
+
+  catch(fn: string | boolean | KawkahAction = true, isCommand: boolean = false): Kawkah {
+    this.assert('.catch()', '<string|boolean|function> <boolean>', [fn, isCommand]);
+    this.core.setCatchHandler(fn, isCommand);
+    return this;
+  }
+
+  /**
+   * Parses process.argv arguments with validation enabled.
+   *
+   * @example .parse();
+   */
+  parse(): IKawkahResult;
+
+  /**
+   * Parses specified arguments optionally enabling or disabling validation.
+   *
+   * @example
+   * .parse(['command', '--dir', '/some/dir']);
+   * .parse(['command', '--dir', '/some/dir'], false);
+   *
+   *
+   * @param argv the arguments to be parsed.
+   * @param validate whether to validate the parsed arguments.
+   */
+  parse(argv: string | string[]): IKawkahResult;
+
+  parse(argv?: string | string[]): IKawkahResult {
+    this.assert('.parse()', '[string|array]', arguments);
+    return this.core.parse(<any>argv);
+  }
+
+  /**
+   * Parse arguments and listen for known command actions.
+   *
+   * @example
+   * .listen();
+   */
+  listen(): IKawkahResult;
+
+  /**
+   * Parse arguments and listen for known command actions, show result.
+   *
+   * @example
+   * .listen(true);
+   *
+   * @param show when true result is output to console helpful when testing.
+   */
+  listen(show: boolean): IKawkahResult;
+
+  /**
+   * Listens for matching commands after parsing arguments.
+   *
+   * @example
+   * .listen(['command', '--dir', '/some/dir']);
+   * .listen(['command', '--dir', '/some/dir'], true);
+   *
+   * @param argv the optional arguments to be parsed.
+   * @param show when true result is output to console helpful when testing.
+   */
+  listen(argv: string | string[], show?: boolean): IKawkahResult;
+
+  listen(argv?: string | string[] | boolean, show?: boolean) {
+    this.assert('.listen()', '[string|array|boolean] [boolean]', arguments);
+    if (isBoolean(argv)) {
+      show = <boolean>argv;
+      argv = undefined;
+    }
+    const result = this.core.listen(<any>argv);
+    if (this.core.abort())
+      return;
+    if (show)
+      this.log(result);
+    return result;
+  }
+
+  /**
    * Returns the parsed result generated from .listen();
    */
   result() {
@@ -634,7 +661,7 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
    * @param eanbled enables/disables terminate.
    */
   terminate(enabled: boolean = true): Kawkah {
-    this.assert('.exit()', '[boolean]', [enabled]);
+    this.assert('.terminate()', '<boolean>', [enabled]);
     this.core.options.terminate = enabled;
     return this;
   }

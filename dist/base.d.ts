@@ -324,7 +324,7 @@ export declare class KawkahCommandBase<T> {
      * @param name the name of the option.
      * @param fn a coerce handler function.
      */
-    coerceFor(name: string, fn: KawkahHandler): any;
+    coerceFor(name: string, fn: KawkahHandler): T & KawkahCommandBase<T>;
     /**
      * Sets validation for option using RegExp.
      *

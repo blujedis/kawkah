@@ -12,24 +12,29 @@ class Kawkah extends base_1.KawkahCommandBase {
     get middleware() {
         return this.core.middleware;
     }
-    get configHelp() {
-        return this.core.setHelp;
-    }
-    get configVersion() {
-        return this.core.setVersion;
-    }
-    get configCompletions() {
-        return this.core.setCompletions;
-    }
-    get ok() {
-        return this.core.ok;
-    }
     context(name) {
+        if (name)
+            return this.core.getCommand(name);
         return this._command;
     }
     contextFor(name, command) {
         name = this.utils.stripTokens(name);
         return this.core.getOption(command || this._name, name);
+    }
+    configVersion(name = true, describe, version) {
+        this.assert('.configVersion()', '<string|array|boolean> [string] [string]', [name, describe, version]);
+        this.core.setVersion(name, describe, version);
+        return this;
+    }
+    configHelp(name = true, describe, fn) {
+        this.assert('.configHelp()', '<string|array|boolean|function> [string|function] [function]', [name, describe, fn]);
+        this.core.setHelp(name, describe, fn);
+        return this;
+    }
+    configCompletions(name, describe, fn, template) {
+        this.assert('.configCompletions()', '[string|boolean] [string|function] [function] [string]', arguments);
+        this.core.setCompletions(name, describe, fn, template);
+        return this;
     }
     /**
     * Sets a custom log/event handler.
@@ -37,7 +42,7 @@ class Kawkah extends base_1.KawkahCommandBase {
     * @param fn a log/event handler function.
     */
     configLogger(fn) {
-        this.assert('.logger()', '[function]', arguments);
+        this.assert('.configLogger()', '[function]', arguments);
         this.core.setLogHandler(fn);
         return this;
     }
@@ -50,6 +55,12 @@ class Kawkah extends base_1.KawkahCommandBase {
     }
     command(name, describe, external) {
         this.assert('.command()', '<string> [string|object|boolean] [string|boolean]', arguments);
+        // If just name was passed try to load existing command.
+        // Otherwise continue and create the command.
+        if (arguments.length === 1 && !this.utils.hasTokens(name)) {
+            if (this.core.hasCommand(name))
+                return new command_1.KawkahCommand(name, this.core);
+        }
         let config;
         if (chek_1.isBoolean(describe)) {
             external = describe;
@@ -89,28 +100,6 @@ class Kawkah extends base_1.KawkahCommandBase {
         this.assert('.actionFor()', '<string> [function]', arguments);
         this.core.setOption(this._name, option, 'action', fn);
         return this;
-    }
-    catch(fn = true, isCommand = false) {
-        this.assert('.catch()', '<string|boolean|function> <boolean>', [fn, isCommand]);
-        this.core.setCatchHandler(fn, isCommand);
-        return this;
-    }
-    parse(argv) {
-        this.assert('.parse()', '[string|array]', arguments);
-        return this.core.parse(argv);
-    }
-    listen(argv, show) {
-        this.assert('.listen()', '[string|array|boolean] [boolean]', arguments);
-        if (chek_1.isBoolean(argv)) {
-            show = argv;
-            argv = undefined;
-        }
-        const result = this.core.listen(argv);
-        if (this.core.abort())
-            return;
-        if (show)
-            this.log(result);
-        return result;
     }
     /**
      * Enables --trace option to enable stacktrace for errors on the fly.
@@ -161,10 +150,10 @@ class Kawkah extends base_1.KawkahCommandBase {
      * @param message a message to be logged.
      * @param args optional format arguments.
      */
-    // ok(message: any, ...args: any[]): Kawkah {
-    //   this.core.ok(message, ...args);
-    //   return this;
-    // }
+    ok(message, ...args) {
+        this.core.ok(message, ...args);
+        return this;
+    }
     /**
      * Sets a header for help.
      *
@@ -202,6 +191,38 @@ class Kawkah extends base_1.KawkahCommandBase {
         return this;
     }
     /**
+     * Enforces option descriptions, requires command or option on input and also outputs error on anonymous values.
+     *
+     * @param eanbled enables/disables strict.
+     */
+    strict(enabled = true) {
+        this.assert('.strict()', '<boolean>', [enabled]);
+        this.core.options.strict = enabled;
+        return this;
+    }
+    catch(fn = true, isCommand = false) {
+        this.assert('.catch()', '<string|boolean|function> <boolean>', [fn, isCommand]);
+        this.core.setCatchHandler(fn, isCommand);
+        return this;
+    }
+    parse(argv) {
+        this.assert('.parse()', '[string|array]', arguments);
+        return this.core.parse(argv);
+    }
+    listen(argv, show) {
+        this.assert('.listen()', '[string|array|boolean] [boolean]', arguments);
+        if (chek_1.isBoolean(argv)) {
+            show = argv;
+            argv = undefined;
+        }
+        const result = this.core.listen(argv);
+        if (this.core.abort())
+            return;
+        if (show)
+            this.log(result);
+        return result;
+    }
+    /**
      * Returns the parsed result generated from .listen();
      */
     result() {
@@ -221,7 +242,7 @@ class Kawkah extends base_1.KawkahCommandBase {
      * @param eanbled enables/disables terminate.
      */
     terminate(enabled = true) {
-        this.assert('.exit()', '[boolean]', [enabled]);
+        this.assert('.terminate()', '<boolean>', [enabled]);
         this.core.options.terminate = enabled;
         return this;
     }
