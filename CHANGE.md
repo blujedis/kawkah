@@ -6,6 +6,7 @@ Changes in descending order.
 
 <table>
   <tr><td>pre-release</td><td>pre-release need more tests and examples.</td></tr>
+  <tr><td>fix links</td><td>fix readme links.</td></tr>
 </table>
 
 ### 08.13.2018
