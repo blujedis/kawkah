@@ -1,0 +1,20 @@
+{
+  "Expected at least %s arguments but got %s.": "Expected at least %s arguments but got %s.",
+  "Expected no more than %s arguments but got %s.": "Expected no more than %s arguments but got %s.",
+  "%s arg has type %s but only %s is allowed.": "%s arg has type %s but only %s is allowed.",
+  "Validator %s could not be found.": "Validator %s could not be found.",
+  "or": "or",
+  "flags": "flags",
+  "arguments": "arguments",
+  "help": "help",
+  "Displays %s %s": "Displays %s %s",
+  "Flag": "Flag",
+  "version": "version",
+  "flag": "flag",
+  "Duplicate %s %s could not be created": "Duplicate %s %s could not be created",
+  "argument": "argument",
+  "Argument": "Argument",
+  "%s %s failed: %s (value: %s)": "%s %s failed: %s (value: %s)",
+  "%s %s failed: %s (missing: %s)": "%s %s failed: %s (missing: %s)",
+  "%s %s failed: %s (exists: %s)": "%s %s failed: %s (exists: %s)"
+}

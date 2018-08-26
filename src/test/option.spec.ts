@@ -34,7 +34,8 @@ describe('Kawkah:Option', () => {
       deny: [],
       completions: [],
       skip: false,
-      help: true
+      help: true,
+      command: '@Default'
     };
 
     const opt = kk.contextFor('age');
@@ -59,7 +60,8 @@ describe('Kawkah:Option', () => {
       completions: [],
       required: false,
       skip: false,
-      help: true
+      help: true,
+      command: '@Default'
     };
 
     kk.flag('status', {

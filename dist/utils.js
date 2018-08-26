@@ -50,13 +50,11 @@ class KawkahUtils {
             bracket: (v) => {
                 return `[${v}]`;
             },
-            timestamp: (v, k) => {
-                v = logTransforms.bracket(v);
-                return colurs.applyAnsi(v, styles.warning);
+            parens: (v) => {
+                return `(${v})`;
             },
             event: (v, k) => {
                 const key = v;
-                v = logTransforms.bracket(v);
                 if (styles[key])
                     v = colurs.applyAnsi(v, styles[key]);
                 return v;
@@ -68,8 +66,13 @@ class KawkahUtils {
                     v = colurs.applyAnsi(v, styles[o.event]);
                 return v;
             },
-            ministack: (v) => colurs.applyAnsi(`(${v})`, 'gray')
         };
+        // Extend transforms with Kawkah styles.
+        for (const s in styles) {
+            logTransforms[s] = (v, k) => {
+                return colurs.applyAnsi(v, styles[s]);
+            };
+        }
         formatr.setOption('transform', (v, k, o) => {
             if (logTransforms[k])
                 return logTransforms[k](v, k, o);
@@ -211,7 +214,7 @@ class KawkahUtils {
     colorize(val, ...styles) {
         // hack some issue with colorize
         // and tests false need to fix.
-        if (!this.options.colorize)
+        if (!this.options.colorize || !styles.length)
             return val;
         styles = chek_1.flatten(styles);
         // Use try here colorizing can fail if parsed styles aren't valid.
@@ -327,10 +330,10 @@ class KawkahUtils {
     formatMessage(message, ...args) {
         if (chek_1.isError(message))
             return message;
-        return formatr.format(message, ...args);
-    }
-    formatValidationMessage(key, val, msg, label) {
-        label = this.__(label);
+        message = formatr.format(message, ...args);
+        // Ensure $0 in usage strings are replaced.
+        message = message.replace('$0', this.core.$0);
+        return message;
     }
     // ARRAYS & MAPS //
     /**

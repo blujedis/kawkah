@@ -319,7 +319,6 @@ class KawkahCommandBase {
      */
     example(name, text) {
         this.assert('.example()', '<string> <string>', arguments);
-        name = `${this._name}.${name}`;
         this.core.setExample(name, text);
         return this;
     }

@@ -19,6 +19,7 @@ export declare class KawkahCore extends EventEmitter {
     private _events;
     $0: string;
     commands: IKawkahMap<IKawkahCommandInternal>;
+    examples: IKawkahMap<string>;
     middleware: KawkahMiddleware;
     aliases: IKawkahMap<string>;
     groups: IKawkahMap<IKawkahGroup>;
@@ -71,11 +72,17 @@ export declare class KawkahCore extends EventEmitter {
      */
     protected normalizeStyles(style: KawkahAnsiType): AnsiStyles[];
     /**
+     * Groupify example.
+     *
+     * @param name the name of the example.
+     */
+    protected groupifyExamples(name: string): void;
+    /**
      * Adds options to help groups by scheme set in options.
      *
      * @param options the options object to add to help groups.
      */
-    protected groupifyDefault(command: IKawkahCommandInternal): void;
+    protected groupifyChildren(command: IKawkahCommandInternal): void;
     /**
      * Adds command and options to help groups by scheme.
      *
@@ -291,27 +298,12 @@ export declare class KawkahCore extends EventEmitter {
      */
     getExample(name: string): string;
     /**
-     * Gets example text by command and name.
-     *
-     * @param command the command the example belongs to.
-     * @param name the example name to lookup.
-     */
-    getExample(command: string, name: string): string;
-    /**
      * Stores example text.
      *
      * @param name the name of the example.
      * @param text the example text.
      */
-    setExample(name: string, text?: string): any;
-    /**
-     * Stores example text.
-     *
-     * @param command the command name the example is assigned to.
-     * @param name the name of the example.
-     * @param text the example text.
-     */
-    setExample(command: string, name: string, text?: string): any;
+    setExample(name: string, text: string): void;
     /**
      * Removes an example from the collection.
      *
@@ -430,50 +422,53 @@ export declare class KawkahCore extends EventEmitter {
      */
     removeOption(command: string, name: string): void;
     /**
-     * Gets a group configuration from the store.
+     * Normalizes namespaces for groups.
      *
-     * @param name the name of the group to get.
-     * @param def a default value if any.
+     * @description A bit convoluted but makes it much easier for users to create groups.
+     *
+     * @param name the name to lookup and normalize.
      */
-    getGroup(name: string, def?: any): IKawkahGroup;
+    getGroupNamespace(name: any): {
+        ns: any;
+        item: any;
+    };
+    getGroup(name: any, def?: IKawkahGroup): IKawkahGroup;
     /**
-     * Assigns a group to a known command, includes all enabled options as items.
+     * Sets a group's visibility.
      *
-     * @example .setGroup('My Group', 'some_command_name');
-     *
-     * @param name the name of the group.
-     * @param command a known command.
-     * @param isCommand set to true to enable group as a command group.
-     */
-    setGroup(name: string, command: string, isCommand: true): IKawkahGroup;
-    /**
-    * Assigns items to a group, use dot notation when multple options of same name exit.
-    *
-    * @example .setGroup('My Group:', 'option1', 'option2');
-    * @example .setGroup('My Group:', 'commandName.option1', 'commandName.option2');
-    *
-    * @param name the name of the group.
-    * @param items list of items for the group.
-    */
-    setGroup(name: string, ...items: string[]): IKawkahGroup;
-    /**
-     * Sets a group to enabled or disabled.
-     *
-     * @example .setGroup('My Group', false);
-     *
-     * @param name the name of the group.
-     * @param enabled a configuration object for the group.
+     * @param name the name of the group to be set.
+     * @param enabled toggles visibility for the group.
      */
     setGroup(name: string, enabled: boolean): IKawkahGroup;
     /**
-     * Sets a group using config object.
+     * Sets a group using configuration file.
      *
-     * @example .setGroup('My Group', { // options here });
-     *
-     * @param name the name of the group.
-     * @param config a configuration object for the group.
+     * @param name the name of the group to be set.
+     * @param config the group's configuration.
      */
     setGroup(name: string, config: IKawkahGroup): IKawkahGroup;
+    /**
+     * Sets a group's items.
+     *
+     * @param name the name of the group to be set.
+     * @param items array of items to bind to the group.
+     */
+    setGroup(name: string, ...items: string[]): IKawkahGroup;
+    /**
+     * Sets group by command binding options or filtered options.
+     *
+     * @param name the name of the group to be set.
+     * @param items array of items to bind to the group.
+     * @param include true or array of option keys to include.
+     */
+    setGroup(name: string, command: string, include: true | string[]): IKawkahGroup;
+    /**
+     * Removes key from a group's items or all instances of key in any group.
+     *
+     * @param key the key to be removed from group item(s).
+     * @param group the optional group to remove key from.
+     */
+    removeGroupItem(name: string, group?: string): void;
     /**
      * Removes a group from the collection.
      *
@@ -487,13 +482,11 @@ export declare class KawkahCore extends EventEmitter {
      */
     removeGroupPurge(name: string): void;
     /**
-     * Removes key from a group's items or all instances of key in any group.
+     * Lists groups and their contents.
      *
-     * @param key the key to be removed from group item(s).
-     * @param group the optional group to remove key from.
-     * @param removeParent if key in items remove entire group instead of clean.
+     * @param names the group names to be listed.
      */
-    removeGroupItem(key: string, group?: string | boolean, removeParent?: boolean): void;
+    listGroup(...names: string[]): void;
     /**
      * Sets version option with all defaults.
      */

@@ -62,20 +62,20 @@ export class KawkahUtils {
 
     const styles = this.options.styles;
 
+
+
     const logTransforms = {
 
       bracket: (v) => {
         return `[${v}]`;
       },
 
-      timestamp: (v, k) => {
-        v = logTransforms.bracket(v);
-        return colurs.applyAnsi(v, styles.warning);
+      parens: (v) => {
+        return `(${v})`;
       },
 
       event: (v, k) => {
         const key = v;
-        v = logTransforms.bracket(v);
         if (styles[key])
           v = colurs.applyAnsi(v, styles[key]);
         return v;
@@ -89,9 +89,16 @@ export class KawkahUtils {
         return v;
       },
 
-      ministack: (v) => colurs.applyAnsi(`(${v})`, 'gray')
+      // ministack: (v) => colurs.applyAnsi(`(${v})`, 'gray')
 
     };
+
+    // Extend transforms with Kawkah styles.
+    for (const s in styles) {
+      logTransforms[s] = (v, k) => {
+        return colurs.applyAnsi(v, styles[s]);
+      };
+    }
 
     formatr.setOption('transform', (v, k, o) => {
       if (logTransforms[k])
@@ -285,7 +292,7 @@ export class KawkahUtils {
   colorize(val: string, ...styles: AnsiStyles[]) {
     // hack some issue with colorize
     // and tests false need to fix.
-    if (!this.options.colorize)
+    if (!this.options.colorize || !styles.length)
       return val;
     styles = flatten(styles);
     // Use try here colorizing can fail if parsed styles aren't valid.
@@ -463,15 +470,10 @@ export class KawkahUtils {
   formatMessage(message: any, ...args: any[]) {
     if (isError(message))
       return message;
-    return formatr.format(message, ...args);
-  }
-
-  formatValidationMessage(key: string, val: any, msg: string, label: string) {
-
-    label = this.__(label);
-
-
-
+    message = formatr.format(message, ...args);
+    // Ensure $0 in usage strings are replaced.
+    message = message.replace('$0', this.core.$0);
+    return message;
   }
 
   // ARRAYS & MAPS //

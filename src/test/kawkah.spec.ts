@@ -121,10 +121,12 @@ describe('Kawkah', () => {
   it('should set a custom HELP GROUP.', () => {
 
     const expected = {
-      title: 'test',
-      items: ['help', 'version'],
+      title: 'Test',
+      items: ['commands.@Default.options.help', 'commands.@Default.options.version'],
       indent: 2,
-      enabled: true
+      enabled: true,
+      sort: false,
+      children: []
     };
 
     kk.group('test', 'help', 'version');
@@ -134,10 +136,12 @@ describe('Kawkah', () => {
     // Disable the group.
 
     const expectedFalse = {
-      title: 'test',
-      items: ['help', 'version'],
+      title: 'Test',
+      items: ['commands.@Default.options.help', 'commands.@Default.options.version'],
       indent: 2,
-      enabled: false
+      enabled: false,
+      sort: false,
+      children: []
     };
 
     kk.group('test', false);

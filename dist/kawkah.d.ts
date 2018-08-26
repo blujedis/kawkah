@@ -2,7 +2,8 @@ import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandle
 import { KawkahCommandBase } from './base';
 import { KawkahCommand } from './command';
 export declare class Kawkah extends KawkahCommandBase<Kawkah> {
-    constructor(options?: IKawkahOptions);
+    constructor();
+    constructor(options: IKawkahOptions);
     constructor(usage: string, options?: IKawkahOptions);
     readonly middleware: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/middleware").KawkahMiddleware;
     /**
@@ -176,29 +177,22 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      */
     command(usage: string, describe: string, external?: string | boolean): KawkahCommand;
     /**
-     * Assigns a group to a known command, includes all enabled options as items.
+     * Gets a group by name.
      *
-     * @example .group('My Group', 'some_command_name');
-     *
-     * @param name the name of the group.
-     * @param command a known command name.
-     * @param isCommand set to true to enable group as a command group.
+     * @param name the name of the group to get.
      */
-    group(name: string, command: string, isCommand: true): Kawkah;
+    group(name: any): IKawkahGroup;
     /**
      * Sets a group to enabled or disabled.
      *
      * @example .group('My Group', false);
      *
      * @param name the name of the group.
-     * @param enabled a configuration object for the group.
+     * @param enabled enable/disable the group.
      */
     group(name: string, enabled: boolean): Kawkah;
     /**
-    * Assigns items to a group, use dot notation when multple options of same name exit.
-    *
-    * @example .group('My Group:', 'option1', 'option2');
-    * @example .group('My Group:', 'commandName.option1', 'commandName.option2');
+    * Assigns items to a group.
     *
     * @param name the name of the group.
     * @param items list of items for the group.
@@ -207,12 +201,20 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     /**
      * Sets a group using config object.
      *
-     * @example .group('My Group', { //options here });
+     * @example .group('My Group', { // group options here });
      *
      * @param name the name of the group.
      * @param config a configuration object for the group.
      */
     group(name: string, config: IKawkahGroup): Kawkah;
+    /**
+     * Sets group by command binding options or filtered options.
+     *
+     * @param name the name of the group to be set.
+     * @param items array of items to bind to the group.
+     * @param include true or array of option keys to include.
+     */
+    group(name: string, command: string, include: true | string[]): IKawkahGroup;
     /**
      * Adds action for option flag, only available on default command.
      * Command actions when present supersede these callbacks.

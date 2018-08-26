@@ -140,7 +140,6 @@ export declare class KawkahUtils {
      * @param args arguments used for format strings or templates.
      */
     formatMessage(message: any, ...args: any[]): any;
-    formatValidationMessage(key: string, val: any, msg: string, label: string): void;
     /**
      * Extends target array with source values if not already exists.
      *

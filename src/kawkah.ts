@@ -1,4 +1,4 @@
-import { isBoolean, isString, isObject } from 'chek';
+import { isBoolean, isString, isObject, isValue } from 'chek';
 
 import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandler, IKawkahCommand, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, KawkahLogHandler, KawkahThemeKeys, IKawkahTheme, IKawkahOptionInternal, KawkahAction } from './interfaces';
 
@@ -8,11 +8,13 @@ import { KawkahCommand } from './command';
 
 export class Kawkah extends KawkahCommandBase<Kawkah> {
 
-  constructor(options?: IKawkahOptions);
+  constructor();
+
+  constructor(options: IKawkahOptions);
 
   constructor(usage: string, options?: IKawkahOptions);
 
-  constructor(usage: string | IKawkahOptions, options?: IKawkahOptions) {
+  constructor(usage?: string | IKawkahOptions, options?: IKawkahOptions) {
     super(DEFAULT_COMMAND_NAME, <string>usage, options);
   }
 
@@ -305,15 +307,11 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   }
 
   /**
-   * Assigns a group to a known command, includes all enabled options as items.
+   * Gets a group by name.
    *
-   * @example .group('My Group', 'some_command_name');
-   *
-   * @param name the name of the group.
-   * @param command a known command name.
-   * @param isCommand set to true to enable group as a command group.
+   * @param name the name of the group to get.
    */
-  group(name: string, command: string, isCommand: true): Kawkah;
+  group(name): IKawkahGroup;
 
   /**
    * Sets a group to enabled or disabled.
@@ -321,15 +319,12 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
    * @example .group('My Group', false);
    *
    * @param name the name of the group.
-   * @param enabled a configuration object for the group.
+   * @param enabled enable/disable the group.
    */
   group(name: string, enabled: boolean): Kawkah;
 
   /**
-  * Assigns items to a group, use dot notation when multple options of same name exit.
-  *
-  * @example .group('My Group:', 'option1', 'option2');
-  * @example .group('My Group:', 'commandName.option1', 'commandName.option2');
+  * Assigns items to a group.
   *
   * @param name the name of the group.
   * @param items list of items for the group.
@@ -339,16 +334,27 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   /**
    * Sets a group using config object.
    *
-   * @example .group('My Group', { //options here });
+   * @example .group('My Group', { // group options here });
    *
    * @param name the name of the group.
    * @param config a configuration object for the group.
    */
   group(name: string, config: IKawkahGroup): Kawkah;
 
-  group(name: string, config: string | boolean | IKawkahGroup, isCommand?: string | boolean, ...items: string[]) {
-    this.assert('.group()', '<string> <string|boolean|object> [string|boolean] [string...]', arguments);
-    this.core.setGroup(name, <any>config, <any>isCommand, ...items);
+  /**
+   * Sets group by command binding options or filtered options.
+   *
+   * @param name the name of the group to be set.
+   * @param items array of items to bind to the group.
+   * @param include true or array of option keys to include.
+   */
+  group(name: string, command: string, include: true | string[]): IKawkahGroup;
+
+  group(name: string, config?: string | boolean | IKawkahGroup, all?: string | boolean | string[], ...items: string[]): Kawkah | IKawkahGroup {
+    this.assert('.group()', '<string> [string|boolean|object] [string|boolean|array] [string...]', arguments);
+    if (!isValue(config))
+      return this.core.getGroup(name);
+    this.core.setGroup(name, <any>config, <any>all, ...items);
     return this;
   }
 
@@ -667,4 +673,3 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   }
 
 }
-

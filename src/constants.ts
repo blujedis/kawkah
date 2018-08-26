@@ -38,6 +38,7 @@ export const DEFAULT_THEME: IKawkahTheme = {
   argument: null,
   flag: null,
   describe: null,
+  describeCommand: null,
   type: null,
   variadic: null,
   required: null,
@@ -57,8 +58,9 @@ export const DEFAULT_THEMES: IKawkahThemes = {
     argument: null,
     flag: null,
     describe: null,
+    describeCommand: 'muted',
     type: null,
-    variadic: 'primary',
+    variadic: 'warning',
     required: 'error',
     footer: 'muted',
     example: null
@@ -74,6 +76,7 @@ export const DEFAULT_THEMES: IKawkahThemes = {
     argument: 'white.dim',
     flag: 'white.dim',
     describe: 'white.dim',
+    describeCommand: 'white.dim',
     type: 'white.dim',
     variadic: 'yellow.dim',
     required: 'redBright.dim',
@@ -92,6 +95,7 @@ export const DEFAULT_THEMES: IKawkahThemes = {
     argument: 'magentaBright',
     flag: 'magentaBright',
     describe: 'blueBright',
+    describeCommand: 'blueBright',
     type: 'magentaBright',
     variadic: 'blueBright',
     required: 'redBright',
@@ -126,7 +130,9 @@ export const DEFAULT_GROUP: IKawkahGroup = {
   title: undefined,       // the title of the group displayed in help.
   items: [],              // array of items for the group.
   indent: 2,              // whether to indent the group items.
-  enabled: true           // toggles visibility.
+  enabled: true,          // toggles visibility.
+  sort: false,
+  children: []            // array of child groups to display.
 
 };
 
@@ -141,8 +147,7 @@ export const DEFAULT_COMMAND: IKawkahCommand = {
   maxArgs: undefined,                // max args allowed for the command.
   minFlags: undefined,               // mininum flags allowed for command.
   maxFlags: undefined,               // maximum flags allowd for command.
-  options: undefined,                // object containing option configs.
-  examples: {}                        // object of examples for the command.
+  options: undefined                 // object containing option configs.
 
 };
 
@@ -177,7 +182,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   name: undefined,                   // app name if undefined will be generated.
   locale: 'en',                      // the i18n locale to use for messages.
   output: process.stderr,            // the output stream for log/error messages.
-  scheme: KawkahHelpScheme.Default,  // scheme for displaying help.
+  scheme: KawkahHelpScheme.Commands, // scheme for displaying help.
   theme: 'default',                  // theme for help.
   header: undefined,                 // header text.
   footer: undefined,                 // footer text.
@@ -193,7 +198,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   timestampFormat: 'MM-dd-yyyy hh:mm:ss',
 
   // Format/template for log messages.
-  logFormat: '{{symbol}} {{message}}',
+  logFormat: '{{event}} {{message}} {{ministack|parens|muted}}',
 
   // Array of enabled middleware.
   middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],

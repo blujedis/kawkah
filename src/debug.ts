@@ -64,7 +64,7 @@ kk.command('concat')
 // kk.listen('concat /some/dir file1.json file2.json -f', true);
 kk
   .example('test', '$0 /some/path --force')
-  .listen();
+  .listen('--help');
 
 const x = {
   _: ['/some/dir', ['file1.json', 'file2.json']],
@@ -77,18 +77,3 @@ const x = {
 
 const t = 'test';
 
-// kk.command('copy', 'Copies a file.')
-//   .flag('status', 'My status');
-
-// kk
-//   .arg('arg', 'My argument')
-//   .alias('def')
-//   // .arg('other')
-//   .flag('toppings', {
-//     type: 'array',
-//     validate: /(cheese|mushroom|ham)/,
-//     describe: 'Toppings for pizza',
-//     alias: 't'
-//   })
-//   .flag('deep-dish', 'Do you want deep dish')
-//   .listen();

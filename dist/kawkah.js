@@ -82,9 +82,11 @@ class Kawkah extends base_1.KawkahCommandBase {
         // Return command instance.
         return new command_1.KawkahCommand(cmd.name, this.core);
     }
-    group(name, config, isCommand, ...items) {
-        this.assert('.group()', '<string> <string|boolean|object> [string|boolean] [string...]', arguments);
-        this.core.setGroup(name, config, isCommand, ...items);
+    group(name, config, all, ...items) {
+        this.assert('.group()', '<string> [string|boolean|object] [string|boolean|array] [string...]', arguments);
+        if (!chek_1.isValue(config))
+            return this.core.getGroup(name);
+        this.core.setGroup(name, config, all, ...items);
         return this;
     }
     /**

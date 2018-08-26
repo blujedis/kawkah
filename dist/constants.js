@@ -32,6 +32,7 @@ exports.DEFAULT_THEME = {
     argument: null,
     flag: null,
     describe: null,
+    describeCommand: null,
     type: null,
     variadic: null,
     required: null,
@@ -48,8 +49,9 @@ exports.DEFAULT_THEMES = {
         argument: null,
         flag: null,
         describe: null,
+        describeCommand: 'muted',
         type: null,
-        variadic: 'primary',
+        variadic: 'warning',
         required: 'error',
         footer: 'muted',
         example: null
@@ -64,6 +66,7 @@ exports.DEFAULT_THEMES = {
         argument: 'white.dim',
         flag: 'white.dim',
         describe: 'white.dim',
+        describeCommand: 'white.dim',
         type: 'white.dim',
         variadic: 'yellow.dim',
         required: 'redBright.dim',
@@ -80,6 +83,7 @@ exports.DEFAULT_THEMES = {
         argument: 'magentaBright',
         flag: 'magentaBright',
         describe: 'blueBright',
+        describeCommand: 'blueBright',
         type: 'magentaBright',
         variadic: 'blueBright',
         required: 'redBright',
@@ -107,7 +111,9 @@ exports.DEFAULT_GROUP = {
     title: undefined,
     items: [],
     indent: 2,
-    enabled: true // toggles visibility.
+    enabled: true,
+    sort: false,
+    children: [] // array of child groups to display.
 };
 exports.DEFAULT_COMMAND = {
     usage: undefined,
@@ -119,8 +125,7 @@ exports.DEFAULT_COMMAND = {
     maxArgs: undefined,
     minFlags: undefined,
     maxFlags: undefined,
-    options: undefined,
-    examples: {} // object of examples for the command.
+    options: undefined // object containing option configs.
 };
 exports.DEFAULT_PARSER_OPTIONS = {
     charVariadic: exports.VARIADIC_TOKEN,
@@ -147,7 +152,7 @@ exports.DEFAULT_OPTIONS = {
     name: undefined,
     locale: 'en',
     output: process.stderr,
-    scheme: interfaces_1.KawkahHelpScheme.Default,
+    scheme: interfaces_1.KawkahHelpScheme.Commands,
     theme: 'default',
     header: undefined,
     footer: undefined,
@@ -161,7 +166,7 @@ exports.DEFAULT_OPTIONS = {
     // timestamp format to use.
     timestampFormat: 'MM-dd-yyyy hh:mm:ss',
     // Format/template for log messages.
-    logFormat: '{{symbol}} {{message}}',
+    logFormat: '{{event}} {{message}} {{ministack|parens|muted}}',
     // Array of enabled middleware.
     middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],
     // map of colors used when outputting to console.

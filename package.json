@@ -1,7 +1,7 @@
 {
   "name": "kawkah",
-  "version": "0.1.0",
-  "description": "CLI argument parser.",
+  "version": "1.0.0",
+  "description": "CLI argument parser with middleware support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {},
@@ -74,6 +74,7 @@
   "dependencies": {
     "argsert": "^1.0.9",
     "chek": "^1.3.1",
+    "colurs": "^1.0.29",
     "cross-spawn": "^6.0.5",
     "escape-string-regexp": "^1.0.5",
     "formatr": "^1.0.2",

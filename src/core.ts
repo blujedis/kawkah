@@ -13,7 +13,7 @@ import * as exec from './exec';
 import { KawkahMiddleware, defaultMiddleware } from './middleware';
 import { KawkahUtils } from './utils';
 
-import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHandler, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahHelpScheme, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, KawkahResultAction, KawkahGroupKeys, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, KawkahThemeSytleKeys, IKawkahMiddlewareEventOption, KawkahOptionType, KawkahValidateHandler, KawkahMiddlewareGroup, IKawkahMiddlewareEventBase, KawkahGroupType } from './interfaces';
+import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHandler, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahHelpScheme, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, KawkahResultAction, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, KawkahThemeSytleKeys, IKawkahMiddlewareEventOption, KawkahOptionType, KawkahValidateHandler, KawkahMiddlewareGroup, IKawkahMiddlewareEventBase, KawkahGroupType } from './interfaces';
 
 import { DEFAULT_COMMAND_NAME, DEFAULT_OPTIONS, DEFAULT_GROUP, RESULT_NAME_KEY, MESSAGE_FORMAT_EXP, DEFAULT_THEMES, DEFAULT_THEME, RESULT_ARGS_KEY, RESULT_COMMAND_KEY, RESULT_ABORT_KEY, DEFAULT_PARSER_OPTIONS, DEFAULT_COMMAND } from './constants';
 import { KawkahError } from './error';
@@ -61,6 +61,7 @@ export class KawkahCore extends EventEmitter {
 
   $0: string;
   commands: IKawkahMap<IKawkahCommandInternal> = {};
+  examples: IKawkahMap<string> = {};
   middleware: KawkahMiddleware;
   aliases: IKawkahMap<string> = {};
   groups: IKawkahMap<IKawkahGroup> = {};
@@ -171,15 +172,6 @@ export class KawkahCore extends EventEmitter {
       }
     }
 
-    // Always enable commands group.
-    this.setGroup(KawkahGroupKeys.Commands, {
-      title: KawkahGroupKeys.Commands + ':',
-      items: []
-    });
-
-    // Add commands and examples to groups.
-    this.groupifyCommands();
-
     // Set the theme if any.
     this.setTheme(this.options.theme);
 
@@ -188,6 +180,9 @@ export class KawkahCore extends EventEmitter {
 
     // Enable version.k
     this.setVersion();
+
+    // Add commands and examples to groups.
+    this.groupifyCommands();
 
   }
 
@@ -382,43 +377,67 @@ export class KawkahCore extends EventEmitter {
   }
 
   /**
+   * Groupify example.
+   *
+   * @param name the name of the example.
+   */
+  protected groupifyExamples(name: string) {
+
+    // user will define help groups manually.
+    if (this.options.scheme === KawkahHelpScheme.None)
+      return;
+
+    const title = capitalize(KawkahGroupType.Examples) + ':';
+
+    this.setGroup(KawkahGroupType.Examples, {
+      title: title,
+      items: ['examples.' + name]
+    });
+
+  }
+
+  /**
    * Adds options to help groups by scheme set in options.
    *
    * @param options the options object to add to help groups.
    */
-  protected groupifyDefault(command: IKawkahCommandInternal) {
+  protected groupifyChildren(command: IKawkahCommandInternal) {
 
     const options = command.options;
 
-    // If Default command add to global groups.
-    if (this.options.scheme === KawkahHelpScheme.Default) {
+    const args = [];
+    const flags = [];
 
-      const flags = keys(options)
-        .filter(o => options[o].help && !isValue(options[o].index))
-        .map(k => command.name + '.options.' + k);
+    keys(options).forEach(k => {
+      const ns = 'commands.' + command.name + '.options.' + k;
+      if (!isValue(options[k].index))
+        flags.push(ns);
+      else
+        args.push(ns);
+    });
 
-      const examples = keys(command.examples)
-        .map(k => command.name + '.examples.' + k);
+    const flagsTitle = capitalize(this.utils.__(KawkahGroupType.Flags));
+    const argsTitle = capitalize(this.utils.__(KawkahGroupType.Arguments));
 
-      if (flags.length) {
-        const groupKey = this.utils.__(KawkahGroupKeys.Flags);
-        this.setGroup(groupKey, {
-          title: groupKey + ':',
-          items: flags,
-          sort: true
-        });
-      }
+    // If Default command add to global flags.
+    if (this.options.scheme === KawkahHelpScheme.Default && command.name === DEFAULT_COMMAND_NAME) {
 
-      if (examples.length) {
-        const groupKey = this.utils.__(KawkahGroupKeys.Examples);
-        this.setGroup(groupKey, {
-          title: groupKey + ':',
-          items: examples,
-          sort: true
-        });
-      }
+      this.setGroup(KawkahGroupType.Flags, {
+        title: flagsTitle + ':',
+        items: flags
+      });
 
     }
+
+    this.setGroup(command.name + '.args', {
+      title: argsTitle + ':',
+      items: args
+    });
+
+    this.setGroup(command.name + '.flags', {
+      title: flagsTitle + ':',
+      items: flags
+    });
 
   }
 
@@ -430,38 +449,41 @@ export class KawkahCore extends EventEmitter {
   protected groupifyCommand(command: IKawkahCommandInternal) {
 
     // user will define help groups manually.
-    if (this.options.scheme === KawkahHelpScheme.None || !command.help)
+    if (this.options.scheme === KawkahHelpScheme.None)
       return;
 
-    // If default command and there are no aliases or args
+    // Build up children.
+    this.groupifyChildren(command);
+
+    // ADD COMMAND GROUPS //
+
+    let title = (command.name === DEFAULT_COMMAND_NAME ? command.alias[0] || DEFAULT_COMMAND_NAME : command.name) + ':';
+
+    // Add command and all its options.
+    this.setGroup(command.name, {
+      title: capitalize(title),
+      items: [command.name],
+      children: [command.name + '.args', command.name + '.flags'],
+      isCommand: true
+    });
+
+    // If default command and there are no aliases
     // no need to list in Commands group.
     if (command.name === DEFAULT_COMMAND_NAME && !command.alias.length)
       return;
 
-    // Add command to Commands group also add options to default groups.
+    // Add command to the global commands group.
     if (this.options.scheme === KawkahHelpScheme.Default) {
 
-      const groupKey = this.utils.__(KawkahGroupKeys.Commands);
+      const groupKey = this.utils.__(KawkahGroupType.Commands);
 
       this.setGroup(groupKey, {
-        title: groupKey + ':',
+        title: capitalize(groupKey + ':'),
         items: [command.name],
-        sort: true
+        children: [KawkahGroupType.Flags, KawkahGroupType.Examples]
       });
 
-      if (command.name === DEFAULT_COMMAND_NAME)
-        this.groupifyDefault(command);
-
     }
-
-    let title = (command.name === DEFAULT_COMMAND_NAME ? command.alias[0] || DEFAULT_COMMAND_NAME : command.name) + ':';
-
-    // Help is grouped by commands.
-    this.setGroup(command.name, {
-      title: capitalize(title),
-      isCommand: true,
-      sort: true
-    });
 
   }
 
@@ -476,7 +498,6 @@ export class KawkahCore extends EventEmitter {
 
     for (const name in commands) {
       const command = commands[name];
-      if (!command.help) continue; // skip.
       this.groupifyCommand(command);
     }
 
@@ -689,7 +710,6 @@ export class KawkahCore extends EventEmitter {
     command.alias = toArray(command.alias).map(this.utils.stripTokens, this);
     command.spread = toDefault(command.spread, this.options.spread);
     command.external = toDefault(command.external, null);
-    command.examples = toDefault(command.examples, {});
 
     return command;
 
@@ -706,6 +726,9 @@ export class KawkahCore extends EventEmitter {
 
     oldVal = oldVal || {};
     newVal = newVal || {};
+
+    // Always update the command name.
+    newVal.command = command.name;
 
     for (const k in newVal) {
 
@@ -1314,26 +1337,10 @@ export class KawkahCore extends EventEmitter {
    *
    * @param name the example name to lookup.
    */
-  getExample(name: string): string;
-
-  /**
-   * Gets example text by command and name.
-   *
-   * @param command the command the example belongs to.
-   * @param name the example name to lookup.
-   */
-  getExample(command: string, name: string): string;
-
-  getExample(command: string, name?: string) {
+  getExample(name: string): string {
     this.assert('.getExample()', '<string>', arguments);
-    if (arguments.length === 1) {
-      name = command;
-      command = undefined;
-    }
-    const cmd = this.getCommand(command, DEFAULT_COMMAND_NAME);
-    if (!cmd) return null;
-    cmd.examples = cmd.examples || {};
-    return cmd.examples[name];
+    name = name.replace(/^examples\./, '');
+    return get(this.examples, name);
   }
 
   /**
@@ -1342,40 +1349,11 @@ export class KawkahCore extends EventEmitter {
    * @param name the name of the example.
    * @param text the example text.
    */
-  setExample(name: string, text?: string);
-
-  /**
-   * Stores example text.
-   *
-   * @param command the command name the example is assigned to.
-   * @param name the name of the example.
-   * @param text the example text.
-   */
-  setExample(command: string, name: string, text?: string);
-
-  setExample(command: string, name: string, text?: string) {
-
-    this.assert('.setExample()', '<string> <string> [string]', [command, name, text]);
-
-    if (arguments.length === 2) {
-      text = name;
-      name = command;
-      command = undefined;
-    }
-
-    const cmd = this.getCommand(command, DEFAULT_COMMAND_NAME);
-
-    if (!cmd) {
-      this.error(this.utils.__`${this.utils.__`Command`} ${command} could not be found`);
-      return;
-    }
-
-    cmd.examples = cmd.examples || {};
-    cmd.examples[name] = text;
-
-    // Groupify the examples for usage in help.
-    // this.groupifyExamples(name);
-
+  setExample(name: string, text: string) {
+    this.assert('.setExample()', '<string> <string> [string]', [name, text]);
+    name = name.replace(/^examples\./, '');
+    set<string>(this.examples, name, text);
+    this.groupifyExamples(name);
   }
 
   /**
@@ -1451,7 +1429,7 @@ export class KawkahCore extends EventEmitter {
     if (name)
       name = name.replace(/^commands\./, '');
     name = this.commandAliasToKey(name, def);
-    return get(this.commands, name);
+    return this.commands[name];
   }
 
   /**
@@ -1612,7 +1590,7 @@ export class KawkahCore extends EventEmitter {
    * @param command the command name to check.
    */
   hasCommand(command: string) {
-    return isValue(this.commands[command]);
+    return !!this.getCommand(command);
   }
 
   /**
@@ -1635,37 +1613,45 @@ export class KawkahCore extends EventEmitter {
     this.assert('.getOption()', '[string] [string]', arguments);
 
     if (!command && !name)
-      return;
+      return null;
 
+    // Get via dot noation.
     if (arguments.length === 1) {
-      name = command;
-      command = undefined;
+      if (/\./g.test(command)) {
+        name = command.replace(/^commands\./, '');
+        return get(this.commands, name);
+      }
+      else {
+        name = command;
+        command = undefined;
+      }
     }
-
-    name = name.replace(/^commands\./, '');
 
     if (command) {
 
-      command = command.replace(/^commands\./, '');
-
       const cmd = this.getCommand(command);
 
-      name = name.replace(new RegExp('^' + command + '\.'), '');
+      if (cmd) {
 
-      name = this.optionAliasToKey(name, cmd.options);
+        name = name.replace(new RegExp('^' + command + '\.'), '');
 
-      return cmd.options[name];
+        name = this.optionAliasToKey(name, cmd.options);
+
+        return cmd.options[name];
+
+      }
+
+      return null;
 
     }
 
     else {
 
-      if (~name.indexOf('.'))
-        return get(this.commands, name);
-
       for (const k in this.commands) {
 
         const cmd = this.commands[k];
+
+        if (!cmd) break;
 
         const primaryKey = this.optionAliasToKey(name, cmd.options);
 
@@ -1677,7 +1663,6 @@ export class KawkahCore extends EventEmitter {
       return null;
 
     }
-
 
   }
 
@@ -1840,9 +1825,8 @@ export class KawkahCore extends EventEmitter {
     cmd.usage = this.getUsage(cmd);
 
     // Ensure options are added to groups if needed.
-    this.groupifyDefault(cmd);
+    this.groupifyCommand(cmd);
 
-    // return cmd.options[name];
     return result;
 
   }
@@ -1886,124 +1870,251 @@ export class KawkahCore extends EventEmitter {
   }
 
   /**
-   * Gets a group configuration from the store.
+   * Normalizes namespaces for groups.
    *
-   * @param name the name of the group to get.
-   * @param def a default value if any.
+   * @description A bit convoluted but makes it much easier for users to create groups.
+   *
+   * @param name the name to lookup and normalize.
    */
-  getGroup(name: string, def?: any): IKawkahGroup {
+  getGroupNamespace(name) {
+
+    // Check if is full namespace.
+    let item = get(this, name);
+    const orig = name;
+
+    if (item) {
+      return {
+        ns: name,
+        item
+      };
+    }
+
+    // Check if is example
+    item = get(this.examples, name);
+
+    if (item) {
+      return {
+        ns: `examples.${name}`,
+        item
+      };
+    }
+
+    // Check if first key is command name or alias.
+    let nameSplit = name.split('.');
+    const nameAlias = this.commandAliasToKey(nameSplit.shift());
+
+    // If found update the name.
+    if (nameAlias) {
+      nameSplit.unshift(nameAlias);
+      name = nameSplit.join('.');
+    }
+    else {
+      nameSplit.unshift(name);
+    }
+
+    // Check if name is only command.
+    item = get(this.commands, name);
+
+    if (item && isPlainObject(item)) {
+      return {
+        ns: `commands.${name}`,
+        item
+      };
+    }
+
+    // Check if command.optionName shorthand.
+    if (nameSplit.length > 1) {
+
+      nameSplit.splice(1, 0, 'options');
+      name = nameSplit.join('.');
+
+      item = get(this.commands, name);
+
+      if (item && isPlainObject(item)) {
+        return {
+          ns: `commands.${name}`,
+          item
+        };
+      }
+
+    }
+
+    // Last result try to lookup option.
+    item = this.getOption(this.optionAliasToKey(name));
+
+    if (item) {
+      item = <IKawkahOptionInternal>item;
+
+      return {
+        ns: `commands.${(item as IKawkahOptionInternal).command}.options.${name}`,
+        item
+      };
+
+    }
+
+    // Probably a static string.
+    return {
+      ns: orig,
+      item: name
+    };
+
+
+  }
+
+  getGroup(name, def?: IKawkahGroup) {
     this.assert('.getGroup()', '[string] [any]', arguments);
-    return this.groups[name] || def;
+    def = Object.assign({}, DEFAULT_GROUP, def);
+    const group = this.groups[name];
+    if (!group)
+      this.groups[name] = def;
+    return this.groups[name];
   }
 
   /**
-   * Assigns a group to a known command, includes all enabled options as items.
+   * Sets a group's visibility.
    *
-   * @example .setGroup('My Group', 'some_command_name');
-   *
-   * @param name the name of the group.
-   * @param command a known command.
-   * @param isCommand set to true to enable group as a command group.
-   */
-  setGroup(name: string, command: string, isCommand: true): IKawkahGroup;
-
-  /**
-  * Assigns items to a group, use dot notation when multple options of same name exit.
-  *
-  * @example .setGroup('My Group:', 'option1', 'option2');
-  * @example .setGroup('My Group:', 'commandName.option1', 'commandName.option2');
-  *
-  * @param name the name of the group.
-  * @param items list of items for the group.
-  */
-  setGroup(name: string, ...items: string[]): IKawkahGroup;
-
-  /**
-   * Sets a group to enabled or disabled.
-   *
-   * @example .setGroup('My Group', false);
-   *
-   * @param name the name of the group.
-   * @param enabled a configuration object for the group.
+   * @param name the name of the group to be set.
+   * @param enabled toggles visibility for the group.
    */
   setGroup(name: string, enabled: boolean): IKawkahGroup;
 
   /**
-   * Sets a group using config object.
+   * Sets a group using configuration file.
    *
-   * @example .setGroup('My Group', { // options here });
-   *
-   * @param name the name of the group.
-   * @param config a configuration object for the group.
+   * @param name the name of the group to be set.
+   * @param config the group's configuration.
    */
   setGroup(name: string, config: IKawkahGroup): IKawkahGroup;
 
-  setGroup(name: string, config?: string | boolean | IKawkahGroup, isCommand?: string | boolean, ...items: string[]) {
+  /**
+   * Sets a group's items.
+   *
+   * @param name the name of the group to be set.
+   * @param items array of items to bind to the group.
+   */
+  setGroup(name: string, ...items: string[]): IKawkahGroup;
 
-    this.assert('.setGroup()', '<string> [string|boolean|object] [string|boolean] [string...]', arguments);
+  /**
+   * Sets group by command binding options or filtered options.
+   *
+   * @param name the name of the group to be set.
+   * @param items array of items to bind to the group.
+   * @param include true or array of option keys to include.
+   */
+  setGroup(name: string, command: string, include: true | string[]): IKawkahGroup;
 
-    // Get group or create with defaults.
-    let group: IKawkahGroup = this.getGroup(name);
+  setGroup(name: string, config: string | boolean | IKawkahGroup, include?: string | boolean | string[], ...items: string[]) {
 
-    // Cast to type.
-    config = <IKawkahGroup>config;
+    let group: IKawkahGroup = this.getGroup(name, { title: capitalize(name) });
 
-    const origConfig = config;
-
+    // Enabling/disabling group.
     if (isBoolean(config)) {
       group.enabled = <boolean>config;
+      this.groups[name] = group;
       return group;
     }
 
-    // Not a config object.
-    if (!isObject(config)) {
+    if (isObject(config)) {
 
-      if (isString(isCommand)) {
-        items.unshift(<string>isCommand);
-        isCommand = false;
-      }
+      // If is existing group store items.
+      group.items = group.items || [];
+      group.children = group.children || [];
+      const tmpItems = group.items.slice(0);
+      const tmpChildren = group.children.slice(0);
 
-      if (isValue(config))
-        items.unshift(<string>config);
+      config = <IKawkahGroup>config;
+      config.items = toArray(config.items);
+      config.children = toArray(config.children);
 
-      config = { items: items };
+      // Extend the config with defaults.
+      group = Object.assign({}, group, config);
 
-      // Existing group don't overwrite items or title.
-      if (group) {
-        config.title = group.title;
-        config.items = group.items;
-      }
+      // Ensure no duplicates in group items.
+      group.items = (group.items as string[]).map(v => this.getGroupNamespace(v).ns);
+      group.items = this.utils.arrayExtend(tmpItems || [], group.items);
+      group.children = this.utils.arrayExtend(tmpChildren, group.children);
+
+      this.groups[name] = group;
+
+      return group;
 
     }
 
-    // Ensure items array.
-    config.items = config.items || [];
+    // Adding a command.
+    if (isArray(include) || include === true) {
 
-    // This group is a command will build help for
-    // the command and all options.
-    if (isCommand === true || config.isCommand) {
-      const commandName = isObject(origConfig) ? name : <string>origConfig;
-      const cmd = this.getCommand(commandName);
+      const commandKey = this.commandAliasToKey(<string>config);
+      const cmd = this.getCommand(commandKey);
+
       if (!cmd) {
-        this.warning(this.utils.__`${this.utils.__`Command`} ${config.items[0] || 'unknown'} could not be found`);
-        return;
+        this.error(this.utils.__`${this.utils.__`Command`} ${commandKey} could not be found`);
       }
-      config.isCommand = true;
-      config.items = keys(cmd.options).filter(k => cmd.options[k].help);
-      config.examples = keys(cmd.examples);
+
+      if (this.commands[commandKey]) {
+
+        this.groupifyChildren(cmd);
+
+        // items = include === true ? keys(cmd.options) : <string[]>include;
+
+        // items = items.map(k => {
+        //   return `commands.${commandKey}.options.${k}`;
+        // });
+
+      }
+
     }
-    // Otherwise merge items.
     else {
-      config.items = this.utils.arrayExtend((group && group.items || []), config.items);
+
+      if (include)
+        items.unshift(<string>include);
+
+      items.unshift(<string>config);
+
     }
 
-    // Extend group with current.
-    group = Object.assign({}, DEFAULT_GROUP, group, config);
-    group.title = group.title || name;
+    items = items.map(v => this.getGroupNamespace(v).ns);
+
+    group.items = this.utils.arrayExtend(group.items || [], items);
 
     this.groups[name] = group;
 
     return group;
+  }
+
+  /**
+   * Removes key from a group's items or all instances of key in any group.
+   *
+   * @param key the key to be removed from group item(s).
+   * @param group the optional group to remove key from.
+   */
+  removeGroupItem(name: string, group?: string) {
+
+    this.assert('.removeGroupItem()', '<string> [string|boolean]', arguments);
+
+    const lookup = this.getGroupNamespace(name);
+
+    // Remove item from known group.
+    if (group) {
+
+      const grp = this.getGroup(group);
+      if (!grp) {
+        this.error(this.utils.__`${this.utils.__`Group`} ${group} could not be found`);
+        return;
+      }
+
+      grp.items = (grp.items as string[]).filter(v => v !== lookup.ns);
+
+    }
+
+    // Otherwise iterate all groups and filter key.
+    else {
+
+      for (const k in this.groups) {
+        const grp = this.groups[k];
+        grp.items = (grp.items as string[]).filter(v => v !== lookup.ns);
+      }
+
+    }
 
   }
 
@@ -2013,14 +2124,8 @@ export class KawkahCore extends EventEmitter {
    * @param name the name of the group to be removed.
    */
   removeGroup(name: string) {
-
     this.assert('.removeGroup()', '<string>', arguments);
-
-    if (!this.groups[name])
-      return;
-
-    delete this.groups[name];
-
+    del(this.groups, name);
   }
 
   /**
@@ -2035,53 +2140,43 @@ export class KawkahCore extends EventEmitter {
   }
 
   /**
-   * Removes key from a group's items or all instances of key in any group.
+   * Lists groups and their contents.
    *
-   * @param key the key to be removed from group item(s).
-   * @param group the optional group to remove key from.
-   * @param removeParent if key in items remove entire group instead of clean.
+   * @param names the group names to be listed.
    */
-  removeGroupItem(key: string, group?: string | boolean, removeParent?: boolean) {
+  listGroup(...names: string[]) {
 
-    this.assert('.removeGroupItem()', '<string> [string|boolean] [boolean]', arguments);
+    if (!names.length)
+      return this.warning(this.utils.__`Failed to list groups of length 0.`);
 
-    if (isBoolean(group)) {
-      removeParent = <boolean>group;
-      group = undefined;
-    }
+    const tbl = new Tablur({
+      colorize: this.options.colorize,
+      width: 80,
+      padding: 0,
+      sizes: [30]
+      // aligns: [null, null, TablurAlign.right]
+    });
 
-    const groupKey = <string>group;
+    names.forEach((k, i) => {
+      const group = this.getGroup(k);
+      if (!group) return;
+      const enabled = group.enabled ? ' (enabled)' : '';
+      tbl.section(group.title + enabled);
+      tbl.break();
+      let items: any = group.items as string[];
+      let children: any = group.children as string[];
+      items = !items.length ? 'none' : items.join(', ');
+      children = !children.length ? 'none' : children.join(', ');
+      tbl.row(...['items:', items]);
+      tbl.row(...['children:', children]);
+      tbl.row(...['sort:', (group.sort || false) + '']);
+      tbl.row(...['isCommand:', (group.isCommand || false) + '']);
+      tbl.row(...['indent:', group.indent + '']);
+      if (names[i + 1])
+        tbl.break();
+    });
 
-    const modified = [];
-
-    if (group && ~this.groups[groupKey].items.indexOf(key)) {
-
-      modified.push(group);
-      this.groups[groupKey].items = (this.groups[groupKey].items as string[]).filter(k => k !== key);
-
-    }
-
-    else {
-
-      for (const k in this.groups) {
-
-        const group = this.groups[k];
-        const hasItem = ~group.items.indexOf(key);
-
-        // Nothing to do.
-        if (!hasItem)
-          continue;
-
-        modified.push(k);
-
-        if (removeParent)
-          this.removeGroup(k);
-        else
-          this.groups[k].items = (group.items as string[]).filter(k => k !== key);
-
-      }
-
-    }
+    this.log('\n' + tbl.toString() + '\n');
 
   }
 
@@ -2182,7 +2277,7 @@ export class KawkahCore extends EventEmitter {
 
     const width = 90;
 
-    const table = this.table = this.table || new Tablur({
+    const table = this.table || new Tablur({
       colorize: this.options.colorize,
       width: width,
       padding: 0,
@@ -2258,8 +2353,9 @@ export class KawkahCore extends EventEmitter {
 
       if (group.isCommand) {
         const splitUsg = cmd.usage.split(cmd.name);
-        const suffix = splitUsg[1].trim();
-        usage = applyTheme('command', `${this.$0} ${cmd.name} `) + suffix;
+        const suffix = (splitUsg[1] || '').trim();
+        const cmdName = cmd.name === DEFAULT_COMMAND_NAME ? '' : cmd.name;
+        usage = this.$0 + ' ' + applyTheme('command', cmdName) + ' ' + suffix;
         describe = '';
       }
       else {
@@ -2315,14 +2411,23 @@ export class KawkahCore extends EventEmitter {
 
     };
 
-    const buildStatic = (val: string, group: IKawkahGroup, indent?: number) => {
+    const buildExample = (val: string, group: IKawkahGroup, indent?: number) => {
 
       indent = toDefault(indent, group.indent);
+
+      // Run message through formatter
+      val = this.utils.formatMessage(val, this);
 
       // Colorize the static element.
       if (theme)
         val = applyTheme('example', val);
 
+      return [indentValue(indent) + val];
+
+    };
+
+    const buildStatic = (val: string, group: IKawkahGroup, indent?: number) => {
+      indent = toDefault(indent, group.indent);
       return [indentValue(indent) + val];
 
     };
@@ -2334,122 +2439,80 @@ export class KawkahCore extends EventEmitter {
       if (group.sort)
         (group.items as string[]).sort();
 
-      // We're building a command and it's options.
-      if (group.isCommand) {
+      if (!group.isCommand)
+        table.section(applyTheme('title', group.title));
 
-        const cmd = this.getCommand(name);
+      for (const k of group.items) {
 
-        if (!validGroupItem(cmd, name, name, 'command') || !(cmd && cmd.help))
-          return;
+        const isOption = /options/g.test(k);
+        const isCommand = !isOption && /^commands/.test(k);
+        const isExample = /^examples/.test(k);
 
-        // Build the command.
-        const row = buildCommand(cmd, group, 2);
+        let row;
 
-        // table.section(applyTheme('command', group.title));
-        table.row(...row);
-        table.break();
-        table.section(applyTheme('describe', cmd.describe || 'No Description'));
+        if (isCommand) {
 
-        const args = (group.items as string[]).filter(k => has(cmd.options[k], 'index') && cmd.options[k].help);
+          const cmd = this.getCommand(k);
+          if (!cmd || !cmd.help) continue;
+          table.row(...buildCommand(cmd, group));
 
-        const flags = (group.items as string[]).filter(k => !has(cmd.options[k], 'index') && cmd.options[k].help);
-
-        if (args.length || flags.length)
-          table.break();
-
-        if (args.length) {
-          table.section(applyTheme('title', KawkahGroupKeys.Arguments + ':'));
-          args.forEach(a => {
-            const opt = this.getOption(name, a);
-            if (!validGroupItem(opt, name, a, 'argument'))
-              return;
-            table.row(...buildOption(opt, group));
-          });
-        }
-
-        if (args.length && flags.length)
-          table.break();
-
-        if (flags.length) {
-          table.section(applyTheme('title', KawkahGroupKeys.Flags + ':'));
-          flags.forEach(f => {
-            const opt = this.getOption(name, f);
-            if (!validGroupItem(opt, name, f, 'option'))
-              return;
-            table.row(...buildOption(opt, group));
-          });
-        }
-
-
-      }
-
-      // Otherwise detect type and build.
-      else {
-
-        let title = applyTheme('title', group.title);
-
-        if (group.items.length) {
-
-          table.section(title);
-
-          for (const k of group.items) {
-
-            const type = (k + '.').slice(0, k.indexOf('.'));
-            const typeOptions = /options\./g.test(k);
-
-            // If the collection doesn't exist
-            // warn then continue.
-            if (!this[type]) {
-              this.warning(this.utils.__`Help group ${group.title} failed to lookup type ${type}`);
-              continue;
-            }
-
-
-            // If name is contained in aliases
-            // this item is a command.
-            if (type === 'commands' && !typeOptions) {
-
-              const cmd = this.getCommand(k);
-
-              if (!validGroupItem(cmd, name, k, 'command') || !(cmd && cmd.help))
-                continue;
-
-              table.row(...buildCommand(cmd, group));
-
-            }
-
-            else if (type === 'examples') {
-
-              const example = this.getExample(k);
-
-              table.row(...buildStatic(example, group));
-
-            }
-
-            else {
-
-              const opt = this.getOption(k);
-
-              if (!validGroupItem(opt, name, k, 'option') || !(opt && opt.help))
-                continue;
-
-              table.row(...buildOption(opt, group));
-
-            }
-
+          // Need to add description below.
+          if (group.isCommand && cmd.describe.length) {
+            table
+              .break()
+              .section(applyTheme('describeCommand', cmd.describe));
           }
 
         }
 
+        else if (isOption) {
 
+          const opt = this.getOption(k);
+          if (!opt || !opt.help) continue;
+          table.row(...buildOption(opt, group));
+
+        }
+
+        else if (isExample) {
+
+          const exp = this.getExample(k);
+          if (!exp) continue;
+          table.row(...buildExample(exp, group));
+
+        }
+
+        else {
+          table.row(...buildStatic(k, group));
+        }
 
       }
+
+      // Get each child group and build.
+      if (group.children && group.children.length) {
+
+        table.break();
+
+        (group.children as string[]).forEach((k, i) => {
+
+          const child = this.getGroup(k);
+
+          if (child && child.enabled && child.items.length) {
+            buildGroup(k, child);
+
+            if (group.children[i + 1])
+              table.break();
+          }
+
+        });
+
+      }
+
 
     };
 
     groups.forEach((k, i) => {
 
-      const group = this.groups[k];
+      const group = get<IKawkahGroup>(this.groups, k);
 
       if (!group || !group.enabled || !group.items.length)
         return;
@@ -2498,7 +2561,7 @@ export class KawkahCore extends EventEmitter {
 
       // Build groups using default help groups.
       if (this.options.scheme === KawkahHelpScheme.Default)
-        groups = Object.keys(KawkahGroupKeys);
+        groups = [KawkahGroupType.Commands];
 
       // Display help by each command.
       else if (this.options.scheme === KawkahHelpScheme.Commands)

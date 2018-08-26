@@ -500,7 +500,6 @@ export class KawkahCommandBase<T> {
    */
   example(name: string, text: string) {
     this.assert('.example()', '<string> <string>', arguments);
-    name = `${this._name}.${name}`;
     this.core.setExample(name, text);
     return this;
   }

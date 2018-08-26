@@ -15,13 +15,13 @@ var KawkahHelpScheme;
     KawkahHelpScheme["Default"] = "default";
     KawkahHelpScheme["Commands"] = "commands";
 })(KawkahHelpScheme = exports.KawkahHelpScheme || (exports.KawkahHelpScheme = {}));
-var KawkahGroupKeys;
-(function (KawkahGroupKeys) {
-    KawkahGroupKeys["Commands"] = "Commands";
-    KawkahGroupKeys["Arguments"] = "Arguments";
-    KawkahGroupKeys["Flags"] = "Flags";
-    KawkahGroupKeys["Examples"] = "Examples";
-})(KawkahGroupKeys = exports.KawkahGroupKeys || (exports.KawkahGroupKeys = {}));
+var KawkahGroupType;
+(function (KawkahGroupType) {
+    KawkahGroupType["Commands"] = "commands";
+    KawkahGroupType["Arguments"] = "arguments";
+    KawkahGroupType["Flags"] = "flags";
+    KawkahGroupType["Examples"] = "examples";
+})(KawkahGroupType = exports.KawkahGroupType || (exports.KawkahGroupType = {}));
 var KawkahEvent;
 (function (KawkahEvent) {
     KawkahEvent["Error"] = "Error";

@@ -31,6 +31,7 @@ class KawkahCore extends events_1.EventEmitter {
         super();
         this._completionsName = 'completions';
         this.commands = {};
+        this.examples = {};
         this.aliases = {};
         this.groups = {};
         this.symbols = {
@@ -104,19 +105,14 @@ class KawkahCore extends events_1.EventEmitter {
                     this.middleware.add(n, m);
             }
         }
-        // Always enable commands group.
-        this.setGroup(interfaces_1.KawkahGroupKeys.Commands, {
-            title: interfaces_1.KawkahGroupKeys.Commands + ':',
-            items: []
-        });
-        // Add commands and examples to groups.
-        this.groupifyCommands();
         // Set the theme if any.
         this.setTheme(this.options.theme);
         // Enable default help.
         this.setHelp();
         // Enable version.k
         this.setVersion();
+        // Add commands and examples to groups.
+        this.groupifyCommands();
     }
     get assert() {
         return this.utils.argsert.assert;
@@ -236,36 +232,53 @@ class KawkahCore extends events_1.EventEmitter {
         return toAnsiStyle(styles);
     }
     /**
+     * Groupify example.
+     *
+     * @param name the name of the example.
+     */
+    groupifyExamples(name) {
+        // user will define help groups manually.
+        if (this.options.scheme === interfaces_1.KawkahHelpScheme.None)
+            return;
+        const title = chek_1.capitalize(interfaces_1.KawkahGroupType.Examples) + ':';
+        this.setGroup(interfaces_1.KawkahGroupType.Examples, {
+            title: title,
+            items: ['examples.' + name]
+        });
+    }
+    /**
      * Adds options to help groups by scheme set in options.
      *
      * @param options the options object to add to help groups.
      */
-    groupifyDefault(command) {
+    groupifyChildren(command) {
         const options = command.options;
-        // If Default command add to global groups.
-        if (this.options.scheme === interfaces_1.KawkahHelpScheme.Default) {
-            const flags = chek_1.keys(options)
-                .filter(o => options[o].help && !chek_1.isValue(options[o].index))
-                .map(k => command.name + '.options.' + k);
-            const examples = chek_1.keys(command.examples)
-                .map(k => command.name + '.examples.' + k);
-            if (flags.length) {
-                const groupKey = this.utils.__(interfaces_1.KawkahGroupKeys.Flags);
-                this.setGroup(groupKey, {
-                    title: groupKey + ':',
-                    items: flags,
-                    sort: true
-                });
-            }
-            if (examples.length) {
-                const groupKey = this.utils.__(interfaces_1.KawkahGroupKeys.Examples);
-                this.setGroup(groupKey, {
-                    title: groupKey + ':',
-                    items: examples,
-                    sort: true
-                });
-            }
+        const args = [];
+        const flags = [];
+        chek_1.keys(options).forEach(k => {
+            const ns = 'commands.' + command.name + '.options.' + k;
+            if (!chek_1.isValue(options[k].index))
+                flags.push(ns);
+            else
+                args.push(ns);
+        });
+        const flagsTitle = chek_1.capitalize(this.utils.__(interfaces_1.KawkahGroupType.Flags));
+        const argsTitle = chek_1.capitalize(this.utils.__(interfaces_1.KawkahGroupType.Arguments));
+        // If Default command add to global flags.
+        if (this.options.scheme === interfaces_1.KawkahHelpScheme.Default && command.name === constants_1.DEFAULT_COMMAND_NAME) {
+            this.setGroup(interfaces_1.KawkahGroupType.Flags, {
+                title: flagsTitle + ':',
+                items: flags
+            });
         }
+        this.setGroup(command.name + '.args', {
+            title: argsTitle + ':',
+            items: args
+        });
+        this.setGroup(command.name + '.flags', {
+            title: flagsTitle + ':',
+            items: flags
+        });
     }
     /**
      * Adds command and options to help groups by scheme.
@@ -274,30 +287,32 @@ class KawkahCore extends events_1.EventEmitter {
      */
     groupifyCommand(command) {
         // user will define help groups manually.
-        if (this.options.scheme === interfaces_1.KawkahHelpScheme.None || !command.help)
+        if (this.options.scheme === interfaces_1.KawkahHelpScheme.None)
             return;
-        // If default command and there are no aliases or args
+        // Build up children.
+        this.groupifyChildren(command);
+        // ADD COMMAND GROUPS //
+        let title = (command.name === constants_1.DEFAULT_COMMAND_NAME ? command.alias[0] || constants_1.DEFAULT_COMMAND_NAME : command.name) + ':';
+        // Add command and all its options.
+        this.setGroup(command.name, {
+            title: chek_1.capitalize(title),
+            items: [command.name],
+            children: [command.name + '.args', command.name + '.flags'],
+            isCommand: true
+        });
+        // If default command and there are no aliases
         // no need to list in Commands group.
         if (command.name === constants_1.DEFAULT_COMMAND_NAME && !command.alias.length)
             return;
-        // Add command to Commands group also add options to default groups.
+        // Add command to the global commands group.
         if (this.options.scheme === interfaces_1.KawkahHelpScheme.Default) {
-            const groupKey = this.utils.__(interfaces_1.KawkahGroupKeys.Commands);
+            const groupKey = this.utils.__(interfaces_1.KawkahGroupType.Commands);
             this.setGroup(groupKey, {
-                title: groupKey + ':',
+                title: chek_1.capitalize(groupKey + ':'),
                 items: [command.name],
-                sort: true
+                children: [interfaces_1.KawkahGroupType.Flags, interfaces_1.KawkahGroupType.Examples]
             });
-            if (command.name === constants_1.DEFAULT_COMMAND_NAME)
-                this.groupifyDefault(command);
         }
-        let title = (command.name === constants_1.DEFAULT_COMMAND_NAME ? command.alias[0] || constants_1.DEFAULT_COMMAND_NAME : command.name) + ':';
-        // Help is grouped by commands.
-        this.setGroup(command.name, {
-            title: chek_1.capitalize(title),
-            isCommand: true,
-            sort: true
-        });
     }
     /**
      * Adds collection of commands and options to help groups by scheme.
@@ -308,8 +323,6 @@ class KawkahCore extends events_1.EventEmitter {
         commands = commands || this.commands;
         for (const name in commands) {
             const command = commands[name];
-            if (!command.help)
-                continue; // skip.
             this.groupifyCommand(command);
         }
     }
@@ -477,7 +490,6 @@ class KawkahCore extends events_1.EventEmitter {
         command.alias = chek_1.toArray(command.alias).map(this.utils.stripTokens, this);
         command.spread = chek_1.toDefault(command.spread, this.options.spread);
         command.external = chek_1.toDefault(command.external, null);
-        command.examples = chek_1.toDefault(command.examples, {});
         return command;
     }
     /**
@@ -490,6 +502,8 @@ class KawkahCore extends events_1.EventEmitter {
     mergeOption(oldVal, newVal, command) {
         oldVal = oldVal || {};
         newVal = newVal || {};
+        // Always update the command name.
+        newVal.command = command.name;
         for (const k in newVal) {
             if (command && k === 'variadic' && newVal[k] === true) {
                 const oldIdx = oldVal.index;
@@ -907,34 +921,27 @@ class KawkahCore extends events_1.EventEmitter {
             return;
         this._catchHandler(this);
     }
-    getExample(command, name) {
+    /**
+     * Gets example for default command.
+     *
+     * @param name the example name to lookup.
+     */
+    getExample(name) {
         this.assert('.getExample()', '<string>', arguments);
-        if (arguments.length === 1) {
-            name = command;
-            command = undefined;
-        }
-        const cmd = this.getCommand(command, constants_1.DEFAULT_COMMAND_NAME);
-        if (!cmd)
-            return null;
-        cmd.examples = cmd.examples || {};
-        return cmd.examples[name];
+        name = name.replace(/^examples\./, '');
+        return chek_1.get(this.examples, name);
     }
-    setExample(command, name, text) {
-        this.assert('.setExample()', '<string> <string> [string]', [command, name, text]);
-        if (arguments.length === 2) {
-            text = name;
-            name = command;
-            command = undefined;
-        }
-        const cmd = this.getCommand(command, constants_1.DEFAULT_COMMAND_NAME);
-        if (!cmd) {
-            this.error(this.utils.__ `${this.utils.__ `Command`} ${command} could not be found`);
-            return;
-        }
-        cmd.examples = cmd.examples || {};
-        cmd.examples[name] = text;
-        // Groupify the examples for usage in help.
-        // this.groupifyExamples(name);
+    /**
+     * Stores example text.
+     *
+     * @param name the name of the example.
+     * @param text the example text.
+     */
+    setExample(name, text) {
+        this.assert('.setExample()', '<string> <string> [string]', [name, text]);
+        name = name.replace(/^examples\./, '');
+        chek_1.set(this.examples, name, text);
+        this.groupifyExamples(name);
     }
     /**
      * Removes an example from the collection.
@@ -993,7 +1000,7 @@ class KawkahCore extends events_1.EventEmitter {
         if (name)
             name = name.replace(/^commands\./, '');
         name = this.commandAliasToKey(name, def);
-        return chek_1.get(this.commands, name);
+        return this.commands[name];
     }
     setCommand(command, key, val) {
         this.assert('.setCommand()', '<string> [string|object] [any]', [command, key, val]);
@@ -1086,29 +1093,37 @@ class KawkahCore extends events_1.EventEmitter {
      * @param command the command name to check.
      */
     hasCommand(command) {
-        return chek_1.isValue(this.commands[command]);
+        return !!this.getCommand(command);
     }
     getOption(command, name) {
         this.assert('.getOption()', '[string] [string]', arguments);
         if (!command && !name)
-            return;
+            return null;
+        // Get via dot noation.
         if (arguments.length === 1) {
-            name = command;
-            command = undefined;
+            if (/\./g.test(command)) {
+                name = command.replace(/^commands\./, '');
+                return chek_1.get(this.commands, name);
+            }
+            else {
+                name = command;
+                command = undefined;
+            }
         }
-        name = name.replace(/^commands\./, '');
         if (command) {
-            command = command.replace(/^commands\./, '');
             const cmd = this.getCommand(command);
-            name = name.replace(new RegExp('^' + command + '\.'), '');
-            name = this.optionAliasToKey(name, cmd.options);
-            return cmd.options[name];
+            if (cmd) {
+                name = name.replace(new RegExp('^' + command + '\.'), '');
+                name = this.optionAliasToKey(name, cmd.options);
+                return cmd.options[name];
+            }
+            return null;
         }
         else {
-            if (~name.indexOf('.'))
-                return chek_1.get(this.commands, name);
             for (const k in this.commands) {
                 const cmd = this.commands[k];
+                if (!cmd)
+                    break;
                 const primaryKey = this.optionAliasToKey(name, cmd.options);
                 if (primaryKey)
                     return cmd.options[primaryKey];
@@ -1208,8 +1223,7 @@ class KawkahCore extends events_1.EventEmitter {
         cmd = this.reindexArgs(cmd);
         cmd.usage = this.getUsage(cmd);
         // Ensure options are added to groups if needed.
-        this.groupifyDefault(cmd);
-        // return cmd.options[name];
+        this.groupifyCommand(cmd);
         return result;
     }
     /**
@@ -1239,65 +1253,160 @@ class KawkahCore extends events_1.EventEmitter {
         }
     }
     /**
-     * Gets a group configuration from the store.
+     * Normalizes namespaces for groups.
      *
-     * @param name the name of the group to get.
-     * @param def a default value if any.
+     * @description A bit convoluted but makes it much easier for users to create groups.
+     *
+     * @param name the name to lookup and normalize.
      */
+    getGroupNamespace(name) {
+        // Check if is full namespace.
+        let item = chek_1.get(this, name);
+        const orig = name;
+        if (item) {
+            return {
+                ns: name,
+                item
+            };
+        }
+        // Check if is example
+        item = chek_1.get(this.examples, name);
+        if (item) {
+            return {
+                ns: `examples.${name}`,
+                item
+            };
+        }
+        // Check if first key is command name or alias.
+        let nameSplit = name.split('.');
+        const nameAlias = this.commandAliasToKey(nameSplit.shift());
+        // If found update the name.
+        if (nameAlias) {
+            nameSplit.unshift(nameAlias);
+            name = nameSplit.join('.');
+        }
+        else {
+            nameSplit.unshift(name);
+        }
+        // Check if name is only command.
+        item = chek_1.get(this.commands, name);
+        if (item && chek_1.isPlainObject(item)) {
+            return {
+                ns: `commands.${name}`,
+                item
+            };
+        }
+        // Check if command.optionName shorthand.
+        if (nameSplit.length > 1) {
+            nameSplit.splice(1, 0, 'options');
+            name = nameSplit.join('.');
+            item = chek_1.get(this.commands, name);
+            if (item && chek_1.isPlainObject(item)) {
+                return {
+                    ns: `commands.${name}`,
+                    item
+                };
+            }
+        }
+        // Last result try to lookup option.
+        item = this.getOption(this.optionAliasToKey(name));
+        if (item) {
+            item = item;
+            return {
+                ns: `commands.${item.command}.options.${name}`,
+                item
+            };
+        }
+        // Probably a static string.
+        return {
+            ns: orig,
+            item: name
+        };
+    }
     getGroup(name, def) {
         this.assert('.getGroup()', '[string] [any]', arguments);
-        return this.groups[name] || def;
+        def = Object.assign({}, constants_1.DEFAULT_GROUP, def);
+        const group = this.groups[name];
+        if (!group)
+            this.groups[name] = def;
+        return this.groups[name];
     }
-    setGroup(name, config, isCommand, ...items) {
-        this.assert('.setGroup()', '<string> [string|boolean|object] [string|boolean] [string...]', arguments);
-        // Get group or create with defaults.
-        let group = this.getGroup(name);
-        // Cast to type.
-        config = config;
-        const origConfig = config;
+    setGroup(name, config, include, ...items) {
+        let group = this.getGroup(name, { title: chek_1.capitalize(name) });
+        // Enabling/disabling group.
         if (chek_1.isBoolean(config)) {
             group.enabled = config;
+            this.groups[name] = group;
             return group;
         }
-        // Not a config object.
-        if (!chek_1.isObject(config)) {
-            if (chek_1.isString(isCommand)) {
-                items.unshift(isCommand);
-                isCommand = false;
-            }
-            if (chek_1.isValue(config))
-                items.unshift(config);
-            config = { items: items };
-            // Existing group don't overwrite items or title.
-            if (group) {
-                config.title = group.title;
-                config.items = group.items;
-            }
+        if (chek_1.isObject(config)) {
+            // If is existing group store items.
+            group.items = group.items || [];
+            group.children = group.children || [];
+            const tmpItems = group.items.slice(0);
+            const tmpChildren = group.children.slice(0);
+            config = config;
+            config.items = chek_1.toArray(config.items);
+            config.children = chek_1.toArray(config.children);
+            // Extend the config with defaults.
+            group = Object.assign({}, group, config);
+            // Ensure no duplicates in group items.
+            group.items = group.items.map(v => this.getGroupNamespace(v).ns);
+            group.items = this.utils.arrayExtend(tmpItems || [], group.items);
+            group.children = this.utils.arrayExtend(tmpChildren, group.children);
+            this.groups[name] = group;
+            return group;
         }
-        // Ensure items array.
-        config.items = config.items || [];
-        // This group is a command will build help for
-        // the command and all options.
-        if (isCommand === true || config.isCommand) {
-            const commandName = chek_1.isObject(origConfig) ? name : origConfig;
-            const cmd = this.getCommand(commandName);
+        // Adding a command.
+        if (chek_1.isArray(include) || include === true) {
+            const commandKey = this.commandAliasToKey(config);
+            const cmd = this.getCommand(commandKey);
             if (!cmd) {
-                this.warning(this.utils.__ `${this.utils.__ `Command`} ${config.items[0] || 'unknown'} could not be found`);
-                return;
+                this.error(this.utils.__ `${this.utils.__ `Command`} ${commandKey} could not be found`);
             }
-            config.isCommand = true;
-            config.items = chek_1.keys(cmd.options).filter(k => cmd.options[k].help);
-            config.examples = chek_1.keys(cmd.examples);
+            if (this.commands[commandKey]) {
+                this.groupifyChildren(cmd);
+                // items = include === true ? keys(cmd.options) : <string[]>include;
+                // items = items.map(k => {
+                //   return `commands.${commandKey}.options.${k}`;
+                // });
+            }
         }
-        // Otherwise merge items.
         else {
-            config.items = this.utils.arrayExtend((group && group.items || []), config.items);
+            if (include)
+                items.unshift(include);
+            items.unshift(config);
         }
-        // Extend group with current.
-        group = Object.assign({}, constants_1.DEFAULT_GROUP, group, config);
-        group.title = group.title || name;
+        items = items.map(v => this.getGroupNamespace(v).ns);
+        group.items = this.utils.arrayExtend(group.items || [], items);
         this.groups[name] = group;
         return group;
+    }
+    /**
+     * Removes key from a group's items or all instances of key in any group.
+     *
+     * @param key the key to be removed from group item(s).
+     * @param group the optional group to remove key from.
+     */
+    removeGroupItem(name, group) {
+        this.assert('.removeGroupItem()', '<string> [string|boolean]', arguments);
+        const lookup = this.getGroupNamespace(name);
+        // Remove item from known group.
+        if (group) {
+            const grp = this.getGroup(group);
+            if (!grp) {
+                this.error(this.utils.__ `${this.utils.__ `Group`} ${group} could not be found`);
+                return;
+            }
+            grp.items = grp.items.filter(v => v !== lookup.ns);
+        }
+        // Otherwise iterate all groups and filter key.
+        else {
+            for (const k in this.groups) {
+                const grp = this.groups[k];
+                grp.items = grp.items.filter(v => v !== lookup.ns);
+            }
+        }
     }
     /**
      * Removes a group from the collection.
@@ -1306,9 +1415,7 @@ class KawkahCore extends events_1.EventEmitter {
      */
     removeGroup(name) {
         this.assert('.removeGroup()', '<string>', arguments);
-        if (!this.groups[name])
-            return;
-        delete this.groups[name];
+        chek_1.del(this.groups, name);
     }
     /**
      * Purges any groups by name and cleans any groups which contain key in items.
@@ -1321,38 +1428,40 @@ class KawkahCore extends events_1.EventEmitter {
         this.removeGroupItem(name);
     }
     /**
-     * Removes key from a group's items or all instances of key in any group.
+     * Lists groups and their contents.
      *
-     * @param key the key to be removed from group item(s).
-     * @param group the optional group to remove key from.
-     * @param removeParent if key in items remove entire group instead of clean.
+     * @param names the group names to be listed.
      */
-    removeGroupItem(key, group, removeParent) {
-        this.assert('.removeGroupItem()', '<string> [string|boolean] [boolean]', arguments);
-        if (chek_1.isBoolean(group)) {
-            removeParent = group;
-            group = undefined;
-        }
-        const groupKey = group;
-        const modified = [];
-        if (group && ~this.groups[groupKey].items.indexOf(key)) {
-            modified.push(group);
-            this.groups[groupKey].items = this.groups[groupKey].items.filter(k => k !== key);
-        }
-        else {
-            for (const k in this.groups) {
-                const group = this.groups[k];
-                const hasItem = ~group.items.indexOf(key);
-                // Nothing to do.
-                if (!hasItem)
-                    continue;
-                modified.push(k);
-                if (removeParent)
-                    this.removeGroup(k);
-                else
-                    this.groups[k].items = group.items.filter(k => k !== key);
-            }
-        }
+    listGroup(...names) {
+        if (!names.length)
+            return this.warning(this.utils.__ `Failed to list groups of length 0.`);
+        const tbl = new tablur_1.Tablur({
+            colorize: this.options.colorize,
+            width: 80,
+            padding: 0,
+            sizes: [30]
+            // aligns: [null, null, TablurAlign.right]
+        });
+        names.forEach((k, i) => {
+            const group = this.getGroup(k);
+            if (!group)
+                return;
+            const enabled = group.enabled ? ' (enabled)' : '';
+            tbl.section(group.title + enabled);
+            tbl.break();
+            let items = group.items;
+            let children = group.children;
+            items = !items.length ? 'none' : items.join(', ');
+            children = !children.length ? 'none' : children.join(', ');
+            tbl.row(...['items:', items]);
+            tbl.row(...['children:', children]);
+            tbl.row(...['sort:', (group.sort || false) + '']);
+            tbl.row(...['isCommand:', (group.isCommand || false) + '']);
+            tbl.row(...['indent:', group.indent + '']);
+            if (names[i + 1])
+                tbl.break();
+        });
+        this.log('\n' + tbl.toString() + '\n');
     }
     setVersion(name = true, describe, version) {
         this.assert('.setVersion()', '<string|array|boolean> [string] [string]', [name, describe, version]);
@@ -1406,7 +1515,7 @@ class KawkahCore extends events_1.EventEmitter {
     buildHelp(groups) {
         this.assert('.buildHelp()', '<array>', arguments);
         const width = 90;
-        const table = this.table = this.table || new tablur_1.Tablur({
+        const table = this.table || new tablur_1.Tablur({
             colorize: this.options.colorize,
             width: width,
             padding: 0,
@@ -1462,8 +1571,9 @@ class KawkahCore extends events_1.EventEmitter {
             let usage;
             if (group.isCommand) {
                 const splitUsg = cmd.usage.split(cmd.name);
-                const suffix = splitUsg[1].trim();
-                usage = applyTheme('command', `${this.$0} ${cmd.name} `) + suffix;
+                const suffix = (splitUsg[1] || '').trim();
+                const cmdName = cmd.name === constants_1.DEFAULT_COMMAND_NAME ? '' : cmd.name;
+                usage = this.$0 + ' ' + applyTheme('command', cmdName) + ' ' + suffix;
                 describe = '';
             }
             else {
@@ -1503,91 +1613,73 @@ class KawkahCore extends events_1.EventEmitter {
             names = indentValue(indent) + names;
             return [names, describe, `${type}${variadic}${required}`.trim()];
         };
-        const buildStatic = (val, group, indent) => {
+        const buildExample = (val, group, indent) => {
             indent = chek_1.toDefault(indent, group.indent);
+            // Run message through formatter
+            val = this.utils.formatMessage(val, this);
             // Colorize the static element.
             if (theme)
                 val = applyTheme('example', val);
+            return [indentValue(indent) + val];
+        };
+        const buildStatic = (val, group, indent) => {
+            indent = chek_1.toDefault(indent, group.indent);
             return [indentValue(indent) + val];
         };
         // BUILD BY GROUP //
         const buildGroup = (name, group) => {
             if (group.sort)
                 group.items.sort();
-            // We're building a command and it's options.
-            if (group.isCommand) {
-                const cmd = this.getCommand(name);
-                if (!validGroupItem(cmd, name, name, 'command') || !(cmd && cmd.help))
-                    return;
-                // Build the command.
-                const row = buildCommand(cmd, group, 2);
-                // table.section(applyTheme('command', group.title));
-                table.row(...row);
-                table.break();
-                table.section(applyTheme('describe', cmd.describe || 'No Description'));
-                const args = group.items.filter(k => chek_1.has(cmd.options[k], 'index') && cmd.options[k].help);
-                const flags = group.items.filter(k => !chek_1.has(cmd.options[k], 'index') && cmd.options[k].help);
-                if (args.length || flags.length)
-                    table.break();
-                if (args.length) {
-                    table.section(applyTheme('title', interfaces_1.KawkahGroupKeys.Arguments + ':'));
-                    args.forEach(a => {
-                        const opt = this.getOption(name, a);
-                        if (!validGroupItem(opt, name, a, 'argument'))
-                            return;
-                        table.row(...buildOption(opt, group));
-                    });
-                }
-                if (args.length && flags.length)
-                    table.break();
-                if (flags.length) {
-                    table.section(applyTheme('title', interfaces_1.KawkahGroupKeys.Flags + ':'));
-                    flags.forEach(f => {
-                        const opt = this.getOption(name, f);
-                        if (!validGroupItem(opt, name, f, 'option'))
-                            return;
-                        table.row(...buildOption(opt, group));
-                    });
-                }
-            }
-            // Otherwise detect type and build.
-            else {
-                let title = applyTheme('title', group.title);
-                if (group.items.length) {
-                    table.section(title);
-                    for (const k of group.items) {
-                        const type = (k + '.').slice(0, k.indexOf('.'));
-                        const typeOptions = /options\./g.test(k);
-                        // If the collection doesn't exist
-                        // warn then continue.
-                        if (!this[type]) {
-                            this.warning(this.utils.__ `Help group ${group.title} failed to lookup type ${type}`);
-                            continue;
-                        }
-                        // If name is contained in aliases
-                        // this item is a command.
-                        if (type === 'commands' && !typeOptions) {
-                            const cmd = this.getCommand(k);
-                            if (!validGroupItem(cmd, name, k, 'command') || !(cmd && cmd.help))
-                                continue;
-                            table.row(...buildCommand(cmd, group));
-                        }
-                        else if (type === 'examples') {
-                            const example = this.getExample(k);
-                            table.row(...buildStatic(example, group));
-                        }
-                        else {
-                            const opt = this.getOption(k);
-                            if (!validGroupItem(opt, name, k, 'option') || !(opt && opt.help))
-                                continue;
-                            table.row(...buildOption(opt, group));
-                        }
+            if (!group.isCommand)
+                table.section(applyTheme('title', group.title));
+            for (const k of group.items) {
+                const isOption = /options/g.test(k);
+                const isCommand = !isOption && /^commands/.test(k);
+                const isExample = /^examples/.test(k);
+                let row;
+                if (isCommand) {
+                    const cmd = this.getCommand(k);
+                    if (!cmd || !cmd.help)
+                        continue;
+                    table.row(...buildCommand(cmd, group));
+                    // Need to add description below.
+                    if (group.isCommand && cmd.describe.length) {
+                        table
+                            .break()
+                            .section(applyTheme('describeCommand', cmd.describe));
                     }
                 }
+                else if (isOption) {
+                    const opt = this.getOption(k);
+                    if (!opt || !opt.help)
+                        continue;
+                    table.row(...buildOption(opt, group));
+                }
+                else if (isExample) {
+                    const exp = this.getExample(k);
+                    if (!exp)
+                        continue;
+                    table.row(...buildExample(exp, group));
+                }
+                else {
+                    table.row(...buildStatic(k, group));
+                }
+            }
+            // Get each child group and build.
+            if (group.children && group.children.length) {
+                table.break();
+                group.children.forEach((k, i) => {
+                    const child = this.getGroup(k);
+                    if (child && child.enabled && child.items.length) {
+                        buildGroup(k, child);
+                        if (group.children[i + 1])
+                            table.break();
+                    }
+                });
             }
         };
         groups.forEach((k, i) => {
-            const group = this.groups[k];
+            const group = chek_1.get(this.groups, k);
             if (!group || !group.enabled || !group.items.length)
                 return;
             buildGroup(k, group);
@@ -1623,7 +1715,7 @@ class KawkahCore extends events_1.EventEmitter {
         if (!groups || !groups.length) {
             // Build groups using default help groups.
             if (this.options.scheme === interfaces_1.KawkahHelpScheme.Default)
-                groups = Object.keys(interfaces_1.KawkahGroupKeys);
+                groups = [interfaces_1.KawkahGroupType.Commands];
             // Display help by each command.
             else if (this.options.scheme === interfaces_1.KawkahHelpScheme.Commands)
                 groups = Object.keys(this.groups).filter(k => this.groups[k].isCommand);

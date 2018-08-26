@@ -65,11 +65,11 @@ export declare enum KawkahHelpScheme {
     Default = "default",
     Commands = "commands"
 }
-export declare enum KawkahGroupKeys {
-    Commands = "Commands",
-    Arguments = "Arguments",
-    Flags = "Flags",
-    Examples = "Examples"
+export declare enum KawkahGroupType {
+    Commands = "commands",
+    Arguments = "arguments",
+    Flags = "flags",
+    Examples = "examples"
 }
 export declare enum KawkahEvent {
     Error = "Error",
@@ -93,6 +93,7 @@ export interface IKawkahTheme {
     argument?: KawkahAnsiType;
     flag?: KawkahAnsiType;
     describe?: KawkahAnsiType;
+    describeCommand?: KawkahAnsiType;
     type?: KawkahAnsiType;
     variadic?: KawkahAnsiType;
     required?: KawkahAnsiType;
@@ -147,11 +148,10 @@ export interface IKawkahGroup {
     title?: string;
     isCommand?: boolean;
     items?: string | string[];
-    examples?: string | string[];
     indent?: number;
-    parent?: string;
     sort?: boolean;
     enabled?: boolean;
+    children?: string | string[];
 }
 export interface IKawkahOptionBase {
     type?: KawkahOptionType;
@@ -186,6 +186,7 @@ export interface IKawkahOptionInternal extends IKawkahOption {
     static?: any;
     validate?: IKawkahValidateConfig;
     action?: KawkahResultAction;
+    command?: string;
 }
 export interface IKawkahCommandOptions {
     [key: string]: IKawkahOption | IKawkahOptionInternal;
@@ -206,7 +207,6 @@ export interface IKawkahCommand {
     minFlags?: number;
     maxFlags?: number;
     action?: KawkahAction;
-    examples?: IKawkahMap<string>;
 }
 export interface IKawkahCommandInternal extends IKawkahCommand {
     usage?: string;
@@ -223,8 +223,8 @@ export interface IKawkahOptionsBase {
     locale?: string;
     output?: NodeJS.WritableStream;
     parser?: KawkahParser;
-    scheme?: KawkahHelpScheme;
-    theme?: KawkahThemeKeys | IKawkahTheme;
+    scheme?: KawkahHelpScheme | string;
+    theme?: KawkahThemeKeys | IKawkahTheme | string;
     header?: string;
     footer?: string;
     colorize?: boolean;

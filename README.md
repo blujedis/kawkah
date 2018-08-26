@@ -2,7 +2,19 @@
   <a href="http://github.com/blujedis/kawkah"><img src="https://cdn.rawgit.com/blujedis/kawkah/master/assets/logo.png"></a>
 </p>
 
-An extensible command line parsing utility with middleware.
+An extensible command line parsing utility with middleware. Although fairly stable this module is not in production use as of 8/2018.
+
+Key benefits of Kawkah are that it allows you to extend the validation pipeline and parsing via middleware. This allows you to easily create hooks for tracking usage or to add some sort of custom validation step.
+
+Another key feature is the ability to build help groups for display. Kawkah is very customizable on this front. You can mix and match just about anything from examples to options to commands under a single heading with ease.
+
+This is done by using namespaces. you might do something like:
+
+```ts
+kk.group('MyGroup', 'commandName.option', 'examples.name', 'Some static string of text');
+```
+
+We'll provide more on this soon...
 
 <img src="assets/help.png" />
 
