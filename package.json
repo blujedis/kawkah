@@ -1,6 +1,6 @@
 {
   "name": "kawkah",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI argument parser with middleware support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
