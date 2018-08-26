@@ -65,12 +65,11 @@ const result = {
 
 The documentation listed in this table of contents is here for convenience. If you find an error we suggest heading over to the [Generated Docs](https://blujedis.github.io/kawkah/). These tend to be pretty accurate given the cannot be generated without the project building. We try to keep examples up to date but there's only so much time. Feel free to create a PR if you see a mistake!
 
-* [API](assets/api.md)
-* [Options](assets/options.md)
-* [Defining Middleware](assets/middleware.md)
-* [Examples](assets/examples.md)
+* [API](/assets/API.md)
+* [Options](/assets/OPTIONS.md)
+* [Defining Middleware](/assets/MIDDLEWARE.md)
+* [Examples](/assets/EXAMPLES.md)
 * [Kawkah Parser](https://github.com/blujedis/kawkah-parser)
-* [Coverage](coverage/index.html)
 
 ## Docs
 
