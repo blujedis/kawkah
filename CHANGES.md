@@ -2,7 +2,7 @@
 
 Changes in descending order.
 
-### 09.08.2018 (v1.0.3)
+### 09.08.2018 (v1.0.3-v1.0.5)
 
 <table>
   <tr><td>typings</td><td>typings were build by error with relative paths.</td></tr>
