@@ -1,10 +1,11 @@
 {
   "name": "kawkah",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CLI argument parser with middleware support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {},
+  "files": [],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blujedis/kawkah.git"

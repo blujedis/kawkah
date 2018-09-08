@@ -54,10 +54,10 @@ export declare class KawkahUtils {
     readonly __: any;
     readonly __n: any;
     readonly assert: {
-        (map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (name: string, map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
+        (map: string, values?: object | any[], validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (map: string, values?: object | any[], len?: number, validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
     };
     /**
      * Pluralizes a string.

@@ -1759,10 +1759,6 @@ class KawkahCore extends events_1.EventEmitter {
                 help = this._helpHandler([result[constants_1.RESULT_COMMAND_KEY]], this);
             else
                 help = this._helpHandler(null, this);
-            // if (!help) {
-            //   this.warning(this.utils.__`${this.utils.__`Help`} returned empty result`);
-            //   return;
-            // }
             this.write(help, true);
         };
         return this.setOption(constants_1.DEFAULT_COMMAND_NAME, key, {

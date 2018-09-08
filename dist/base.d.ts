@@ -7,7 +7,7 @@ export declare class KawkahCommandBase<T> {
     constructor(name: string, options?: IKawkahOptions);
     constructor(name: string, usage: string, core?: KawkahCore);
     constructor(name: string, usage: string, options?: IKawkahOptions);
-    protected readonly _command: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/interfaces").IKawkahCommandInternal;
+    protected readonly _command: import("./interfaces").IKawkahCommandInternal;
     /**
      * Creates option flag or option arg.
      *
@@ -23,17 +23,17 @@ export declare class KawkahCommandBase<T> {
      * @param arg indicates we are creating an arg.
      */
     protected _option(name: string, describe: string | IKawkahOption, type: KawkahOptionType, def: any, arg?: boolean): T & KawkahCommandBase<T>;
-    protected readonly utils: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/utils").KawkahUtils;
+    protected readonly utils: import("./utils").KawkahUtils;
     protected readonly assert: {
-        (map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (name: string, map: string, values?: object | any[], validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
-        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").ArgsertValidator): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/node_modules/argsert/dist/interfaces").IArgsertResult;
+        (map: string, values?: object | any[], validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (map: string, values?: object | any[], len?: number, validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
+        (name: string, map: string, values?: object | any[], len?: number, validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
     };
     /**
      * Gets the command config object.
      */
-    context(): import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/interfaces").IKawkahCommandInternal;
+    context(): import("./interfaces").IKawkahCommandInternal;
     /**
      * Gets a configuration for a flag or arg option on this command.
      *

@@ -2,6 +2,13 @@
 
 Changes in descending order.
 
+### 09.08.2018 (v1.0.3)
+
+<table>
+  <tr><td>typings</td><td>typings were build by error with relative paths.</td></tr>
+  <tr><td>CHANGE.md</td><td>renamed to CHANGES to support default npm behavior.</td></tr>
+</table>
+
 ### 08.26.2018 (v1.0.0-v1.0.2)
 
 <table>

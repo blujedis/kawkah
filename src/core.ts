@@ -2660,11 +2660,6 @@ export class KawkahCore extends EventEmitter {
       else
         help = this._helpHandler(null, this);
 
-      // if (!help) {
-      //   this.warning(this.utils.__`${this.utils.__`Help`} returned empty result`);
-      //   return;
-      // }
-
       this.write(help, true);
 
     };
@@ -3343,6 +3338,5 @@ export class KawkahCore extends EventEmitter {
     this.assert('.abort()', '<boolean>', [abort]);
     this._aborting = abort;
   }
-
 
 }

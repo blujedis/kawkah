@@ -47,10 +47,11 @@ const actions = {
   },
 
   compile: (watch) => {
-    let args = './node_modules/typescript/bin/tsc -p ./src/tsconfig.json';
+    // let args = './node_modules/typescript/bin/tsc -p ./src/tsconfig.json';
+    let args = '-p ./src/tsconfig.json';
     args += (watch ? ' -w' : '');
     args = normalize(args);
-    stiks.exec.node(args);
+    stiks.exec.command('tsc', args);
     return actions;
   },
 
@@ -66,7 +67,7 @@ const actions = {
     args += docsDir;
     args = normalize(args);
     stiks.exec.node(args);
-    stiks.exec.command('touch', join(docsDir, '.nojekyll'));
+    stiks.exec.command('touch', join(docsDir, '.nojekyll'), { cwd: process.cwd() });
     return actions;
   },
 

@@ -5,7 +5,7 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     constructor();
     constructor(options: IKawkahOptions);
     constructor(usage: string, options?: IKawkahOptions);
-    readonly middleware: import("../../../../../../Volumes/DATA/Projects/Apps/kawkah/src/middleware").KawkahMiddleware;
+    readonly middleware: import("./middleware").KawkahMiddleware;
     /**
      * Gets the current command's context.
      */
