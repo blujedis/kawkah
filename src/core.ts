@@ -385,7 +385,7 @@ export class KawkahCore extends EventEmitter {
   protected groupifyExamples(command: string, name: string) {
 
     // user will define help groups manually.
-    if (this.options.scheme === KawkahHelpScheme.None)
+    if (this.options.scheme === KawkahHelpScheme.None || !this.commands[command])
       return;
 
     const title = capitalize(KawkahGroupType.Examples) + ':';

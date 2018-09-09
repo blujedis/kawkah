@@ -349,18 +349,15 @@ class KawkahCommandBase {
         result = Object.assign({}, { _: [], __: [], $0: this.core.$0, $command: this._name }, result);
         return cmd.action(result, this.core);
     }
-    /**
-    * Creates example for current command.
-    *
-    * @example
-    * kawkah.example('My global example');
-    * kawkah.command('mycommand').example('My command specific example');
-    *
-    * @param text the example text.
-    */
-    example(text) {
+    example(name, text) {
         this.assert('.example()', '<string> [string]', arguments);
-        const name = this._name + '.' + Date.now();
+        if (arguments.length === 1) {
+            text = name;
+            name = undefined;
+        }
+        // Create namespace if none provided.
+        if (!name)
+            name = this._name + '.' + Date.now();
         this.core.setExample(name, text);
         return this;
     }

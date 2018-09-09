@@ -239,7 +239,7 @@ class KawkahCore extends events_1.EventEmitter {
      */
     groupifyExamples(command, name) {
         // user will define help groups manually.
-        if (this.options.scheme === interfaces_1.KawkahHelpScheme.None)
+        if (this.options.scheme === interfaces_1.KawkahHelpScheme.None || !this.commands[command])
             return;
         const title = chek_1.capitalize(interfaces_1.KawkahGroupType.Examples) + ':';
         if (command === constants_1.DEFAULT_COMMAND_NAME) {

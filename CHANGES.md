@@ -2,7 +2,7 @@
 
 Changes in descending order.
 
-### 09.08.2018 (v1.0.3-v1.0.6)
+### 09.08.2018 (v1.0.3-v1.0.7)
 
 <table>
   <tr><td>example</td><td>improve handling for examples.</td></tr>

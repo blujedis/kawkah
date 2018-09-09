@@ -263,7 +263,7 @@ export declare class KawkahCommandBase<T> {
      */
     exec(result?: IKawkahResult): any;
     /**
-    * Creates example for current command.
+    * Creates example for command.
     *
     * @example
     * kawkah.example('My global example');
@@ -272,6 +272,17 @@ export declare class KawkahCommandBase<T> {
     * @param text the example text.
     */
     example(text: string): T & KawkahCommandBase<T>;
+    /**
+    * Creates example using namespace.
+    *
+    * @example
+    * kawkah.example('commandName.exampleName', 'My example');
+    * kawkah.example('anyName.exampleName', 'My example');
+    *
+    * @param name assign namespace to example.
+    * @param text the example text.
+    */
+    example(name: string, text: string): T & KawkahCommandBase<T>;
     /**
      * Sets the type for an option.
      *

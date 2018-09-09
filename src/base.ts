@@ -573,7 +573,7 @@ export class KawkahCommandBase<T> {
   }
 
   /**
-  * Creates example for current command.
+  * Creates example for command.
   * 
   * @example
   * kawkah.example('My global example');
@@ -581,9 +581,29 @@ export class KawkahCommandBase<T> {
   *
   * @param text the example text.
   */
-  example(text: string): T & KawkahCommandBase<T> {
+  example(text: string): T & KawkahCommandBase<T>;
+
+  /**
+  * Creates example using namespace.
+  * 
+  * @example
+  * kawkah.example('commandName.exampleName', 'My example');
+  * kawkah.example('anyName.exampleName', 'My example');
+  *
+  * @param name assign namespace to example.
+  * @param text the example text.
+  */
+  example(name: string, text: string): T & KawkahCommandBase<T>;
+
+  example(name: string, text?: string): T & KawkahCommandBase<T> {
     this.assert('.example()', '<string> [string]', arguments);
-    const name = this._name + '.' + Date.now();
+    if (arguments.length === 1) {
+      text = name;
+      name = undefined;
+    }
+    // Create namespace if none provided.
+    if (!name)
+      name = this._name + '.' + Date.now();
     this.core.setExample(name, text);
     return <any>this;
   }
