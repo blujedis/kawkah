@@ -1,5 +1,5 @@
 import { KawkahCore } from './core';
-import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions } from './interfaces';
+import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction } from './interfaces';
 export declare class KawkahCommandBase<T> {
     protected _name: string;
     core: KawkahCore;
@@ -22,7 +22,7 @@ export declare class KawkahCommandBase<T> {
      * @param def the option's default value.
      * @param arg indicates we are creating an arg.
      */
-    protected _option(name: string, describe: string | IKawkahOption, type: KawkahOptionType, def: any, arg?: boolean): T & KawkahCommandBase<T>;
+    protected _option(name: string, describe: string | IKawkahOption, type: KawkahOptionType, def: any, argOrAction?: boolean | KawkahResultAction): T & KawkahCommandBase<T>;
     protected readonly utils: import("./utils").KawkahUtils;
     protected readonly assert: {
         (map: string, values?: object | any[], validator?: string | import("argsert/dist/interfaces").ArgsertValidator): import("argsert/dist/interfaces").IArgsertResult;
@@ -92,14 +92,39 @@ export declare class KawkahCommandBase<T> {
      */
     flag(name: string, config: IKawkahOption): T & KawkahCommandBase<T>;
     /**
+    * Adds a flag to the command.
+    *
+    * @param name the name of the option.
+    * @param describe the description for the option.
+    */
+    flag(name: string, describe: string): T & KawkahCommandBase<T>;
+    /**
+    * Adds a flag to the command.
+    *
+    * @param name the name of the option.
+    * @param describe the description for the option.
+    * @param action an action to call on flag option. (Default Command ONlY)
+    */
+    flag(name: string, describe: string, action: KawkahResultAction): T & KawkahCommandBase<T>;
+    /**
+     * Adds a flag to the command.
+     *
+     * @param name the name of the option.
+     * @param describe the description for the option.
+     * @param type the option's type.
+     * @param action an action to call on flag option. (Default Command ONlY)
+     */
+    flag(name: string, describe: string, type: KawkahOptionType, action?: KawkahResultAction): T & KawkahCommandBase<T>;
+    /**
      * Adds a flag to the command.
      *
      * @param name the name of the option.
      * @param describe the description for the option.
      * @param type the option's type.
      * @param def a default value.
+     * @param action an action to call on flag option. (Default Command ONlY)
      */
-    flag(name: string, describe: string, type?: KawkahOptionType, def?: any): T & KawkahCommandBase<T>;
+    flag(name: string, describe: string, type: KawkahOptionType, def?: any, action?: KawkahResultAction): T & KawkahCommandBase<T>;
     /**
      * Adds multiple args to command from an array.
      *
@@ -215,6 +240,13 @@ export declare class KawkahCommandBase<T> {
      */
     help(fn: KawkahHandler): T & KawkahCommandBase<T>;
     /**
+     * When true injects -- abort arg resulting in all
+     * arguments being added to result.__
+     *
+     * @param enabled enables/disables abort for command.
+     */
+    abort(enabled?: boolean): T & KawkahCommandBase<T>;
+    /**
      * Binds an action to be called when parsed command or alias is matched.
      *
      * @example .action((result, context) => { do something });
@@ -231,12 +263,15 @@ export declare class KawkahCommandBase<T> {
      */
     exec(result?: IKawkahResult): any;
     /**
-     * Stores example text for command.
-     *
-     * @param name the name of the example
-     * @param text the example text.
-     */
-    example(name: string, text: string): this;
+    * Creates example for current command.
+    *
+    * @example
+    * kawkah.example('My global example');
+    * kawkah.command('mycommand').example('My command specific example');
+    *
+    * @param text the example text.
+    */
+    example(text: string): T & KawkahCommandBase<T>;
     /**
      * Sets the type for an option.
      *

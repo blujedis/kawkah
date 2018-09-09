@@ -343,7 +343,7 @@ export declare class KawkahUtils {
      *
      * @param opt the option to be parsed.
      */
-    parseOption(opt: string): {
+    parseFlag(opt: string): {
         name: string;
         type: any;
         default: any;

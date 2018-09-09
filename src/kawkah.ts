@@ -1,6 +1,6 @@
-import { isBoolean, isString, isObject, isValue } from 'chek';
+import { isBoolean, isString, isObject, isValue, isFunction } from 'chek';
 
-import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandler, IKawkahCommand, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, KawkahLogHandler, KawkahThemeKeys, IKawkahTheme, IKawkahOptionInternal, KawkahAction } from './interfaces';
+import { IKawkahResult, IKawkahGroup, KawkahHelpHandler, KawkahCompletionsHandler, IKawkahCommand, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, KawkahLogHandler, KawkahThemeKeys, IKawkahTheme, IKawkahOptionInternal, KawkahAction, KawkahOptionType, IKawkahOption } from './interfaces';
 
 import { DEFAULT_COMMAND_NAME } from './constants';
 import { KawkahCommandBase } from './base';
@@ -239,12 +239,28 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   command(nameOrUsage: string): KawkahCommand;
 
   /**
-   * Creates a new command using config object.
+  * Creates a new command from name & description.
+  *
+  * @param name the command name.
+  * @param desribe the description for the command.
+  */
+  command(name: string, describe: string): KawkahCommand;
+
+  /**
+   * Creates a new command as external command.
    *
    * @param name the command name.
-   * @param external the executable path or none to use name.
+   * @param external the executable path or true to use name.
    */
-  command(name: string, external?: boolean): KawkahCommand;
+  command(name: string, external: string | boolean): KawkahCommand;
+
+  /**
+   * Creates a new command from name and action.
+   *
+   * @param name the command name.
+   * @param action the action to execute on matched command.
+   */
+  command(name: string, describe: string, action: KawkahAction): KawkahCommand;
 
   /**
    * Creates a new command using config object.
@@ -256,17 +272,26 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
   command(name: string, config: IKawkahCommand, external?: string | boolean): KawkahCommand;
 
   /**
-   * Creates a new command from usage tokens & description.
+   * Creates a new command from name, description as external command.
    *
-   * @param usage the command usage string to be parsed.
+   * @param name the command name.
    * @param desribe the description for the command.
    * @param external external command, executable path or true to use name.
    */
-  command(usage: string, describe: string, external?: string | boolean): KawkahCommand;
+  command(name: string, describe: string, external?: string | boolean): KawkahCommand;
 
-  command(name: string, describe?: string | IKawkahCommand | boolean, external?: string | boolean) {
+  /**
+   * Creates a new command from name, description and action.
+   *
+   * @param name the command name.
+   * @param desribe the description for the command.
+   * @param action the action to execute on matched command.
+   */
+  command(name: string, describe: string, action: KawkahAction): KawkahCommand;
 
-    this.assert('.command()', '<string> [string|object|boolean] [string|boolean]', arguments);
+  command(name: string, describe?: string | IKawkahCommand | boolean | KawkahAction, external?: string | boolean | KawkahAction) {
+
+    this.assert('.command()', '<string> [string|object|boolean|function] [string|boolean|function]', arguments);
 
     // If just name was passed try to load existing command.
     // Otherwise continue and create the command.
@@ -276,6 +301,18 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
     }
 
     let config: IKawkahCommandInternal;
+
+    let action;
+
+    if (isFunction(describe)) {
+      action = <KawkahAction>describe;
+      describe = undefined;
+    }
+
+    if (isFunction(external)) {
+      action = <KawkahAction>external;
+      external = undefined;
+    }
 
     if (isBoolean(describe)) {
       external = <boolean>describe;
@@ -297,6 +334,9 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
 
     config = config || {};
     config.external = <any>external;
+
+    if (action)
+      config.action = action;
 
     // Set the command.
     const cmd = this.core.setCommand(name, <IKawkahCommandInternal>config);
@@ -670,6 +710,15 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
     this.assert('.terminate()', '<boolean>', [enabled]);
     this.core.options.terminate = enabled;
     return this;
+  }
+
+  /**
+   * Exits Kawkah.
+   * 
+   * @param code the process exit code.
+   */
+  exit(code: number = 0) {
+    this.core.exit(code);
   }
 
 }

@@ -76,7 +76,7 @@ export declare class KawkahCore extends EventEmitter {
      *
      * @param name the name of the example.
      */
-    protected groupifyExamples(name: string): void;
+    protected groupifyExamples(command: string, name: string): void;
     /**
      * Adds options to help groups by scheme set in options.
      *

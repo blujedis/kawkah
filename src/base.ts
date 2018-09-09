@@ -1,7 +1,8 @@
 import { nonenumerable } from './decorators';
 import { KawkahCore } from './core';
-import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions } from './interfaces';
-import { isObject, isPlainObject, isValue } from 'chek';
+import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction } from './interfaces';
+import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray } from 'chek';
+import { DEFAULT_COMMAND_NAME, ALIAS_TOKEN } from './constants';
 
 export class KawkahCommandBase<T> {
 
@@ -58,13 +59,34 @@ export class KawkahCommandBase<T> {
    * @param def the option's default value.
    * @param arg indicates we are creating an arg.
    */
-  protected _option(name: string, describe: string | IKawkahOption, type: KawkahOptionType, def: any, arg?: boolean): T & KawkahCommandBase<T> {
+  protected _option(name: string, describe: string | IKawkahOption, type: KawkahOptionType, def: any, argOrAction?: boolean | KawkahResultAction): T & KawkahCommandBase<T> {
 
     let config = <IKawkahOptionInternal>describe;
 
+    let arg: boolean;
+    let action: KawkahResultAction;
+
+    if (isBoolean(argOrAction))
+      arg = <boolean>argOrAction;
+
+    if (isFunction(argOrAction))
+      action = <KawkahResultAction>argOrAction;
+
     const optType = arg ? this.utils.__`argument` : this.utils.__`flag`;
 
+    if (action && this._name !== DEFAULT_COMMAND_NAME) {
+      this.core.error(this.utils.__`Action ${optType} ${name} invalid for not default command.`);
+      return <any>this;
+    }
+
     if (!this.utils.hasTokens(name)) {
+
+      let aliases = [];
+
+      if (!!~name.indexOf(ALIAS_TOKEN)) {
+        aliases = name.split(ALIAS_TOKEN);
+        name = aliases.shift();
+      }
 
       if (this.core.options.allowCamelcase)
         name = this.utils.toCamelcase(name);
@@ -82,10 +104,6 @@ export class KawkahCommandBase<T> {
           config.index = -1; // placeholder index.
         }
 
-        // Set the option on the command.
-        this.core.setOption(this._name, name, config);
-        return <any>this;
-
       }
 
       else {
@@ -99,10 +117,17 @@ export class KawkahCommandBase<T> {
         if (arg)
           config.index = -1; // placeholder index.
 
-        this.core.setOption(this._name, name, config);
-        return <any>this;
+        if (action)
+          config.action = action;
+
 
       }
+
+      config.alias = toArray(config.alias);
+      config.alias = this.utils.arrayExtend(config.alias, aliases);
+
+      this.core.setOption(this._name, name, config);
+      return <any>this;
 
     }
 
@@ -118,11 +143,13 @@ export class KawkahCommandBase<T> {
     // Tokens may have been passed with a config object.
     config = Object.assign({}, parsed[key], config);
 
-    config.default = def || config.default;
     config.describe = <string>describe || config.describe;
     config.type = type || config.type;
+    config.default = def || config.default;
 
     if (arg) config.index = -1;
+
+    if (action) config.action = action;
 
     const opt = this.core.getOption(this._name, key);
 
@@ -254,22 +281,64 @@ export class KawkahCommandBase<T> {
   flag(name: string, config: IKawkahOption): T & KawkahCommandBase<T>;
 
   /**
+  * Adds a flag to the command.
+  *
+  * @param name the name of the option.
+  * @param describe the description for the option.
+  */
+  flag(name: string, describe: string): T & KawkahCommandBase<T>;
+
+  /**
+  * Adds a flag to the command.
+  *
+  * @param name the name of the option.
+  * @param describe the description for the option.
+  * @param action an action to call on flag option. (Default Command ONlY)
+  */
+  flag(name: string, describe: string, action: KawkahResultAction): T & KawkahCommandBase<T>;
+
+  /**
+   * Adds a flag to the command.
+   *
+   * @param name the name of the option.
+   * @param describe the description for the option.
+   * @param type the option's type.
+   * @param action an action to call on flag option. (Default Command ONlY)
+   */
+  flag(name: string, describe: string, type: KawkahOptionType, action?: KawkahResultAction): T & KawkahCommandBase<T>;
+
+  /**
    * Adds a flag to the command.
    *
    * @param name the name of the option.
    * @param describe the description for the option.
    * @param type the option's type.
    * @param def a default value.
+   * @param action an action to call on flag option. (Default Command ONlY)
    */
-  flag(name: string, describe: string, type?: KawkahOptionType, def?: any): T & KawkahCommandBase<T>;
+  flag(name: string, describe: string, type: KawkahOptionType, def?: any, action?: KawkahResultAction): T & KawkahCommandBase<T>;
 
-  flag(name: string, describe?: string | IKawkahOption, type?: KawkahOptionType, def?: any): T & KawkahCommandBase<T> {
-    this.assert('.flag()', '<string> [string|object] [string|function] [any]', arguments);
+  flag(name: string, describe?: string | IKawkahOption, type?: KawkahOptionType | KawkahResultAction, def?: any, action?: KawkahResultAction): T & KawkahCommandBase<T> {
+
+    if (isFunction(type)) {
+      action = <KawkahResultAction>type;
+      type = undefined;
+      def = undefined;
+    }
+
+    if (isFunction(def)) {
+      action = <KawkahResultAction>def;
+      def = undefined;
+    }
+
+    this.assert('.flag()', '<string> [string|object] [string|function] [any] [function]', arguments);
     if (name.startsWith('<') || name.startsWith('[')) {
       this.core.error(this.utils.__`Flag cannot begin with ${'< or ['}, did you mean to call ${'.arg(' + name + ')'}`);
       return;
     }
-    return this._option(name, describe, type, def);
+
+    return this._option(name, describe, <KawkahOptionType>type, def, action);
+
   }
 
   /**
@@ -465,6 +534,17 @@ export class KawkahCommandBase<T> {
   }
 
   /**
+   * When true injects -- abort arg resulting in all
+   * arguments being added to result.__
+   * 
+   * @param enabled enables/disables abort for command.
+   */
+  abort(enabled: boolean = true): T & KawkahCommandBase<T> {
+    this.core.setCommand(this._name, 'abort', enabled);
+    return <any>this;
+  }
+
+  /**
    * Binds an action to be called when parsed command or alias is matched.
    *
    * @example .action((result, context) => { do something });
@@ -493,15 +573,19 @@ export class KawkahCommandBase<T> {
   }
 
   /**
-   * Stores example text for command.
-   *
-   * @param name the name of the example
-   * @param text the example text.
-   */
-  example(name: string, text: string) {
-    this.assert('.example()', '<string> <string>', arguments);
+  * Creates example for current command.
+  * 
+  * @example
+  * kawkah.example('My global example');
+  * kawkah.command('mycommand').example('My command specific example');
+  *
+  * @param text the example text.
+  */
+  example(text: string): T & KawkahCommandBase<T> {
+    this.assert('.example()', '<string> [string]', arguments);
+    const name = this._name + '.' + Date.now();
     this.core.setExample(name, text);
-    return this;
+    return <any>this;
   }
 
   // OPTION METHODS //
@@ -817,11 +901,7 @@ export class KawkahCommandBase<T> {
       type: 'string',
       extend: value
     };
-    // If extend is enabled with
-    // no keys or static value set
-    // the type to boolean.
     if (!value) {
-      config.type = 'boolean';
       config.extend = true;
     }
     this.core.setOption(this._name, option, config);

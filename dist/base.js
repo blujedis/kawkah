@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("./decorators");
 const core_1 = require("./core");
 const chek_1 = require("chek");
+const constants_1 = require("./constants");
 class KawkahCommandBase {
     constructor(name, usage, core) {
         this._name = name;
@@ -45,10 +46,25 @@ class KawkahCommandBase {
      * @param def the option's default value.
      * @param arg indicates we are creating an arg.
      */
-    _option(name, describe, type, def, arg) {
+    _option(name, describe, type, def, argOrAction) {
         let config = describe;
+        let arg;
+        let action;
+        if (chek_1.isBoolean(argOrAction))
+            arg = argOrAction;
+        if (chek_1.isFunction(argOrAction))
+            action = argOrAction;
         const optType = arg ? this.utils.__ `argument` : this.utils.__ `flag`;
+        if (action && this._name !== constants_1.DEFAULT_COMMAND_NAME) {
+            this.core.error(this.utils.__ `Action ${optType} ${name} invalid for not default command.`);
+            return this;
+        }
         if (!this.utils.hasTokens(name)) {
+            let aliases = [];
+            if (!!~name.indexOf(constants_1.ALIAS_TOKEN)) {
+                aliases = name.split(constants_1.ALIAS_TOKEN);
+                name = aliases.shift();
+            }
             if (this.core.options.allowCamelcase)
                 name = this.utils.toCamelcase(name);
             const opt = this.core.getOption(this._name, name);
@@ -60,9 +76,6 @@ class KawkahCommandBase {
                 if (arg) {
                     config.index = -1; // placeholder index.
                 }
-                // Set the option on the command.
-                this.core.setOption(this._name, name, config);
-                return this;
             }
             else {
                 config = {
@@ -72,9 +85,13 @@ class KawkahCommandBase {
                 };
                 if (arg)
                     config.index = -1; // placeholder index.
-                this.core.setOption(this._name, name, config);
-                return this;
+                if (action)
+                    config.action = action;
             }
+            config.alias = chek_1.toArray(config.alias);
+            config.alias = this.utils.arrayExtend(config.alias, aliases);
+            this.core.setOption(this._name, name, config);
+            return this;
         }
         const parsed = this.utils.parseTokens(name, false);
         if (parsed._error) {
@@ -84,11 +101,13 @@ class KawkahCommandBase {
         let key = parsed._keys.shift();
         // Tokens may have been passed with a config object.
         config = Object.assign({}, parsed[key], config);
-        config.default = def || config.default;
         config.describe = describe || config.describe;
         config.type = type || config.type;
+        config.default = def || config.default;
         if (arg)
             config.index = -1;
+        if (action)
+            config.action = action;
         const opt = this.core.getOption(this._name, key);
         if (opt) {
             this.core.error(this.utils.__ `Duplicate ${optType} ${key} could not be created`);
@@ -143,13 +162,22 @@ class KawkahCommandBase {
         }).join(' '));
         return this;
     }
-    flag(name, describe, type, def) {
-        this.assert('.flag()', '<string> [string|object] [string|function] [any]', arguments);
+    flag(name, describe, type, def, action) {
+        if (chek_1.isFunction(type)) {
+            action = type;
+            type = undefined;
+            def = undefined;
+        }
+        if (chek_1.isFunction(def)) {
+            action = def;
+            def = undefined;
+        }
+        this.assert('.flag()', '<string> [string|object] [string|function] [any] [function]', arguments);
         if (name.startsWith('<') || name.startsWith('[')) {
             this.core.error(this.utils.__ `Flag cannot begin with ${'< or ['}, did you mean to call ${'.arg(' + name + ')'}`);
             return;
         }
-        return this._option(name, describe, type, def);
+        return this._option(name, describe, type, def, action);
     }
     /**
      * Adds multiple args to command from an array.
@@ -286,6 +314,16 @@ class KawkahCommandBase {
         return this;
     }
     /**
+     * When true injects -- abort arg resulting in all
+     * arguments being added to result.__
+     *
+     * @param enabled enables/disables abort for command.
+     */
+    abort(enabled = true) {
+        this.core.setCommand(this._name, 'abort', enabled);
+        return this;
+    }
+    /**
      * Binds an action to be called when parsed command or alias is matched.
      *
      * @example .action((result, context) => { do something });
@@ -312,13 +350,17 @@ class KawkahCommandBase {
         return cmd.action(result, this.core);
     }
     /**
-     * Stores example text for command.
-     *
-     * @param name the name of the example
-     * @param text the example text.
-     */
-    example(name, text) {
-        this.assert('.example()', '<string> <string>', arguments);
+    * Creates example for current command.
+    *
+    * @example
+    * kawkah.example('My global example');
+    * kawkah.command('mycommand').example('My command specific example');
+    *
+    * @param text the example text.
+    */
+    example(text) {
+        this.assert('.example()', '<string> [string]', arguments);
+        const name = this._name + '.' + Date.now();
         this.core.setExample(name, text);
         return this;
     }
@@ -510,11 +552,7 @@ class KawkahCommandBase {
             type: 'string',
             extend: value
         };
-        // If extend is enabled with
-        // no keys or static value set
-        // the type to boolean.
         if (!value) {
-            config.type = 'boolean';
             config.extend = true;
         }
         this.core.setOption(this._name, option, config);

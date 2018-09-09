@@ -152,7 +152,7 @@ exports.DEFAULT_OPTIONS = {
     name: undefined,
     locale: 'en',
     output: process.stderr,
-    scheme: interfaces_1.KawkahHelpScheme.Commands,
+    scheme: interfaces_1.KawkahHelpScheme.Default,
     theme: 'default',
     header: undefined,
     footer: undefined,

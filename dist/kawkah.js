@@ -54,7 +54,7 @@ class Kawkah extends base_1.KawkahCommandBase {
         return this;
     }
     command(name, describe, external) {
-        this.assert('.command()', '<string> [string|object|boolean] [string|boolean]', arguments);
+        this.assert('.command()', '<string> [string|object|boolean|function] [string|boolean|function]', arguments);
         // If just name was passed try to load existing command.
         // Otherwise continue and create the command.
         if (arguments.length === 1 && !this.utils.hasTokens(name)) {
@@ -62,6 +62,15 @@ class Kawkah extends base_1.KawkahCommandBase {
                 return new command_1.KawkahCommand(name, this.core);
         }
         let config;
+        let action;
+        if (chek_1.isFunction(describe)) {
+            action = describe;
+            describe = undefined;
+        }
+        if (chek_1.isFunction(external)) {
+            action = external;
+            external = undefined;
+        }
         if (chek_1.isBoolean(describe)) {
             external = describe;
             describe = undefined;
@@ -77,6 +86,8 @@ class Kawkah extends base_1.KawkahCommandBase {
         }
         config = config || {};
         config.external = external;
+        if (action)
+            config.action = action;
         // Set the command.
         const cmd = this.core.setCommand(name, config);
         // Return command instance.
@@ -247,6 +258,14 @@ class Kawkah extends base_1.KawkahCommandBase {
         this.assert('.terminate()', '<boolean>', [enabled]);
         this.core.options.terminate = enabled;
         return this;
+    }
+    /**
+     * Exits Kawkah.
+     *
+     * @param code the process exit code.
+     */
+    exit(code = 0) {
+        this.core.exit(code);
     }
 }
 exports.Kawkah = Kawkah;

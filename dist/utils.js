@@ -733,7 +733,7 @@ class KawkahUtils {
      *
      * @param opt the option to be parsed.
      */
-    parseOption(opt) {
+    parseFlag(opt) {
         opt = this.stripFlag(opt);
         const parts = opt.split(' ');
         const aliases = parts.shift().split(constants_1.ALIAS_TOKEN);
@@ -822,7 +822,7 @@ class KawkahUtils {
                 continue;
             }
             const _flagValue = this.flagHasValue(tokens, i);
-            let parsed = !_isFlag ? this.parseArg(t) : this.parseOption(t);
+            let parsed = !_isFlag ? this.parseArg(t) : this.parseFlag(t);
             if (!parsed.name) {
                 i++;
                 continue;

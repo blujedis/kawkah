@@ -1,6 +1,6 @@
 {
   "name": "kawkah",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "CLI argument parser with middleware support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -80,9 +80,9 @@
     "colurs": "^1.0.29",
     "cross-spawn": "^6.0.5",
     "escape-string-regexp": "^1.0.5",
-    "formatr": "^1.0.2",
+    "formatr": "^1.0.4",
     "js-yaml": "^3.12.0",
-    "kawkah-parser": "github:blujedis/kawkah-parser",
+    "kawkah-parser": "^1.0.0",
     "lokales": "^1.2.3",
     "read-pkg-up": "^4.0.0",
     "tablur": "^1.0.8"

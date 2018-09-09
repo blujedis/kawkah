@@ -169,6 +169,7 @@ export interface IKawkahOptionBase {
     completions?: string | string[];
     extend?: any;
     skip?: boolean;
+    action?: KawkahResultAction;
 }
 /**
  * Contains all properties for arg and flag option types.
@@ -185,7 +186,6 @@ export interface IKawkahOptionInternal extends IKawkahOption {
     extend?: true | string[];
     static?: any;
     validate?: IKawkahValidateConfig;
-    action?: KawkahResultAction;
     command?: string;
 }
 export interface IKawkahCommandOptions {

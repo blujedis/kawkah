@@ -15,8 +15,9 @@ import { KawkahUtils } from './utils';
 
 import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahOption, IKawkahCommandInternal, KawkahEvent, KawkahHandler, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahHelpScheme, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, KawkahResultAction, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, KawkahThemeSytleKeys, IKawkahMiddlewareEventOption, KawkahOptionType, KawkahValidateHandler, KawkahMiddlewareGroup, IKawkahMiddlewareEventBase, KawkahGroupType } from './interfaces';
 
-import { DEFAULT_COMMAND_NAME, DEFAULT_OPTIONS, DEFAULT_GROUP, RESULT_NAME_KEY, MESSAGE_FORMAT_EXP, DEFAULT_THEMES, DEFAULT_THEME, RESULT_ARGS_KEY, RESULT_COMMAND_KEY, RESULT_ABORT_KEY, DEFAULT_PARSER_OPTIONS, DEFAULT_COMMAND } from './constants';
+import { DEFAULT_COMMAND_NAME, DEFAULT_OPTIONS, DEFAULT_GROUP, RESULT_NAME_KEY, MESSAGE_FORMAT_EXP, DEFAULT_THEMES, DEFAULT_THEME, RESULT_ARGS_KEY, RESULT_COMMAND_KEY, RESULT_ABORT_KEY, DEFAULT_PARSER_OPTIONS, DEFAULT_COMMAND, ABORT_TOKEN } from './constants';
 import { KawkahError } from './error';
+import { inspect } from 'util';
 
 // Ensure clean, not cached.
 delete require.cache[__filename];
@@ -381,7 +382,7 @@ export class KawkahCore extends EventEmitter {
    *
    * @param name the name of the example.
    */
-  protected groupifyExamples(name: string) {
+  protected groupifyExamples(command: string, name: string) {
 
     // user will define help groups manually.
     if (this.options.scheme === KawkahHelpScheme.None)
@@ -389,10 +390,23 @@ export class KawkahCore extends EventEmitter {
 
     const title = capitalize(KawkahGroupType.Examples) + ':';
 
-    this.setGroup(KawkahGroupType.Examples, {
-      title: title,
-      items: ['examples.' + name]
-    });
+    if (command === DEFAULT_COMMAND_NAME) {
+
+      this.setGroup(KawkahGroupType.Examples, {
+        title: title,
+        items: ['examples.' + name]
+      });
+
+    }
+
+    else {
+
+      this.setGroup(command + '.examples', {
+        title: title,
+        items: ['examples.' + name]
+      });
+
+    }
 
   }
 
@@ -416,8 +430,11 @@ export class KawkahCore extends EventEmitter {
         args.push(ns);
     });
 
+    const examples = keys(get(this.examples, command.name)).map(k => `examples.${command.name}.${k}`);
+
     const flagsTitle = capitalize(this.utils.__(KawkahGroupType.Flags));
     const argsTitle = capitalize(this.utils.__(KawkahGroupType.Arguments));
+    const examplesTitle = capitalize(this.utils.__(KawkahGroupType.Examples));
 
     // If Default command add to global flags.
     if (this.options.scheme === KawkahHelpScheme.Default && command.name === DEFAULT_COMMAND_NAME) {
@@ -437,6 +454,11 @@ export class KawkahCore extends EventEmitter {
     this.setGroup(command.name + '.flags', {
       title: flagsTitle + ':',
       items: flags
+    });
+
+    this.setGroup(command.name + '.examples', {
+      title: examplesTitle + ':',
+      items: examples
     });
 
   }
@@ -463,7 +485,7 @@ export class KawkahCore extends EventEmitter {
     this.setGroup(command.name, {
       title: capitalize(title),
       items: [command.name],
-      children: [command.name + '.args', command.name + '.flags'],
+      children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
       isCommand: true
     });
 
@@ -594,8 +616,9 @@ export class KawkahCore extends EventEmitter {
 
     if (isValue(option.default)) {
 
-      if (!this.utils.isType(option.type, option.default)) {
-        this.error(this.utils.__`${optType} ${name} failed: invalidated by invalid type ${option.type} (value: ${option.default})`);
+      if (this.options.strict && !this.utils.isType(option.type, option.default)) {
+        const defVal = inspect(option.default, null, null, this.options.colorize);
+        this.error(this.utils.__`${optType} ${name} failed: invalidated by invalid type ${option.type} (value: ${defVal})`);
       }
 
     }
@@ -784,9 +807,9 @@ export class KawkahCore extends EventEmitter {
 
       // Ensure default is of same type as option.type.
       // if not try to convert.
-      else if (k === 'default' && isValue(newVal.default)) {
-        newVal.default = this.utils.toType(newVal.type || oldVal.type || 'string', newVal.default);
-      }
+      // else if (k === 'default' && isValue(newVal.default)) {
+      //   newVal.default = this.utils.toType(newVal.type || oldVal.type || 'string', newVal.default);
+      // }
 
       else {
 
@@ -1352,8 +1375,9 @@ export class KawkahCore extends EventEmitter {
   setExample(name: string, text: string) {
     this.assert('.setExample()', '<string> <string> [string]', [name, text]);
     name = name.replace(/^examples\./, '');
+    const commandName = name.split('.').shift();
     set<string>(this.examples, name, text);
-    this.groupifyExamples(name);
+    this.groupifyExamples(commandName, name);
   }
 
   /**
@@ -2227,7 +2251,11 @@ export class KawkahCore extends EventEmitter {
 
     describe = describe || this.utils.__`Displays ${this.$0} ${key}`;
 
-    let displayStr = this.package.pkg.version;
+    let displayStr = this.package.pkg && this.package.pkg.version;
+
+    // no version to set.
+    if (!ver && !displayStr)
+      return;
 
     // Default action handler for version.
     const action = (result) => {
@@ -2281,8 +2309,7 @@ export class KawkahCore extends EventEmitter {
       colorize: this.options.colorize,
       width: width,
       padding: 0,
-      sizes: [25, 30, 20],
-      aligns: [null, null, TablurAlign.right]
+      aligns: [null, null, TablurAlign.left]
     });
 
     // Clear ensure empty rows.
@@ -2422,7 +2449,7 @@ export class KawkahCore extends EventEmitter {
       if (theme)
         val = applyTheme('example', val);
 
-      return [indentValue(indent) + val];
+      return [indentValue(indent) + val, '', ''];
 
     };
 
@@ -2447,8 +2474,6 @@ export class KawkahCore extends EventEmitter {
         const isOption = /options/g.test(k);
         const isCommand = !isOption && /^commands/.test(k);
         const isExample = /^examples/.test(k);
-
-        let row;
 
         if (isCommand) {
 
@@ -3196,9 +3221,9 @@ export class KawkahCore extends EventEmitter {
       parserOptions.allowPlaceholderArgs = true;
 
     // Forces all args to be ignored.
-    // Then args can be passed to spawn.
+    // Then args can be passed to spawn etc.
     if (command && command.abort)
-      argv.unshift('--');
+      argv.unshift(ABORT_TOKEN);
 
     // Ensure aliases are disabled in kawkah-parser.
     parserOptions.allowAliases = false;
@@ -3269,10 +3294,7 @@ export class KawkahCore extends EventEmitter {
         .runGroup(KawkahMiddlewareGroup.AfterParsed)
         .run(parsed, event, this);
 
-    // If not calling for example help, version etc
-    // then we need to validate the parsed result.
-    if (!actionOption)
-      event.result = this.validate(event);
+    event.result = this.validate(event);
 
     event.result =
       this.middleware

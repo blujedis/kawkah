@@ -182,7 +182,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   name: undefined,                   // app name if undefined will be generated.
   locale: 'en',                      // the i18n locale to use for messages.
   output: process.stderr,            // the output stream for log/error messages.
-  scheme: KawkahHelpScheme.Commands, // scheme for displaying help.
+  scheme: KawkahHelpScheme.Default,  // scheme for displaying help.
   theme: 'default',                  // theme for help.
   header: undefined,                 // header text.
   footer: undefined,                 // footer text.

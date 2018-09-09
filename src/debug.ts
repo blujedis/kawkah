@@ -46,7 +46,7 @@ kk.command('copy')
 kk.command('concat')
   .aliasFor('force', 'f')
   .requiredFor('files')
-  .example('test', '$0 some example')
+  .example('$0 some example')
   .coerceFor('files', (val) => {
     return val.map(v => path.normalize(v));
   })
@@ -63,7 +63,7 @@ kk.command('concat')
 
 // kk.listen('concat /some/dir file1.json file2.json -f', true);
 kk
-  .example('test', '$0 /some/path --force')
+  .example('$0 /some/path --force')
   .listen('--help');
 
 const x = {

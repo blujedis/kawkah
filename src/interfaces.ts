@@ -229,6 +229,7 @@ export interface IKawkahOptionBase {
   completions?: string | string[];
   extend?: any;
   skip?: boolean;
+  action?: KawkahResultAction; // only avail for global command options.
 }
 
 /**
@@ -248,7 +249,6 @@ export interface IKawkahOptionInternal extends IKawkahOption {
   extend?: true | string[];
   static?: any;
   validate?: IKawkahValidateConfig;
-  action?: KawkahResultAction; // only avail for global command options.
   command?: string;
 }
 
