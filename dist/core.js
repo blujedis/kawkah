@@ -1623,6 +1623,8 @@ class KawkahCore extends events_1.EventEmitter {
             if (chek_1.isFunction(opt.help))
                 return [indentValue(indent) + opt.help(opt, this), '', ''];
             const isOpt = !chek_1.isValue(opt.index);
+            // BUG: need to figure out why some aliases contain option name.
+            opt.alias = opt.alias.filter(v => v !== opt.name);
             // Convert keys to flags.
             let names = !chek_1.isValue(opt.index)
                 ? [opt.name].concat(opt.alias).map(v => this.utils.toFlag(v), this)

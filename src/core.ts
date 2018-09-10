@@ -2424,6 +2424,9 @@ export class KawkahCore extends EventEmitter {
 
       const isOpt = !isValue(opt.index);
 
+      // BUG: need to figure out why some aliases contain option name.
+      opt.alias = opt.alias.filter(v => v !== opt.name);
+
       // Convert keys to flags.
       let names: any = !isValue(opt.index)
         ? [opt.name].concat(opt.alias).map(v => this.utils.toFlag(v), this)

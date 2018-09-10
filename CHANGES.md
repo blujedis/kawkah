@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 09.09.2018 (v1.0.8)
+### 09.09.2018 (v1.0.8-v1.0.9)
 
 <table>
+  <tr><td>core.buildHelp()</td><td>bug where aliases may contain name by error.</td></tr>
   <tr><td>core.spawnCommand()</td><td>allow external command to contain default args.</td></tr>
   <tr><td>base.external()</td><td>add .external() method to allow specifiying spawn options.</td></tr>
   <tr><td>utils.parseArg()</td><td>parsed default value not set to correct type.</td></tr>
