@@ -53,7 +53,7 @@ class Kawkah extends base_1.KawkahCommandBase {
         this.core.name(name);
         return this;
     }
-    command(name, describe, external) {
+    command(name, describe, external, action) {
         this.assert('.command()', '<string> [string|object|boolean|function] [string|boolean|function]', arguments);
         // If just name was passed try to load existing command.
         // Otherwise continue and create the command.
@@ -62,7 +62,6 @@ class Kawkah extends base_1.KawkahCommandBase {
                 return new command_1.KawkahCommand(name, this.core);
         }
         let config;
-        let action;
         if (chek_1.isFunction(describe)) {
             action = describe;
             describe = undefined;

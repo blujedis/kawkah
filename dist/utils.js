@@ -721,7 +721,7 @@ class KawkahUtils {
             name: name,
             token: _isRequired ? `<${name}>` : _isVariadic ? `[${name}...]` : `[${name}]`,
             type: type,
-            default: parts[1],
+            default: def,
             describe: parts[2],
             alias: undefined,
             variadic: _isVariadic,

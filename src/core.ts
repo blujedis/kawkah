@@ -1277,7 +1277,19 @@ export class KawkahCore extends EventEmitter {
     // Concat all args to an array.
     args = args.concat(cmdOptsArr);
 
-    let child = this.spawn(cmd.external, args, options);
+    // Check if external command contains additional args.
+    const cmdArgs = this.utils.expandArgs(cmd.external);
+    const cmdName = cmdArgs.shift();
+
+    // Check if user defined custom spawn options.
+    if (cmd.externalOptions) {
+      options = Object.assign({}, cmd.externalOptions, options);
+    }
+    else {
+      options = Object.assign({}, { stdio: 'inherit' }, options);
+    }
+
+    let child = this.spawn(cmdName, cmdArgs.concat(args), options);
 
     // If command action call it on close.
     close = close || noop;
@@ -1556,6 +1568,9 @@ export class KawkahCore extends EventEmitter {
       if (!isObject(key)) {
         config = {};
         config[<string>key] = val;
+      }
+      else {
+        config = <IKawkahCommandInternal>key;
       }
 
       // If external is set to true update it

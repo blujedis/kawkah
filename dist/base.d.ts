@@ -1,5 +1,7 @@
+/// <reference types="node" />
 import { KawkahCore } from './core';
-import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction } from './interfaces';
+import { SpawnOptions } from 'child_process';
+import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal } from './interfaces';
 export declare class KawkahCommandBase<T> {
     protected _name: string;
     core: KawkahCore;
@@ -7,7 +9,7 @@ export declare class KawkahCommandBase<T> {
     constructor(name: string, options?: IKawkahOptions);
     constructor(name: string, usage: string, core?: KawkahCore);
     constructor(name: string, usage: string, options?: IKawkahOptions);
-    protected readonly _command: import("./interfaces").IKawkahCommandInternal;
+    protected readonly _command: IKawkahCommandInternal;
     /**
      * Creates option flag or option arg.
      *
@@ -33,7 +35,7 @@ export declare class KawkahCommandBase<T> {
     /**
      * Gets the command config object.
      */
-    context(): import("./interfaces").IKawkahCommandInternal;
+    context(): IKawkahCommandInternal;
     /**
      * Gets a configuration for a flag or arg option on this command.
      *
@@ -246,6 +248,31 @@ export declare class KawkahCommandBase<T> {
      * @param enabled enables/disables abort for command.
      */
     abort(enabled?: boolean): T & KawkahCommandBase<T>;
+    /**
+     * Sets command as an external command using existing command name.
+     */
+    external(): T & KawkahCommandBase<T>;
+    /**
+     * Sets command in path as an external command.
+     *
+     * @example .external('ls');
+     *
+     * @param command an external command to assign this command to.
+     */
+    external(command: string): T & KawkahCommandBase<T>;
+    /**
+     * Sets command using existing command name as an external command with spawn options.
+     *
+     * @param options spawn options to use when spawning command.
+     */
+    external(options: SpawnOptions): T & KawkahCommandBase<T>;
+    /**
+     * Sets command as an external command using specified command in path with options.
+     *
+     * @param command an external command in path to assign this command to.
+     * @param options spawn options to use when spawning command.
+     */
+    external(command: string, options: SpawnOptions): T & KawkahCommandBase<T>;
     /**
      * Binds an action to be called when parsed command or alias is matched.
      *

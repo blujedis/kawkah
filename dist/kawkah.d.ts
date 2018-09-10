@@ -166,7 +166,21 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param name the command name.
      * @param external the executable path or true to use name.
      */
-    command(name: string, external: string | boolean): KawkahCommand;
+    command(name: string, external: boolean): KawkahCommand;
+    /**
+     * Creates a new command with action.
+     *
+     * @param name the command name.
+     * @param action the action to call on command matched.
+     */
+    command(name: string, action: KawkahAction): KawkahCommand;
+    /**
+     * Creates a new command using config object.
+     *
+     * @param name the command name.
+     * @param config the command's configuration object.
+     */
+    command(name: string, config: IKawkahCommand): KawkahCommand;
     /**
      * Creates a new command from name and action.
      *
@@ -175,21 +189,13 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      */
     command(name: string, describe: string, action: KawkahAction): KawkahCommand;
     /**
-     * Creates a new command using config object.
-     *
-     * @param name the command name.
-     * @param config the command's configuration object.
-     * @param external executable path or none to use name.
-     */
-    command(name: string, config: IKawkahCommand, external?: string | boolean): KawkahCommand;
-    /**
      * Creates a new command from name, description as external command.
      *
      * @param name the command name.
      * @param desribe the description for the command.
      * @param external external command, executable path or true to use name.
      */
-    command(name: string, describe: string, external?: string | boolean): KawkahCommand;
+    command(name: string, describe: string, external: string | boolean): KawkahCommand;
     /**
      * Creates a new command from name, description and action.
      *
@@ -197,7 +203,7 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
      * @param desribe the description for the command.
      * @param action the action to execute on matched command.
      */
-    command(name: string, describe: string, action: KawkahAction): KawkahCommand;
+    command(name: string, describe: string, external: string | boolean, action: KawkahAction): KawkahCommand;
     /**
      * Gets a group by name.
      *

@@ -23,7 +23,7 @@ describe('Kawkah:Spawn', () => {
   it('should spawn and test bash script.', (done) => {
     if (isWindows()) // windows can't run bash.
       return done();
-    const cmd = kk.command('bash.sh', null, './src/test/bash.sh');
+    const cmd = kk.command('bash.sh', null, './src/test/bash.sh').external({ stdio: 'pipe' });
     const proc = cmd.exec({ _: [], __: [], $command: 'bash.sh' }) as ChildProcess;
     passpipe.proc(proc, (chunk) => {
       assert.equal(chunk, 'executed bash script.');
@@ -32,7 +32,7 @@ describe('Kawkah:Spawn', () => {
   });
 
   it('should spawn and test node script.', (done) => {
-    const cmd = kk.command('node.js', null, './src/test/node.js');
+    const cmd = kk.command('node.js', null, './src/test/node.js').external({ stdio: 'pipe' });
     const proc = cmd.exec({ _: [], __: [], $command: 'node.js' });
     passpipe.proc(proc, (chunk) => {
       assert.equal(chunk, 'executed node script.');

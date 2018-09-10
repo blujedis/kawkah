@@ -320,7 +320,20 @@ class KawkahCommandBase {
      * @param enabled enables/disables abort for command.
      */
     abort(enabled = true) {
+        this.assert('.abort()', '[boolean]', [enabled]);
         this.core.setCommand(this._name, 'abort', enabled);
+        return this;
+    }
+    external(command, options) {
+        this.assert('.external()', '[string|object] [object]', [command]);
+        const config = {};
+        if (chek_1.isObject(command)) {
+            options = command;
+            command = undefined;
+        }
+        config.external = command || this._command.external || this._name;
+        config.externalOptions = options || {};
+        this.core.setCommand(this._name, config);
         return this;
     }
     /**

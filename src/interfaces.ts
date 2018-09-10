@@ -2,6 +2,7 @@ import { KawkahCore } from './core';
 import { IKawkahParserOptions, IKawkahParserResult, IKawhakParserBaseOptions, KawkahParserType } from 'kawkah-parser';
 import { IAnsiStyles } from 'colurs';
 import { ITablurColumn } from 'tablur';
+import { SpawnOptions } from 'child_process';
 
 export { IKawkahParserOptions, IKawkahParserResult };
 export { IAnsiStyles } from 'colurs';
@@ -67,6 +68,8 @@ export type KawkahThemeSytleKeys = keyof IKawkahTheme;
 export type KawkahThemeKeys = keyof IKawkahThemes;
 
 export type KawkahAnsiType = string | AnsiStyles | AnsiStyles[];
+
+export type SpawnOptionKeys = keyof SpawnOptions;
 
 ////////////////
 // MIDDLEWARE //
@@ -265,6 +268,7 @@ export interface IKawkahCommand {
   help?: string | boolean | KawkahHandler;
   spread?: boolean;
   external?: string;
+  externalOptions?: SpawnOptions;
   skip?: boolean;
   abort?: boolean;
   minArgs?: number;

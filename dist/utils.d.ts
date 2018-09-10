@@ -332,7 +332,7 @@ export declare class KawkahUtils {
         name: any;
         token: string;
         type: string;
-        default: string;
+        default: any;
         describe: string;
         alias: any;
         variadic: any;
@@ -365,7 +365,7 @@ export declare class KawkahUtils {
             name: any;
             token: string;
             type: string;
-            default: string;
+            default: any;
             describe: string;
             alias: any;
             variadic: any;

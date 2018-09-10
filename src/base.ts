@@ -1,6 +1,7 @@
 import { nonenumerable } from './decorators';
 import { KawkahCore } from './core';
-import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction } from './interfaces';
+import { SpawnOptions } from 'child_process';
+import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, SpawnOptionKeys } from './interfaces';
 import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray } from 'chek';
 import { DEFAULT_COMMAND_NAME, ALIAS_TOKEN } from './constants';
 
@@ -540,7 +541,50 @@ export class KawkahCommandBase<T> {
    * @param enabled enables/disables abort for command.
    */
   abort(enabled: boolean = true): T & KawkahCommandBase<T> {
+    this.assert('.abort()', '[boolean]', [enabled]);
     this.core.setCommand(this._name, 'abort', enabled);
+    return <any>this;
+  }
+
+  /**
+   * Sets command as an external command using existing command name.
+   */
+  external(): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets command in path as an external command.
+   * 
+   * @example .external('ls');
+   * 
+   * @param command an external command to assign this command to.
+   */
+  external(command: string): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets command using existing command name as an external command with spawn options.
+   *
+   * @param options spawn options to use when spawning command.
+   */
+  external(options: SpawnOptions): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets command as an external command using specified command in path with options.
+   * 
+   * @param command an external command in path to assign this command to.
+   * @param options spawn options to use when spawning command.
+   */
+  external(command: string, options: SpawnOptions): T & KawkahCommandBase<T>;
+
+  external(command?: string | SpawnOptions, options?: SpawnOptions): T & KawkahCommandBase<T> {
+    this.assert('.external()', '[string|object] [object]', [command]);
+    const config: IKawkahCommandInternal = {};
+    if (isObject(command)) {
+      options = <SpawnOptions>command;
+      command = undefined;
+    }
+    config.external = <string>command || this._command.external || this._name;
+    config.externalOptions = options || {};
+    this.core.setCommand(this._name, config);
     return <any>this;
   }
 
