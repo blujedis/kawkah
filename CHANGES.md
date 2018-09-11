@@ -2,9 +2,14 @@
 
 Changes in descending order.
 
-### 09.09.2018 (v1.0.8-v1.0.9)
+### 09.09.2018 (v1.0.8-v1.0.10)
 
 <table>
+  <tr><td>middleware.demandIf()</td><td>add feature to demand if matches criteria.</td></tr>
+  <tr><td>middleware.denyIf()</td><td>add feature to deny if matches criteria.</td></tr>
+  <tr><td>middleware.demand()</td><td>fix issue where args were not demanded properly.</td></tr>
+  <tr><td>middleware.deny()</td><td>fix issue where args were not denied properly.</td></tr>
+  <tr><td>middleware.validator()</td><td>validate callback should pass event instead of just current option.</td></tr>
   <tr><td>core.buildHelp()</td><td>bug where aliases may contain name by error.</td></tr>
   <tr><td>core.spawnCommand()</td><td>allow external command to contain default args.</td></tr>
   <tr><td>base.external()</td><td>add .external() method to allow specifiying spawn options.</td></tr>

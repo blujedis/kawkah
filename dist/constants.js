@@ -168,7 +168,7 @@ exports.DEFAULT_OPTIONS = {
     // Format/template for log messages.
     logFormat: '{{event}} {{message}} {{ministack|parens|muted}}',
     // Array of enabled middleware.
-    middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],
+    middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases'],
     // map of colors used when outputting to console.
     styles: {
         primary: 'blueBright',

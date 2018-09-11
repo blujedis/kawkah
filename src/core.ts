@@ -692,6 +692,10 @@ export class KawkahCore extends EventEmitter {
     option.alias = toArray(option.alias).map(this.utils.stripFlag, this);
     option.demand = toArray(option.demand).map(this.utils.stripTokens, this);
     option.deny = toArray(option.deny).map(this.utils.stripTokens, this);
+    option.demandIf = option.demandIf || {};
+    option.denyIf = option.denyIf || {};
+    option.demandIf.keys = toArray(option.demandIf.keys);
+    option.denyIf.keys = toArray(option.denyIf.keys);
     option.completions = toArray(option.completions);
     option.required = toDefault(option.required, false);
     option.skip = toDefault(option.skip, false);
@@ -768,6 +772,13 @@ export class KawkahCore extends EventEmitter {
         if (k === 'extend')
           oldVal.extend = toArray(oldVal.extend);
         newVal[k] = this.utils.arrayExtend(toArray(oldVal[k]).slice(0), newVal[k], this.utils.stripTokens.bind(this.utils));
+      }
+
+      else if (includes(['demandIf', 'denyIf'], k)) {
+
+        oldVal[k] = oldVal[k] || {};
+        newVal[k].keys = this.utils.arrayExtend(toArray(oldVal[k].keys).slice(0), toArray(newVal[k].keys), this.utils.stripTokens.bind(this.utils));
+
       }
 
       else if (k === 'validate') {

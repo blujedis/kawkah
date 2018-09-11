@@ -374,6 +374,26 @@ export declare class KawkahCommandBase<T> {
      */
     denyFor(name: string, ...deny: string[]): T & KawkahCommandBase<T>;
     /**
+     * Sets a demand for the specified option if matches criteria.
+     *
+     * @example .demand('username', ['password', 'email'], /(bob|joe)/);
+     *
+     * @param name the option key name.
+     * @param demand array of keys to demand if match.
+     * @param handler a handler Function or RegExp to test if should demand.
+     */
+    demandIfFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+    /**
+     * Sets deny for the specified option if matches criteria.
+     *
+     * @example .deny('username', ['password', 'email'], /(bob|joe)/);
+     *
+     * @param name the option key name.
+     * @param deny array of keys to deny if match.
+     * @param handler a handler Function or RegExp to test if should deny.
+     */
+    denyIfFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+    /**
      * Sets a default value for the specified option.
      *
      * @example .default('theme', 'dark');

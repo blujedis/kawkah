@@ -772,6 +772,42 @@ export class KawkahCommandBase<T> {
   }
 
   /**
+   * Sets a demand for the specified option if matches criteria.
+   *
+   * @example .demand('username', ['password', 'email'], /(bob|joe)/);
+   *
+   * @param name the option key name.
+   * @param demand array of keys to demand if match.
+   * @param handler a handler Function or RegExp to test if should demand.
+   */
+  demandIfFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T> {
+    this.assert('.demandIfFor()', '<string> <array> <regexp|function>', arguments);
+    this.core.setOption(this._name, name, 'demandIf', {
+      keys: demand,
+      handler: handler
+    });
+    return <any>this;
+  }
+
+  /**
+   * Sets deny for the specified option if matches criteria.
+   *
+   * @example .deny('username', ['password', 'email'], /(bob|joe)/);
+   *
+   * @param name the option key name.
+   * @param deny array of keys to deny if match.
+   * @param handler a handler Function or RegExp to test if should deny.
+   */
+  denyIfFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T> {
+    this.assert('.denyIfFor()', '<string> <array> <regexp|function>', arguments);
+    this.core.setOption(this._name, name, 'denyIf', {
+      keys: deny,
+      handler: handler
+    });
+    return <any>this;
+  }
+
+  /**
    * Sets a default value for the specified option.
    *
    * @example .default('theme', 'dark');

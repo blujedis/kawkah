@@ -25,7 +25,7 @@ export declare type KawkahHelpHandler = (groups?: string[], context?: KawkahCore
 export declare type KawkahLogHandler = (type?: any, message?: any, ...args: any[]) => void;
 export declare type KawkahCompletionsCallback = (completions: any[]) => void;
 export declare type KawkahCompletionsHandler = (query: IKawkahCompletionQuery, done?: KawkahCompletionsCallback) => any[];
-export declare type KawkahValidateHandler = (val?: any, key?: string, option?: IKawkahOption, context?: KawkahCore) => string | boolean | Error;
+export declare type KawkahValidateHandler = (val?: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => string | boolean | Error;
 export declare type KawkahValidate = RegExp | KawkahValidateHandler | IKawkahValidateConfig;
 export declare type KawkahParser = (argv: string | string[], options?: IKawkahOptionsInternal) => IKawkahResult;
 export declare type KawkahFormatMessageCallback = (key: string, data: IKawkahFormatMessage) => string;
@@ -84,6 +84,10 @@ export declare enum KawkahEvent {
 export interface IKawkahValidateConfig {
     message?: string;
     handler?: RegExp | KawkahValidateHandler;
+}
+export interface IKawkahDemandDenyIf {
+    handler?: RegExp | KawkahValidateHandler;
+    keys?: string | string[];
 }
 export interface IKawkahTheme {
     header?: KawkahAnsiType;
@@ -162,6 +166,8 @@ export interface IKawkahOptionBase {
     describe?: string;
     demand?: string | string[];
     deny?: string | string[];
+    demandIf?: IKawkahDemandDenyIf;
+    denyIf?: IKawkahDemandDenyIf;
     default?: any;
     required?: boolean;
     coerce?: KawkahHandler;

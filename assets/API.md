@@ -285,6 +285,22 @@ Sets keys to be denied when this option is present.
 kk.denyFor('toppings', 'drink');
 ```
 
+### .demandIfFor()
+
+Demand keys if matches criteria.
+
+```ts
+kk.demandFor('order', ['toppings', 'drink'], /^pizza$/);
+```
+
+### .denyIfFor()
+
+Deny keys if matches criteria.
+
+```ts
+kk.denyFor('order', ['drink'], /^food$/);
+```
+
 ### .defaultFor()
 
 Sets a default value for an option.

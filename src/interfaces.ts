@@ -44,7 +44,7 @@ export type KawkahCompletionsHandler =
 
 // VALIDATION/PARSER TYPES //
 
-export type KawkahValidateHandler = (val?: any, key?: string, option?: IKawkahOption, context?: KawkahCore) => string | boolean | Error;
+export type KawkahValidateHandler = (val?: any, key?: string, event?: IKawkahMiddlewareEventOption, context?: KawkahCore) => string | boolean | Error;
 export type KawkahValidate = RegExp | KawkahValidateHandler | IKawkahValidateConfig;
 export type KawkahParser = (argv: string | string[], options?: IKawkahOptionsInternal) => IKawkahResult;
 export type KawkahFormatMessageCallback = (key: string, data: IKawkahFormatMessage) => string;
@@ -130,6 +130,11 @@ export enum KawkahEvent {
 export interface IKawkahValidateConfig {
   message?: string;
   handler?: RegExp | KawkahValidateHandler;
+}
+
+export interface IKawkahDemandDenyIf {
+  handler?: RegExp | KawkahValidateHandler;
+  keys?: string | string[];
 }
 
 export interface IKawkahTheme {
@@ -223,6 +228,8 @@ export interface IKawkahOptionBase {
   describe?: string;
   demand?: string | string[];
   deny?: string | string[];
+  demandIf?: IKawkahDemandDenyIf;
+  denyIf?: IKawkahDemandDenyIf;
   default?: any;
   required?: boolean;
   coerce?: KawkahHandler;

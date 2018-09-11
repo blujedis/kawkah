@@ -473,6 +473,10 @@ class KawkahCore extends events_1.EventEmitter {
         option.alias = chek_1.toArray(option.alias).map(this.utils.stripFlag, this);
         option.demand = chek_1.toArray(option.demand).map(this.utils.stripTokens, this);
         option.deny = chek_1.toArray(option.deny).map(this.utils.stripTokens, this);
+        option.demandIf = option.demandIf || {};
+        option.denyIf = option.denyIf || {};
+        option.demandIf.keys = chek_1.toArray(option.demandIf.keys);
+        option.denyIf.keys = chek_1.toArray(option.denyIf.keys);
         option.completions = chek_1.toArray(option.completions);
         option.required = chek_1.toDefault(option.required, false);
         option.skip = chek_1.toDefault(option.skip, false);
@@ -533,6 +537,10 @@ class KawkahCore extends events_1.EventEmitter {
                 if (k === 'extend')
                     oldVal.extend = chek_1.toArray(oldVal.extend);
                 newVal[k] = this.utils.arrayExtend(chek_1.toArray(oldVal[k]).slice(0), newVal[k], this.utils.stripTokens.bind(this.utils));
+            }
+            else if (chek_1.includes(['demandIf', 'denyIf'], k)) {
+                oldVal[k] = oldVal[k] || {};
+                newVal[k].keys = this.utils.arrayExtend(chek_1.toArray(oldVal[k].keys).slice(0), chek_1.toArray(newVal[k].keys), this.utils.stripTokens.bind(this.utils));
             }
             else if (k === 'validate') {
                 if (!chek_1.isPlainObject(newVal.validate)) {

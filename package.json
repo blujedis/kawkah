@@ -19,7 +19,7 @@
     "copy": [
       "./src/completions.sh.tpl|./dist/completions.sh.tpl"
     ],
-    "docs": "./gendocs"
+    "docs": "./docs"
   },
   "nyc": {
     "include": [
