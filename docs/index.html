@@ -67,9 +67,14 @@
 				<p align="left">
 					<a href="http://github.com/blujedis/kawkah"><img src="https://cdn.rawgit.com/blujedis/kawkah/master/assets/logo.png"></a>
 				</p>
-				<p>Kawkah is a Node command line parser written in Typescript. It&#39;s purpose is to simplify parsing CLI arguments for complex CLI applications. One of the key benefits of Kawkah is the use of customizable middleware. If you wish to add a feature into the pipeline simply add custom middleware. We&#39;ll get to that in a moment.</p>
-				<h3 id="note">NOTE</h3>
-				<p>Kawkah is not in production as of yet. Although fairly stable many more tests need to be written more debugging blah blah blah you get the idea.</p>
+				<p>An extensible command line parsing utility with middleware. Although fairly stable this module is not in production use as of 8/2018.</p>
+				<p>Key benefits of Kawkah are that it allows you to extend the validation pipeline and parsing via middleware. This allows you to easily create hooks for tracking usage or to add some sort of custom validation step.</p>
+				<p>Another key feature is the ability to build help groups for display. Kawkah is very customizable on this front. You can mix and match just about anything from examples to options to commands under a single heading with ease.</p>
+				<p>This is done by using namespaces. you might do something like:</p>
+				<pre><code class="lang-ts">kk.group(<span class="hljs-string">'MyGroup'</span>, <span class="hljs-string">'commandName.option'</span>, <span class="hljs-string">'examples.name'</span>, <span class="hljs-string">'Some static string of text'</span>);
+</code></pre>
+				<p>We&#39;ll provide more on this soon...</p>
+				<p><img src="assets/help.png" /></p>
 				<h2 id="install">Install</h2>
 				<pre><code class="lang-sh">$ npm install kawkah
 </code></pre>
@@ -109,12 +114,11 @@ kk
 				<h2 id="table-of-contents">Table of Contents</h2>
 				<p>The documentation listed in this table of contents is here for convenience. If you find an error we suggest heading over to the <a href="https://blujedis.github.io/kawkah/">Generated Docs</a>. These tend to be pretty accurate given the cannot be generated without the project building. We try to keep examples up to date but there&#39;s only so much time. Feel free to create a PR if you see a mistake!</p>
 				<ul>
-					<li><a href="/assets/api.md">API</a></li>
-					<li><a href="/assets/options.md">Options</a></li>
-					<li><a href="/assets/middleware.md">Defining Middleware</a></li>
-					<li><a href="/assets/examples.md">Examples</a></li>
-					<li><a href="https://blujedis/github.io/kawkah-parser">Kawkah Parser</a></li>
-					<li><a href="/coverage/index.html">Coverage</a></li>
+					<li><a href="/assets/API.md">API</a></li>
+					<li><a href="/assets/OPTIONS.md">Options</a></li>
+					<li><a href="/assets/MIDDLEWARE.md">Defining Middleware</a></li>
+					<li><a href="/assets/EXAMPLES.md">Examples</a></li>
+					<li><a href="https://github.com/blujedis/kawkah-parser">Kawkah Parser</a></li>
 				</ul>
 				<h2 id="docs">Docs</h2>
 				<p>Documentation generated from source.</p>

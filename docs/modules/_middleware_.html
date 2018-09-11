@@ -81,9 +81,12 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#aliases" class="tsd-kind-icon">aliases</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#checkdemanddeny" class="tsd-kind-icon">check<wbr>Demand<wbr>Deny</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#checkdemanddenyif" class="tsd-kind-icon">check<wbr>Demand<wbr>Deny<wbr>If</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#coerce" class="tsd-kind-icon">coerce</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#demand" class="tsd-kind-icon">demand</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#demandif" class="tsd-kind-icon">demand<wbr>If</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#deny" class="tsd-kind-icon">deny</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#denyif" class="tsd-kind-icon">deny<wbr>If</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#extend" class="tsd-kind-icon">extend</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#minmax" class="tsd-kind-icon">minmax</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported"><a href="_middleware_.html#required" class="tsd-kind-icon">required</a></li>
@@ -111,7 +114,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L328">middleware.ts:328</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L426">middleware.ts:426</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -160,7 +163,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L16">middleware.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L15">middleware.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -186,6 +189,41 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="checkdemanddenyif" class="tsd-anchor"></a>
+					<h3>check<wbr>Demand<wbr>Deny<wbr>If</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Demand<wbr>Deny<wbr>If<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"demandIf"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"denyIf"</span>, event<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a>, context<span class="tsd-signature-symbol">: </span><a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L72">middleware.ts:72</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>val: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>type: <span class="tsd-signature-type">"demandIf"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"denyIf"</span></h5>
+								</li>
+								<li>
+									<h5>event: <a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a></h5>
+								</li>
+								<li>
+									<h5>context: <a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
 					<a name="coerce" class="tsd-anchor"></a>
 					<h3>coerce</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
@@ -195,7 +233,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L119">middleware.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L198">middleware.ts:198</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -244,12 +282,61 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L304">middleware.ts:304</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L378">middleware.ts:378</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Checks if result is missing a demanded argument.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>val: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current value.</p>
+									</div>
+								</li>
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current key.</p>
+									</div>
+								</li>
+								<li>
+									<h5>event: <a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>object of event context objects (result, source, option keys etc..).</p>
+									</div>
+								</li>
+								<li>
+									<h5>context: <a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the core context.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="demandif" class="tsd-anchor"></a>
+					<h3>demand<wbr>If</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">demand<wbr>If<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, event<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a>, context<span class="tsd-signature-symbol">: </span><a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L402">middleware.ts:402</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if result is missing a demanded argument if meets expression.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -293,12 +380,61 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L316">middleware.ts:316</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L390">middleware.ts:390</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Checks if result includes a denied or excluded argument.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>val: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current value.</p>
+									</div>
+								</li>
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the current key.</p>
+									</div>
+								</li>
+								<li>
+									<h5>event: <a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>object of event context objects (result, source, option keys etc..).</p>
+									</div>
+								</li>
+								<li>
+									<h5>context: <a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the core context.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+					<a name="denyif" class="tsd-anchor"></a>
+					<h3>deny<wbr>If</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">deny<wbr>If<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, event<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.ikawkahmiddlewareeventoption.html" class="tsd-signature-type">IKawkahMiddlewareEventOption</a>, context<span class="tsd-signature-symbol">: </span><a href="../classes/_core_.kawkahcore.html" class="tsd-signature-type">KawkahCore</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L414">middleware.ts:414</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if result includes a denied or excluded argument if meets expression.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -342,7 +478,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L138">middleware.ts:138</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L217">middleware.ts:217</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,7 +527,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L72">middleware.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L151">middleware.ts:151</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -423,7 +559,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L188">middleware.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L267">middleware.ts:267</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -472,7 +608,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L219">middleware.ts:219</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L289">middleware.ts:289</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -520,7 +656,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Middleware<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L349">middleware.ts:349</a></li>
+							<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L447">middleware.ts:447</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -529,7 +665,7 @@
 						<div class="tsd-signature tsd-kind-icon">Before<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L379">middleware.ts:379</a></li>
+								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L479">middleware.ts:479</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -544,7 +680,7 @@
 						<div class="tsd-signature tsd-kind-icon">After<wbr>Parsed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L353">middleware.ts:353</a></li>
+								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L451">middleware.ts:451</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -553,7 +689,7 @@
 							<div class="tsd-signature tsd-kind-icon">minmax<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L354">middleware.ts:354</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L452">middleware.ts:452</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -562,7 +698,7 @@
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.AfterParsed</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L354">middleware.ts:354</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L452">middleware.ts:452</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -572,7 +708,7 @@
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#minmax" class="tsd-signature-type">minmax</a><span class="tsd-signature-symbol"> =&nbsp;minmax</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L354">middleware.ts:354</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L452">middleware.ts:452</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -584,7 +720,7 @@
 						<div class="tsd-signature tsd-kind-icon">After<wbr>Validate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L372">middleware.ts:372</a></li>
+								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L472">middleware.ts:472</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -593,7 +729,7 @@
 							<div class="tsd-signature tsd-kind-icon">aliases<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L373">middleware.ts:373</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L473">middleware.ts:473</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -602,7 +738,7 @@
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.AfterValidate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L373">middleware.ts:373</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L473">middleware.ts:473</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -612,7 +748,7 @@
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#aliases" class="tsd-signature-type">aliases</a><span class="tsd-signature-symbol"> =&nbsp;aliases</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L373">middleware.ts:373</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L473">middleware.ts:473</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -624,7 +760,7 @@
 						<div class="tsd-signature tsd-kind-icon">Before<wbr>Validate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L360">middleware.ts:360</a></li>
+								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L458">middleware.ts:458</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -633,7 +769,7 @@
 							<div class="tsd-signature tsd-kind-icon">coerce<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L362">middleware.ts:362</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L460">middleware.ts:460</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -642,7 +778,7 @@
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.BeforeValidate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L362">middleware.ts:362</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L460">middleware.ts:460</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -652,7 +788,7 @@
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#coerce" class="tsd-signature-type">coerce</a><span class="tsd-signature-symbol"> =&nbsp;coerce</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L362">middleware.ts:362</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L460">middleware.ts:460</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -663,7 +799,7 @@
 							<div class="tsd-signature tsd-kind-icon">extend<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L361">middleware.ts:361</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L459">middleware.ts:459</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -672,7 +808,7 @@
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.BeforeValidate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L361">middleware.ts:361</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L459">middleware.ts:459</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -682,7 +818,7 @@
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#extend" class="tsd-signature-type">extend</a><span class="tsd-signature-symbol"> =&nbsp;extend</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L361">middleware.ts:361</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L459">middleware.ts:459</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -694,7 +830,7 @@
 						<div class="tsd-signature tsd-kind-icon">Validate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L365">middleware.ts:365</a></li>
+								<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L463">middleware.ts:463</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
@@ -703,7 +839,7 @@
 							<div class="tsd-signature tsd-kind-icon">demand<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L368">middleware.ts:368</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L466">middleware.ts:466</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -712,7 +848,7 @@
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L368">middleware.ts:368</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L466">middleware.ts:466</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -722,7 +858,37 @@
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#demand" class="tsd-signature-type">demand</a><span class="tsd-signature-symbol"> =&nbsp;demand</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L368">middleware.ts:368</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L466">middleware.ts:466</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="defaultmiddleware.validate.demandif-1" class="tsd-anchor"></a>
+							<h3>demand<wbr>If</h3>
+							<div class="tsd-signature tsd-kind-icon">demand<wbr>If<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L468">middleware.ts:468</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="defaultmiddleware.validate.demandif-1.group-5" class="tsd-anchor"></a>
+								<h3>group</h3>
+								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L468">middleware.ts:468</a></li>
+									</ul>
+								</aside>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="defaultmiddleware.validate.demandif-1.handler-5" class="tsd-anchor"></a>
+								<h3>handler</h3>
+								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#demandif" class="tsd-signature-type">demandIf</a><span class="tsd-signature-symbol"> =&nbsp;demandIf</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L468">middleware.ts:468</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -733,26 +899,56 @@
 							<div class="tsd-signature tsd-kind-icon">deny<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L369">middleware.ts:369</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L467">middleware.ts:467</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.deny-1.group-5" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.deny-1.group-6" class="tsd-anchor"></a>
 								<h3>group</h3>
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L369">middleware.ts:369</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L467">middleware.ts:467</a></li>
 									</ul>
 								</aside>
 							</section>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.deny-1.handler-5" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.deny-1.handler-6" class="tsd-anchor"></a>
 								<h3>handler</h3>
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#deny" class="tsd-signature-type">deny</a><span class="tsd-signature-symbol"> =&nbsp;deny</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L369">middleware.ts:369</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L467">middleware.ts:467</a></li>
+									</ul>
+								</aside>
+							</section>
+						</section>
+						<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+							<a name="defaultmiddleware.validate.denyif-1" class="tsd-anchor"></a>
+							<h3>deny<wbr>If</h3>
+							<div class="tsd-signature tsd-kind-icon">deny<wbr>If<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L469">middleware.ts:469</a></li>
+								</ul>
+							</aside>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="defaultmiddleware.validate.denyif-1.group-7" class="tsd-anchor"></a>
+								<h3>group</h3>
+								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L469">middleware.ts:469</a></li>
+									</ul>
+								</aside>
+							</section>
+							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+								<a name="defaultmiddleware.validate.denyif-1.handler-7" class="tsd-anchor"></a>
+								<h3>handler</h3>
+								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#denyif" class="tsd-signature-type">denyIf</a><span class="tsd-signature-symbol"> =&nbsp;denyIf</span></div>
+								<aside class="tsd-sources">
+									<ul>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L469">middleware.ts:469</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -763,26 +959,26 @@
 							<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L366">middleware.ts:366</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L464">middleware.ts:464</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.required-1.group-6" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.required-1.group-8" class="tsd-anchor"></a>
 								<h3>group</h3>
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L366">middleware.ts:366</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L464">middleware.ts:464</a></li>
 									</ul>
 								</aside>
 							</section>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.required-1.handler-6" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.required-1.handler-8" class="tsd-anchor"></a>
 								<h3>handler</h3>
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#required" class="tsd-signature-type">required</a><span class="tsd-signature-symbol"> =&nbsp;required</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L366">middleware.ts:366</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L464">middleware.ts:464</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -793,26 +989,26 @@
 							<div class="tsd-signature tsd-kind-icon">validator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L367">middleware.ts:367</a></li>
+									<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L465">middleware.ts:465</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.validator-1.group-7" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.validator-1.group-9" class="tsd-anchor"></a>
 								<h3>group</h3>
 								<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="../enums/_interfaces_.kawkahmiddlewaregroup.html" class="tsd-signature-type">KawkahMiddlewareGroup</a><span class="tsd-signature-symbol"> =&nbsp;KawkahMiddlewareGroup.Validate</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L367">middleware.ts:367</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L465">middleware.ts:465</a></li>
 									</ul>
 								</aside>
 							</section>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-								<a name="defaultmiddleware.validate.validator-1.handler-7" class="tsd-anchor"></a>
+								<a name="defaultmiddleware.validate.validator-1.handler-9" class="tsd-anchor"></a>
 								<h3>handler</h3>
 								<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="_middleware_.html#validator" class="tsd-signature-type">validator</a><span class="tsd-signature-symbol"> =&nbsp;validator</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/81294d7/src/middleware.ts#L367">middleware.ts:367</a></li>
+										<li>Defined in <a href="https://github.com/blujedis/kawkah/blob/2f33a17/src/middleware.ts#L465">middleware.ts:465</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -877,13 +1073,22 @@
 						<a href="_middleware_.html#checkdemanddeny" class="tsd-kind-icon">check<wbr>Demand<wbr>Deny</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_middleware_.html#checkdemanddenyif" class="tsd-kind-icon">check<wbr>Demand<wbr>Deny<wbr>If</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_middleware_.html#coerce" class="tsd-kind-icon">coerce</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_middleware_.html#demand" class="tsd-kind-icon">demand</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_middleware_.html#demandif" class="tsd-kind-icon">demand<wbr>If</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_middleware_.html#deny" class="tsd-kind-icon">deny</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="_middleware_.html#denyif" class="tsd-kind-icon">deny<wbr>If</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
 						<a href="_middleware_.html#extend" class="tsd-kind-icon">extend</a>
