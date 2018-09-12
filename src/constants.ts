@@ -186,6 +186,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   theme: 'default',                  // theme for help.
   header: undefined,                 // header text.
   footer: undefined,                 // footer text.
+  width: undefined,                  // specify width of the help menu, undefined is auto.
   commands: undefined,               // object containing defined commands.
   examples: undefined,               // object containing example usage.
   stacktrace: false,                 // when true full stack traces are show for errors.

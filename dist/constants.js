@@ -156,6 +156,7 @@ exports.DEFAULT_OPTIONS = {
     theme: 'default',
     header: undefined,
     footer: undefined,
+    width: undefined,
     commands: undefined,
     examples: undefined,
     stacktrace: false,

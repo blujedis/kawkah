@@ -235,6 +235,7 @@ export interface IKawkahOptionsBase {
     theme?: KawkahThemeKeys | IKawkahTheme | string;
     header?: string;
     footer?: string;
+    width?: number;
     colorize?: boolean;
     spread?: boolean;
     stacktrace?: boolean;
@@ -305,6 +306,7 @@ export interface IKawkahMiddlewareEventBase {
     completed?: number;
     elapsed?: number;
     result?: IKawkahResult;
+    isHelp?: boolean;
     command?: IKawkahCommandInternal;
 }
 export interface IKawkahMiddlewareEventResult extends IKawkahMiddlewareEventBase {

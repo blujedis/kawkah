@@ -12,63 +12,6 @@ import { RESULT_ARGS_KEY } from './constants';
 
 // HELPERS //
 
-// function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: IKawkahMiddlewareEventOption, context: KawkahCore) {
-
-//   const option = event.option;
-
-//   const args = event.result[RESULT_ARGS_KEY];
-//   const arr = option[type] as string[];
-
-//   if (!arr.length || !event.isPresent)
-//     return val;
-
-//   const u = context.utils;
-//   const argLabel = u.__`Argument`;
-//   const flagLabel = u.__`Flag`;
-
-//   const isOption = !isValue(option.index);
-//   const label = isOption ? flagLabel : argLabel;
-
-//   let invalid = null;
-
-//   for (const k of arr) {
-
-//     const curOpt = event.command.options[k];
-//     const curIsFlag = !isValue(curOpt.index);
-
-//     // Handle missing demands.
-//     if (type === 'demand') {
-
-//       // If matching option or arg doesn't exist set error.
-//       if (
-//         (!curIsFlag && !isValue(args[curOpt.index])) ||
-//         (curIsFlag && !has(event.result, k))) {
-//         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by demand'} (missing: ${k})`, context);
-//         break;
-//       }
-
-//     }
-
-//     // Handle existing must denies.
-//     else {
-
-//       // If matching option or arg does exist set error.
-//       if ((!curIsFlag && isValue(args[curOpt.index])) || (curIsFlag && has(event.result, k))) {
-//         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by deny'} (exists: ${k})`, context);
-//         break;
-//       }
-
-//     }
-
-//   }
-
-//   if (!invalid)
-//     return val;
-
-//   return invalid;
-
-// }
-
 function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: IKawkahMiddlewareEventOption, context: KawkahCore) {
 
   const option = event.option;

@@ -307,6 +307,7 @@ export interface IKawkahOptionsBase {
   theme?: KawkahThemeKeys | IKawkahTheme | string;
   header?: string;
   footer?: string;
+  width?: number;
   colorize?: boolean;
   spread?: boolean;
   stacktrace?: boolean;
@@ -385,6 +386,7 @@ export interface IKawkahMiddlewareEventBase {
   completed?: number;
   elapsed?: number;
   result?: IKawkahResult;
+  isHelp?: boolean;               // indicates help was requested.
   command?: IKawkahCommandInternal;
 }
 
@@ -394,7 +396,7 @@ export interface IKawkahMiddlewareEventOption extends IKawkahMiddlewareEventBase
   isArg?: boolean;                // indicates current option is an argument.
   isFlag?: boolean;               // indicates current option is a flag.
   isPresent?: boolean;            // indicates option is present in result.
-  option?: IKawkahOptionInternal;
+  option?: IKawkahOptionInternal; // the current option config.
 }
 
 export interface IKawkahMiddlewareEvent extends IKawkahMiddlewareEventResult, IKawkahMiddlewareEventOption { }

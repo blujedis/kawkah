@@ -2,13 +2,16 @@
 
 Changes in descending order.
 
-### 09.12.2018 (v1.0.12)
+### 09.12.2018 (v1.0.12-v1.0.13)
 
 <table>
+ <tr><td>options.width</td><td>add option to define width of help default undefined which is auto or your terminal's width</td></tr>
+ <tr><td>core.listen()</td><td>disable validation middlware group when help is present.</td></tr>
+ <tr><td>IKawkahMiddlewareEvent</td><td>add isHelp flag useful in toggling middleware.</td></tr>
  <tr><td>middleware.demand(), kawkah.demand()</td><td>refactor to support demandIf features.</td></tr>
  <tr><td>middleware.deny(), kawkah.deny()</td><td>refactor to support denyIf features.</td></tr>
-  <tr><td>middleware.demandIf()</td><td>DEPRECATE.</td></tr>
-  <tr><td>middleware.denyIf()</td><td>DEPRECATE.</td></tr>
+ <tr><td>middleware.demandIf()</td><td>DEPRECATE.</td></tr>
+ <tr><td>middleware.denyIf()</td><td>DEPRECATE.</td></tr>
 </table>
 
 ### 09.09.2018 (v1.0.8-v1.0.11)

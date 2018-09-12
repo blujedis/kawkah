@@ -2358,7 +2358,7 @@ export class KawkahCore extends EventEmitter {
 
     this.assert('.buildHelp()', '<array>', arguments);
 
-    const width = 90;
+    const width = this.options.width;
 
     const table = this.table || new Tablur({
       colorize: this.options.colorize,
@@ -3344,6 +3344,17 @@ export class KawkahCore extends EventEmitter {
 
     const event: IKawkahMiddlewareEventBase = { start: Date.now(), result: parsed, command: command || defaultCommand };
 
+    // Set flag that help was requested
+    // we'll use this to ignore middleware validations
+    // that might otherwise fail.
+    event.isHelp = parsed.help;
+
+    // If is event help disable validation steps
+    // we won't need them.
+    const validationGroups = this.middleware.group(KawkahMiddlewareGroup.Validate);
+    if (event.isHelp)
+      this.middleware.disable(...validationGroups);
+
     let result = parsed;
 
     // Run before middleware.
@@ -3366,6 +3377,12 @@ export class KawkahCore extends EventEmitter {
       this.error(<KawkahError>event.result);
       return;
     }
+
+    // This is only need when if using Kawkah
+    // in a live terminal where the process doesn't
+    // exit, otherwise the next run will have disabled groups.
+    if (event.isHelp)
+      this.middleware.enable(...validationGroups);
 
     // Middlware successful no errors.
     result = event.result;
