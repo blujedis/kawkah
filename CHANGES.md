@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 09.12.2018 (v1.0.12-v1.0.14)
+### 09.12.2018 (v1.0.12-v1.0.15)
 
 <table>
+ <tr><td>base.validateFor()</td><td>fix issue where regexp or ojects not allowed.</td></tr>
  <tr><td>KawkahError.generateStacktrace()</td><td>fix issue where line returns not respected in messages.</td></tr>
  <tr><td>options.width</td><td>add option to define width of help default undefined which is auto or your terminal's width</td></tr>
  <tr><td>core.listen()</td><td>disable validation middlware group when help is present.</td></tr>

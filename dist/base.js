@@ -555,7 +555,7 @@ class KawkahCommandBase {
         return this;
     }
     validateFor(name, fn) {
-        this.assert('.validateFor()', '<string> <function>', arguments);
+        this.assert('.validateFor()', '<string> <object|regexp|function>', arguments);
         this.core.setOption(this._name, name, 'validate', fn);
         return this;
     }

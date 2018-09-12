@@ -972,7 +972,7 @@ export class KawkahCommandBase<T> {
   validateFor(name: string, fn: KawkahValidateHandler): T & KawkahCommandBase<T>;
 
   validateFor(name: string, fn: KawkahValidate): T & KawkahCommandBase<T> {
-    this.assert('.validateFor()', '<string> <function>', arguments);
+    this.assert('.validateFor()', '<string> <object|regexp|function>', arguments);
     this.core.setOption(this._name, name, 'validate', fn);
     return <any>this;
   }
