@@ -46,14 +46,23 @@ class KawkahError extends Error {
         const exp = /\(\S+\)/;
         // Update the stack may be merging custom stack.
         this.stack = stack;
+        // Check if message contains line returns.
+        const msgLines = this.message.match(/\n/g);
         // Split stack to array.
         let stacktrace = stack.split('\n');
-        const message = stacktrace.shift();
+        let message;
+        if (!msgLines) {
+            message = stacktrace.shift();
+        }
+        else {
+            message = stacktrace.slice(0, msgLines.length + 1).join('\n');
+            stacktrace = stacktrace.slice(msgLines.length + 1);
+        }
         // Purge rows from top of stack.
         if (purge > 0)
             stacktrace = stacktrace.slice(purge);
-        const m = stacktrace[0].match(exp);
-        let row = stacktrace[0].match(exp)[0];
+        let match = stacktrace[0].match(exp);
+        let row = match[0];
         row = row.replace(/\(|\)/g, '').split(':');
         this.filename = path_1.parse(row[0]).base;
         this.line = parseInt(row[1]);

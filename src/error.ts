@@ -2,6 +2,7 @@
 import { parse } from 'path';
 import { KawkahEvent } from './interfaces';
 import { KawkahCore } from './core';
+import { toArray } from 'chek';
 
 export class KawkahError extends Error {
 
@@ -88,17 +89,30 @@ export class KawkahError extends Error {
     // Update the stack may be merging custom stack.
     this.stack = stack;
 
+    // Check if message contains line returns.
+    const msgLines = this.message.match(/\n/g);
+
     // Split stack to array.
     let stacktrace = stack.split('\n');
 
-    const message = stacktrace.shift();
+    let message;
+
+
+    if (!msgLines) {
+      message = stacktrace.shift();
+    }
+    else {
+      message = stacktrace.slice(0, msgLines.length + 1).join('\n');
+      stacktrace = stacktrace.slice(msgLines.length + 1);
+    }
 
     // Purge rows from top of stack.
     if (purge > 0)
       stacktrace = stacktrace.slice((<number>purge));
 
-    const m = stacktrace[0].match(exp);
-    let row: any = stacktrace[0].match(exp)[0];
+    let match = stacktrace[0].match(exp);
+    let row: any = match[0];
+
     row = row.replace(/\(|\)/g, '').split(':');
 
     this.filename = parse(row[0]).base;
