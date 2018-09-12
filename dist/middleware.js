@@ -20,18 +20,74 @@ const constants_1 = require("./constants");
 // DEFAULT MIDDLEWARE //
 /////////////////////////
 // HELPERS //
+// function checkDemandDeny(val: any, key: string, type: 'demand' | 'deny', event: IKawkahMiddlewareEventOption, context: KawkahCore) {
+//   const option = event.option;
+//   const args = event.result[RESULT_ARGS_KEY];
+//   const arr = option[type] as string[];
+//   if (!arr.length || !event.isPresent)
+//     return val;
+//   const u = context.utils;
+//   const argLabel = u.__`Argument`;
+//   const flagLabel = u.__`Flag`;
+//   const isOption = !isValue(option.index);
+//   const label = isOption ? flagLabel : argLabel;
+//   let invalid = null;
+//   for (const k of arr) {
+//     const curOpt = event.command.options[k];
+//     const curIsFlag = !isValue(curOpt.index);
+//     // Handle missing demands.
+//     if (type === 'demand') {
+//       // If matching option or arg doesn't exist set error.
+//       if (
+//         (!curIsFlag && !isValue(args[curOpt.index])) ||
+//         (curIsFlag && !has(event.result, k))) {
+//         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by demand'} (missing: ${k})`, context);
+//         break;
+//       }
+//     }
+//     // Handle existing must denies.
+//     else {
+//       // If matching option or arg does exist set error.
+//       if ((!curIsFlag && isValue(args[curOpt.index])) || (curIsFlag && has(event.result, k))) {
+//         invalid = new KawkahError(u.__`${label} ${key} failed: ${'invalidated by deny'} (exists: ${k})`, context);
+//         break;
+//       }
+//     }
+//   }
+//   if (!invalid)
+//     return val;
+//   return invalid;
+// }
 function checkDemandDeny(val, key, type, event, context) {
     const option = event.option;
     const args = event.result[constants_1.RESULT_ARGS_KEY];
-    const arr = option[type];
+    const config = option[type];
+    const arr = config.keys;
     if (!arr.length || !event.isPresent)
         return val;
+    config.handler = config.handler || (v => true);
+    config.match = config.match || 0;
     const u = context.utils;
     const argLabel = u.__ `Argument`;
     const flagLabel = u.__ `Flag`;
+    let exp;
+    const errors = [];
+    const invalidKeys = [];
+    const validKyes = [];
     const isOption = !chek_1.isValue(option.index);
     const label = isOption ? flagLabel : argLabel;
-    let invalid = null;
+    const invalidatedBy = `invalidated by ${type}`;
+    const missExists = type === 'demand' ? 'missing' : 'exists';
+    // If RegExp and fails test return the value.
+    if (util_1.isRegExp(config.handler) && !(config.handler).test(val)) {
+        return val;
+    }
+    // If a Function and fails return the value.
+    else if (util_1.isFunction(config.handler) && !config.handler(val, key, event, context)) {
+        return val;
+    }
+    // If we get here we should check for demand/deny
+    // as handler found valid match criteria.
     for (const k of arr) {
         const curOpt = event.command.options[k];
         const curIsFlag = !chek_1.isValue(curOpt.index);
@@ -40,76 +96,32 @@ function checkDemandDeny(val, key, type, event, context) {
             // If matching option or arg doesn't exist set error.
             if ((!curIsFlag && !chek_1.isValue(args[curOpt.index])) ||
                 (curIsFlag && !chek_1.has(event.result, k))) {
-                invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by demand'} (missing: ${k})`, context);
-                break;
+                errors.push(new error_1.KawkahError(u.__ `${label} ${key} failed: ${invalidatedBy} (${missExists}: ${k})`, context));
+                invalidKeys.push(k);
+            }
+            else {
+                validKyes.push(k);
             }
         }
         // Handle existing must denies.
         else {
             // If matching option or arg does exist set error.
             if ((!curIsFlag && chek_1.isValue(args[curOpt.index])) || (curIsFlag && chek_1.has(event.result, k))) {
-                invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by deny'} (exists: ${k})`, context);
-                break;
+                errors.push(new error_1.KawkahError(u.__ `${label} ${key} failed: ${invalidatedBy} (${missExists}: ${k})`, context));
+                invalidKeys.push(k);
+            }
+            else {
+                validKyes.push(k);
             }
         }
     }
-    if (!invalid)
-        return val;
-    return invalid;
-}
-function checkDemandDenyIf(val, key, type, event, context) {
-    const option = event.option;
-    const args = event.result[constants_1.RESULT_ARGS_KEY];
-    const config = option[type];
-    const arr = config.keys;
-    if (!arr.length || !event.isPresent)
-        return val;
-    const u = context.utils;
-    const argLabel = u.__ `Argument`;
-    const flagLabel = u.__ `Flag`;
-    let invalid = null;
-    let exp;
-    const isOption = !chek_1.isValue(option.index);
-    const label = isOption ? flagLabel : argLabel;
-    // If RegExp and fails test just return value.
-    if (util_1.isRegExp(config.handler) && !(config.handler).test(val)) {
-        return val;
-    }
-    // If a Function and fails return value.
-    else if (util_1.isFunction(config.handler) && !config.handler(val, key, event, context)) {
-        return val;
-    }
-    // Return error if invalid handler.
-    else if (!util_1.isFunction(config.handler) && !util_1.isRegExp(config.handler)) {
-        exp = `unknown validator`;
-        return new error_1.KawkahError(option.validate.message || u.__ `${label} ${key} failed: ${'invalidated by ' + exp} (value: ${val})`, context);
-    }
-    // If we get here we should check for demand/deny
-    // as handler found valid match.
-    for (const k of arr) {
-        const curOpt = event.command.options[k];
-        const curIsFlag = !chek_1.isValue(curOpt.index);
-        // Handle missing demands.
-        if (type === 'demandIf') {
-            // If matching option or arg doesn't exist set error.
-            if ((!curIsFlag && !chek_1.isValue(args[curOpt.index])) ||
-                (curIsFlag && !chek_1.has(event.result, k))) {
-                invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by demandIf'} (missing: ${k})`, context);
-                break;
-            }
-        }
-        // Handle existing must denies.
-        else {
-            // If matching option or arg does exist set error.
-            if ((!curIsFlag && chek_1.isValue(args[curOpt.index])) || (curIsFlag && chek_1.has(event.result, k))) {
-                invalid = new error_1.KawkahError(u.__ `${label} ${key} failed: ${'invalidated by denyIf'} (exists: ${k})`, context);
-                break;
-            }
-        }
-    }
-    if (!invalid)
-        return val;
-    return invalid;
+    // Demand at least this number of keys to be present.
+    // If less than demanded return first invalid.
+    if (config.match > 0 && validKyes.length < config.match)
+        return new error_1.KawkahError(u.__ `${label} ${key} failed: ${invalidatedBy} (${missExists}: ${invalidKeys.join(', ')})`, context);
+    if (errors.length)
+        return errors[0];
+    return val;
 }
 // BEFORE MIDDLEWARE //
 function minmax(result, event, context) {
@@ -289,28 +301,6 @@ function deny(val, key, event, context) {
     return checkDemandDeny(val, key, 'deny', event, context);
 }
 /**
- * Checks if result is missing a demanded argument if meets expression.
- *
- * @param val the current value.
- * @param key the current key.
- * @param event object of event context objects (result, source, option keys etc..).
- * @param context the core context.
- */
-function demandIf(val, key, event, context) {
-    return checkDemandDenyIf(val, key, 'demandIf', event, context);
-}
-/**
- * Checks if result includes a denied or excluded argument if meets expression.
- *
- * @param val the current value.
- * @param key the current key.
- * @param event object of event context objects (result, source, option keys etc..).
- * @param context the core context.
- */
-function denyIf(val, key, event, context) {
-    return checkDemandDenyIf(val, key, 'denyIf', event, context);
-}
-/**
  * Extends all aliases for present objects on to the result object.
  *
  * @param val the current value.
@@ -348,9 +338,7 @@ exports.defaultMiddleware = {
         required: { handler: required, group: interfaces_1.KawkahMiddlewareGroup.Validate },
         validator: { handler: validator, group: interfaces_1.KawkahMiddlewareGroup.Validate },
         demand: { handler: demand, group: interfaces_1.KawkahMiddlewareGroup.Validate },
-        deny: { handler: deny, group: interfaces_1.KawkahMiddlewareGroup.Validate },
-        demandIf: { handler: demandIf, group: interfaces_1.KawkahMiddlewareGroup.Validate },
-        denyIf: { handler: denyIf, group: interfaces_1.KawkahMiddlewareGroup.Validate },
+        deny: { handler: deny, group: interfaces_1.KawkahMiddlewareGroup.Validate }
     },
     AfterValidate: {
         aliases: { handler: aliases, group: interfaces_1.KawkahMiddlewareGroup.AfterValidate }

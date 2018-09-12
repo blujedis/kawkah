@@ -471,12 +471,24 @@ class KawkahCore extends events_1.EventEmitter {
         option.default = chek_1.toDefault(option.default, defVal);
         // Ensure arrays.
         option.alias = chek_1.toArray(option.alias).map(this.utils.stripFlag, this);
-        option.demand = chek_1.toArray(option.demand).map(this.utils.stripTokens, this);
-        option.deny = chek_1.toArray(option.deny).map(this.utils.stripTokens, this);
-        option.demandIf = option.demandIf || {};
-        option.denyIf = option.denyIf || {};
-        option.demandIf.keys = chek_1.toArray(option.demandIf.keys);
-        option.denyIf.keys = chek_1.toArray(option.denyIf.keys);
+        // option.demand = toArray(option.demand).map(this.utils.stripTokens, this);
+        // option.deny = toArray(option.deny).map(this.utils.stripTokens, this);
+        if (!chek_1.isObject(option.demand)) {
+            option.demand = {
+                keys: option.demand,
+                match: 0
+            };
+        }
+        if (!chek_1.isObject(option.deny)) {
+            option.deny = {
+                keys: option.deny,
+                match: 0
+            };
+        }
+        option.demand = Object.assign({}, { keys: [], match: 0 }, option.demand);
+        option.deny = Object.assign({}, { keys: [], match: 0 }, option.deny);
+        option.demand.keys = chek_1.toArray(option.demand.keys).map(this.utils.stripTokens, this);
+        option.deny.keys = chek_1.toArray(option.deny.keys).map(this.utils.stripTokens, this);
         option.completions = chek_1.toArray(option.completions);
         option.required = chek_1.toDefault(option.required, false);
         option.skip = chek_1.toDefault(option.skip, false);
@@ -532,14 +544,24 @@ class KawkahCore extends events_1.EventEmitter {
                     newVal.index = command.args.length;
             }
             // Extend arrays ensuring no duplicates.
-            else if (chek_1.includes(['alias', 'demand', 'deny', 'completions'], k) || (k === 'extend' && chek_1.isArray(newVal.extend))) {
+            else if (chek_1.includes(['alias', 'completions'], k) || (k === 'extend' && chek_1.isArray(newVal.extend))) {
                 // Ensure old val is an array if extend.
                 if (k === 'extend')
                     oldVal.extend = chek_1.toArray(oldVal.extend);
                 newVal[k] = this.utils.arrayExtend(chek_1.toArray(oldVal[k]).slice(0), newVal[k], this.utils.stripTokens.bind(this.utils));
             }
-            else if (chek_1.includes(['demandIf', 'denyIf'], k)) {
-                oldVal[k] = oldVal[k] || {};
+            else if (chek_1.includes(['demand', 'deny'], k)) {
+                if (!chek_1.isObject(newVal[k])) {
+                    newVal[k] = {
+                        keys: newVal[k] || []
+                    };
+                }
+                if (!chek_1.isObject(oldVal[k])) {
+                    oldVal[k] = {
+                        keys: oldVal[k] || []
+                    };
+                }
+                oldVal[k] = oldVal[k] || { keys: [] };
                 newVal[k].keys = this.utils.arrayExtend(chek_1.toArray(oldVal[k].keys).slice(0), chek_1.toArray(newVal[k].keys), this.utils.stripTokens.bind(this.utils));
             }
             else if (k === 'validate') {

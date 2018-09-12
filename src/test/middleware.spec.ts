@@ -36,14 +36,14 @@ mw.add(KawkahMiddlewareGroup.BeforeAction, 'after:test', handlerAfter, true);
 describe('Kawkah:Middleware', () => {
 
   it('should disable before and after check enabled.', () => {
-    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases'];
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases'];
     mw.disable('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
   });
 
   it('should enable before and after middleware.', () => {
-    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases', 'before:test', 'after:test'];
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases', 'before:test', 'after:test'];
     mw.enable('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
@@ -56,7 +56,7 @@ describe('Kawkah:Middleware', () => {
   });
 
   it('should remove before and after middleware.', () => {
-    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases'];
+    const expected = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases'];
     mw.remove('before:test', 'after:test');
     const enabled = mw.enabled();
     assert.deepEqual(enabled, expected);
@@ -64,7 +64,7 @@ describe('Kawkah:Middleware', () => {
 
   it('should add before validation middleware.', () => {
 
-    let expected: any = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases', 'modify:test'];
+    let expected: any = ['minmax', 'extend', 'coerce', 'required', 'validator', 'demand', 'deny', 'aliases', 'modify:test'];
 
     const handlerModify = (val) => {
       if (val === 'Milton Waddams')

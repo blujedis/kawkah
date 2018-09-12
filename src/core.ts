@@ -690,12 +690,29 @@ export class KawkahCore extends EventEmitter {
 
     // Ensure arrays.
     option.alias = toArray(option.alias).map(this.utils.stripFlag, this);
-    option.demand = toArray(option.demand).map(this.utils.stripTokens, this);
-    option.deny = toArray(option.deny).map(this.utils.stripTokens, this);
-    option.demandIf = option.demandIf || {};
-    option.denyIf = option.denyIf || {};
-    option.demandIf.keys = toArray(option.demandIf.keys);
-    option.denyIf.keys = toArray(option.denyIf.keys);
+    // option.demand = toArray(option.demand).map(this.utils.stripTokens, this);
+    // option.deny = toArray(option.deny).map(this.utils.stripTokens, this);
+
+    if (!isObject(option.demand)) {
+      option.demand = {
+        keys: <any>option.demand,
+        match: 0
+      };
+    }
+
+    if (!isObject(option.deny)) {
+      option.deny = {
+        keys: <any>option.deny,
+        match: 0
+      };
+    }
+
+    option.demand = Object.assign({}, { keys: [], match: 0 }, option.demand);
+    option.deny = Object.assign({}, { keys: [], match: 0 }, option.deny);
+
+    option.demand.keys = toArray(option.demand.keys).map(this.utils.stripTokens, this);
+    option.deny.keys = toArray(option.deny.keys).map(this.utils.stripTokens, this);
+
     option.completions = toArray(option.completions);
     option.required = toDefault(option.required, false);
     option.skip = toDefault(option.skip, false);
@@ -767,16 +784,28 @@ export class KawkahCore extends EventEmitter {
       }
 
       // Extend arrays ensuring no duplicates.
-      else if (includes(['alias', 'demand', 'deny', 'completions'], k) || (k === 'extend' && isArray(newVal.extend))) {
+      else if (includes(['alias', 'completions'], k) || (k === 'extend' && isArray(newVal.extend))) {
         // Ensure old val is an array if extend.
         if (k === 'extend')
           oldVal.extend = toArray(oldVal.extend);
         newVal[k] = this.utils.arrayExtend(toArray(oldVal[k]).slice(0), newVal[k], this.utils.stripTokens.bind(this.utils));
       }
 
-      else if (includes(['demandIf', 'denyIf'], k)) {
+      else if (includes(['demand', 'deny'], k)) {
 
-        oldVal[k] = oldVal[k] || {};
+        if (!isObject(newVal[k])) {
+          newVal[k] = {
+            keys: newVal[k] || []
+          };
+        }
+
+        if (!isObject(oldVal[k])) {
+          oldVal[k] = {
+            keys: oldVal[k] || []
+          };
+        }
+
+        oldVal[k] = oldVal[k] || { keys: [] };
         newVal[k].keys = this.utils.arrayExtend(toArray(oldVal[k].keys).slice(0), toArray(newVal[k].keys), this.utils.stripTokens.bind(this.utils));
 
       }

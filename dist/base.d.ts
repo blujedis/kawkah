@@ -356,43 +356,65 @@ export declare class KawkahCommandBase<T> {
     */
     describeFor(name: string, describe: string): T & KawkahCommandBase<T>;
     /**
-     * Sets a demand for the specified option.
+    * Sets demands for the specified option.
+    *
+    * @example .demand('username', 'password', ...);
+    *
+    * @param name the option key name.
+    * @param demand rest array of keys to demand.
+    */
+    demandFor(name: string, ...demand: string[]): T & KawkahCommandBase<T>;
+    /**
+     * Sets demands when matches handler criteria
      *
-     * @example .demand('username', 'password', ...);
+     * @example .demand('username', ['password', 'email'], function validator(v) { return true });
      *
      * @param name the option key name.
      * @param demand array of keys to demand.
+     * @param handler handler that returns if should demand keys.
      */
-    demandFor(name: string, ...demand: string[]): T & KawkahCommandBase<T>;
+    demandFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
     /**
-     * Sets deny for the specified option.
+     * Sets demands when matches handler criteria
      *
-     * @example .deny('directory', 'filename', ...);
+     * @example .demand('username', ['password', 'email'], 1, function validator(v) { return true });
+     *
+     * @param name the option key name.
+     * @param demand array of keys to demand.
+     * @param match indicates how many keys should be demanded, 0 for all.
+     * @param handler handler that returns if should demand keys.
+     */
+    demandFor(name: string, demand: string[], match: number, handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+    /**
+    * Sets deny for the specified option.
+    *
+    * @example .deny('username', 'password', ...);
+    *
+    * @param name the option key name.
+    * @param deny rest array of keys to deny.
+    */
+    denyFor(name: string, ...deny: string[]): T & KawkahCommandBase<T>;
+    /**
+     * Sets deny when matches handler criteria
+     *
+     * @example .demand('username', ['password', 'email'], function validator(v) { return true });
      *
      * @param name the option key name.
      * @param deny array of keys to deny.
+     * @param handler handler that returns if should deny keys.
      */
-    denyFor(name: string, ...deny: string[]): T & KawkahCommandBase<T>;
+    denyFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
     /**
-     * Sets a demand for the specified option if matches criteria.
+     * Sets deny when matches handler criteria
      *
-     * @example .demand('username', ['password', 'email'], /(bob|joe)/);
+     * @example .deny('username', ['password', 'email'], 1, function validator(v) { return true });
      *
      * @param name the option key name.
-     * @param demand array of keys to demand if match.
-     * @param handler a handler Function or RegExp to test if should demand.
+     * @param deny array of keys to deny.
+     * @param match indicates how many keys should be denied, 0 for all.
+     * @param handler handler that returns if should deny keys.
      */
-    demandIfFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
-    /**
-     * Sets deny for the specified option if matches criteria.
-     *
-     * @example .deny('username', ['password', 'email'], /(bob|joe)/);
-     *
-     * @param name the option key name.
-     * @param deny array of keys to deny if match.
-     * @param handler a handler Function or RegExp to test if should deny.
-     */
-    denyIfFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+    denyFor(name: string, deny: string[], match: number, handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
     /**
      * Sets a default value for the specified option.
      *

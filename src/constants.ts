@@ -111,8 +111,8 @@ export const DEFAULT_OPTION: IKawkahOptionInternal = {
   type: 'string',                   // string or coerce action.
   alias: [],                        // aliases for the option. (flags only).
   describe: '',                     // option description.
-  demand: [],                       // when option is called these are required.
-  deny: [],                         // when option is present exclude those listed.
+  demand: { keys: [], match: 0 },   // when option is called these are required.
+  deny: { keys: [], match: 0 },     // when option is present exclude those listed.
   default: undefined,               // a default value.
   required: false,                  // option is required.
   validate: undefined,              // RegExp or user defined validator function.
@@ -201,7 +201,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   logFormat: '{{event}} {{message}} {{ministack|parens|muted}}',
 
   // Array of enabled middleware.
-  middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases'],
+  middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],
 
   // map of colors used when outputting to console.
   styles: {

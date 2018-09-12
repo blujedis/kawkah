@@ -95,8 +95,8 @@ exports.DEFAULT_OPTION = {
     type: 'string',
     alias: [],
     describe: '',
-    demand: [],
-    deny: [],
+    demand: { keys: [], match: 0 },
+    deny: { keys: [], match: 0 },
     default: undefined,
     required: false,
     validate: undefined,
@@ -168,7 +168,7 @@ exports.DEFAULT_OPTIONS = {
     // Format/template for log messages.
     logFormat: '{{event}} {{message}} {{ministack|parens|muted}}',
     // Array of enabled middleware.
-    middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'demandIf', 'denyIf', 'aliases'],
+    middleware: ['minmax', 'coerce', 'extend', 'required', 'validator', 'demand', 'deny', 'aliases'],
     // map of colors used when outputting to console.
     styles: {
         primary: 'blueBright',

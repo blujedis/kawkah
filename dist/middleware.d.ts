@@ -57,24 +57,6 @@ declare function demand(val: any, key: string, event: IKawkahMiddlewareEventOpti
  */
 declare function deny(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore): any;
 /**
- * Checks if result is missing a demanded argument if meets expression.
- *
- * @param val the current value.
- * @param key the current key.
- * @param event object of event context objects (result, source, option keys etc..).
- * @param context the core context.
- */
-declare function demandIf(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore): any;
-/**
- * Checks if result includes a denied or excluded argument if meets expression.
- *
- * @param val the current value.
- * @param key the current key.
- * @param event object of event context objects (result, source, option keys etc..).
- * @param context the core context.
- */
-declare function denyIf(val: any, key: string, event: IKawkahMiddlewareEventOption, context: KawkahCore): any;
-/**
  * Extends all aliases for present objects on to the result object.
  *
  * @param val the current value.
@@ -115,14 +97,6 @@ export declare const defaultMiddleware: {
         };
         deny: {
             handler: typeof deny;
-            group: KawkahMiddlewareGroup;
-        };
-        demandIf: {
-            handler: typeof demandIf;
-            group: KawkahMiddlewareGroup;
-        };
-        denyIf: {
-            handler: typeof denyIf;
             group: KawkahMiddlewareGroup;
         };
     };

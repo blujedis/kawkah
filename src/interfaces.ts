@@ -132,9 +132,10 @@ export interface IKawkahValidateConfig {
   handler?: RegExp | KawkahValidateHandler;
 }
 
-export interface IKawkahDemandDenyIf {
+export interface IKawkahDemandDeny {
   handler?: RegExp | KawkahValidateHandler;
   keys?: string | string[];
+  match?: number;
 }
 
 export interface IKawkahTheme {
@@ -226,10 +227,8 @@ export interface IKawkahOptionBase {
   index?: true | number; // indicates is argument.
   alias?: string | string[];
   describe?: string;
-  demand?: string | string[];
-  deny?: string | string[];
-  demandIf?: IKawkahDemandDenyIf;
-  denyIf?: IKawkahDemandDenyIf;
+  demand?: string | string[] | IKawkahDemandDeny;
+  deny?: string | string[] | IKawkahDemandDeny;
   default?: any;
   required?: boolean;
   coerce?: KawkahHandler;
@@ -253,8 +252,8 @@ export interface IKawkahOptionInternal extends IKawkahOption {
   name?: string;
   index?: number;
   alias?: string[];
-  demand?: string[];
-  deny?: string[];
+  demand?: IKawkahDemandDeny;
+  deny?: IKawkahDemandDeny;
   completions?: string[];
   extend?: true | string[];
   static?: any;

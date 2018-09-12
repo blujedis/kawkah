@@ -457,64 +457,64 @@ class KawkahCommandBase {
         this.core.setOption(this._name, name, 'describe', describe);
         return this;
     }
-    /**
-     * Sets a demand for the specified option.
-     *
-     * @example .demand('username', 'password', ...);
-     *
-     * @param name the option key name.
-     * @param demand array of keys to demand.
-     */
-    demandFor(name, ...demand) {
-        this.assert('.demandFor()', '<string> <string...>', arguments);
-        this.core.setOption(this._name, name, 'demand', demand);
+    demandFor(name, keys, match, handler, ...demand) {
+        this.assert('.demandFor()', '<string> <string|array> [string|regexp|number|function] [string|regexp|function]  [string...]', arguments);
+        if (chek_1.isString(keys)) {
+            if (chek_1.isString(handler)) {
+                demand.unshift(handler);
+                handler = undefined;
+            }
+            if (chek_1.isString(match)) {
+                demand.unshift(match);
+                match = undefined;
+            }
+            demand.unshift(keys);
+            keys = undefined;
+        }
+        if (chek_1.isFunction(match) || chek_1.isRegExp(match)) {
+            handler = match;
+            match = undefined;
+        }
+        if (Array.isArray(keys)) {
+            demand = keys;
+            keys = undefined;
+        }
+        const config = {
+            handler: handler,
+            match: match || 0,
+            keys: demand
+        };
+        this.core.setOption(this._name, name, 'demand', config);
         return this;
     }
-    /**
-     * Sets deny for the specified option.
-     *
-     * @example .deny('directory', 'filename', ...);
-     *
-     * @param name the option key name.
-     * @param deny array of keys to deny.
-     */
-    denyFor(name, ...deny) {
-        this.assert('.denyFor()', '<string> <string...>', arguments);
-        this.core.setOption(this._name, name, 'deny', deny);
-        return this;
-    }
-    /**
-     * Sets a demand for the specified option if matches criteria.
-     *
-     * @example .demand('username', ['password', 'email'], /(bob|joe)/);
-     *
-     * @param name the option key name.
-     * @param demand array of keys to demand if match.
-     * @param handler a handler Function or RegExp to test if should demand.
-     */
-    demandIfFor(name, demand, handler) {
-        this.assert('.demandIfFor()', '<string> <array> <regexp|function>', arguments);
-        this.core.setOption(this._name, name, 'demandIf', {
-            keys: demand,
-            handler: handler
-        });
-        return this;
-    }
-    /**
-     * Sets deny for the specified option if matches criteria.
-     *
-     * @example .deny('username', ['password', 'email'], /(bob|joe)/);
-     *
-     * @param name the option key name.
-     * @param deny array of keys to deny if match.
-     * @param handler a handler Function or RegExp to test if should deny.
-     */
-    denyIfFor(name, deny, handler) {
-        this.assert('.denyIfFor()', '<string> <array> <regexp|function>', arguments);
-        this.core.setOption(this._name, name, 'denyIf', {
-            keys: deny,
-            handler: handler
-        });
+    denyFor(name, keys, match, handler, ...deny) {
+        this.assert('.denyFor()', '<string> <string|array> [string|regexp|number|function] [string|regexp|function]  [string...]', arguments);
+        if (chek_1.isString(keys)) {
+            if (chek_1.isString(handler)) {
+                deny.unshift(handler);
+                handler = undefined;
+            }
+            if (chek_1.isString(match)) {
+                deny.unshift(match);
+                match = undefined;
+            }
+            deny.unshift(keys);
+            keys = undefined;
+        }
+        if (chek_1.isFunction(match) || chek_1.isRegExp(match)) {
+            handler = match;
+            match = undefined;
+        }
+        if (Array.isArray(keys)) {
+            deny = keys;
+            keys = undefined;
+        }
+        const config = {
+            handler: handler,
+            match: match || 0,
+            keys: deny
+        };
+        this.core.setOption(this._name, name, 'deny', config);
         return this;
     }
     /**

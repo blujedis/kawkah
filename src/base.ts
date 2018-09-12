@@ -1,8 +1,8 @@
 import { nonenumerable } from './decorators';
 import { KawkahCore } from './core';
 import { SpawnOptions } from 'child_process';
-import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, SpawnOptionKeys } from './interfaces';
-import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray } from 'chek';
+import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, SpawnOptionKeys, IKawkahDemandDeny } from './interfaces';
+import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray, isString, isRegExp } from 'chek';
 import { DEFAULT_COMMAND_NAME, ALIAS_TOKEN } from './constants';
 
 export class KawkahCommandBase<T> {
@@ -744,67 +744,159 @@ export class KawkahCommandBase<T> {
   }
 
   /**
-   * Sets a demand for the specified option.
+  * Sets demands for the specified option.
+  *
+  * @example .demand('username', 'password', ...);
+  *
+  * @param name the option key name.
+  * @param demand rest array of keys to demand.
+  */
+  demandFor(name: string, ...demand: string[]): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets demands when matches handler criteria
    *
-   * @example .demand('username', 'password', ...);
+   * @example .demand('username', ['password', 'email'], function validator(v) { return true });
    *
    * @param name the option key name.
    * @param demand array of keys to demand.
+   * @param handler handler that returns if should demand keys.
    */
-  demandFor(name: string, ...demand: string[]): T & KawkahCommandBase<T> {
-    this.assert('.demandFor()', '<string> <string...>', arguments);
-    this.core.setOption(this._name, name, 'demand', demand);
+  demandFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets demands when matches handler criteria
+   *
+   * @example .demand('username', ['password', 'email'], 1, function validator(v) { return true });
+   *
+   * @param name the option key name.
+   * @param demand array of keys to demand.
+   * @param match indicates how many keys should be demanded, 0 for all.
+   * @param handler handler that returns if should demand keys.
+   */
+  demandFor(name: string, demand: string[], match: number, handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
+
+  demandFor(name: string,
+    keys: string | string[],
+    match: string | number | RegExp | KawkahValidateHandler,
+    handler?: string | RegExp | KawkahValidateHandler,
+    ...demand: string[]): T & KawkahCommandBase<T> {
+    this.assert('.demandFor()', '<string> <string|array> [string|regexp|number|function] [string|regexp|function]  [string...]', arguments);
+
+    if (isString(keys)) {
+
+      if (isString(handler)) {
+        demand.unshift(<string>handler);
+        handler = undefined;
+      }
+
+      if (isString(match)) {
+        demand.unshift(<string>match);
+        match = undefined;
+      }
+
+      demand.unshift(<string>keys);
+      keys = undefined;
+
+    }
+
+    if (isFunction(match) || isRegExp(match)) {
+      handler = <any>match;
+      match = undefined;
+    }
+
+    if (Array.isArray(keys)) {
+      demand = <string[]>keys;
+      keys = undefined;
+    }
+
+    const config: IKawkahDemandDeny = {
+      handler: <RegExp | KawkahValidateHandler>handler,
+      match: <number>match || 0,
+      keys: demand
+    };
+
+    this.core.setOption(this._name, name, 'demand', config);
     return <any>this;
+
   }
 
   /**
-   * Sets deny for the specified option.
+  * Sets deny for the specified option.
+  *
+  * @example .deny('username', 'password', ...);
+  *
+  * @param name the option key name.
+  * @param deny rest array of keys to deny.
+  */
+  denyFor(name: string, ...deny: string[]): T & KawkahCommandBase<T>;
+
+  /**
+   * Sets deny when matches handler criteria
    *
-   * @example .deny('directory', 'filename', ...);
+   * @example .demand('username', ['password', 'email'], function validator(v) { return true });
    *
    * @param name the option key name.
    * @param deny array of keys to deny.
+   * @param handler handler that returns if should deny keys.
    */
-  denyFor(name: string, ...deny: string[]): T & KawkahCommandBase<T> {
-    this.assert('.denyFor()', '<string> <string...>', arguments);
-    this.core.setOption(this._name, name, 'deny', deny);
-    return <any>this;
-  }
+  denyFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
 
   /**
-   * Sets a demand for the specified option if matches criteria.
+   * Sets deny when matches handler criteria
    *
-   * @example .demand('username', ['password', 'email'], /(bob|joe)/);
+   * @example .deny('username', ['password', 'email'], 1, function validator(v) { return true });
    *
    * @param name the option key name.
-   * @param demand array of keys to demand if match.
-   * @param handler a handler Function or RegExp to test if should demand.
+   * @param deny array of keys to deny.
+   * @param match indicates how many keys should be denied, 0 for all.
+   * @param handler handler that returns if should deny keys.
    */
-  demandIfFor(name: string, demand: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T> {
-    this.assert('.demandIfFor()', '<string> <array> <regexp|function>', arguments);
-    this.core.setOption(this._name, name, 'demandIf', {
-      keys: demand,
-      handler: handler
-    });
-    return <any>this;
-  }
+  denyFor(name: string, deny: string[], match: number, handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T>;
 
-  /**
-   * Sets deny for the specified option if matches criteria.
-   *
-   * @example .deny('username', ['password', 'email'], /(bob|joe)/);
-   *
-   * @param name the option key name.
-   * @param deny array of keys to deny if match.
-   * @param handler a handler Function or RegExp to test if should deny.
-   */
-  denyIfFor(name: string, deny: string[], handler: RegExp | KawkahValidateHandler): T & KawkahCommandBase<T> {
-    this.assert('.denyIfFor()', '<string> <array> <regexp|function>', arguments);
-    this.core.setOption(this._name, name, 'denyIf', {
-      keys: deny,
-      handler: handler
-    });
+  denyFor(name: string,
+    keys: string | string[],
+    match: string | number | RegExp | KawkahValidateHandler,
+    handler?: string | RegExp | KawkahValidateHandler,
+    ...deny: string[]): T & KawkahCommandBase<T> {
+    this.assert('.denyFor()', '<string> <string|array> [string|regexp|number|function] [string|regexp|function]  [string...]', arguments);
+
+    if (isString(keys)) {
+
+      if (isString(handler)) {
+        deny.unshift(<string>handler);
+        handler = undefined;
+      }
+
+      if (isString(match)) {
+        deny.unshift(<string>match);
+        match = undefined;
+      }
+
+      deny.unshift(<string>keys);
+      keys = undefined;
+
+    }
+
+    if (isFunction(match) || isRegExp(match)) {
+      handler = <any>match;
+      match = undefined;
+    }
+
+    if (Array.isArray(keys)) {
+      deny = <string[]>keys;
+      keys = undefined;
+    }
+
+    const config: IKawkahDemandDeny = {
+      handler: <RegExp | KawkahValidateHandler>handler,
+      match: <number>match || 0,
+      keys: deny
+    };
+
+    this.core.setOption(this._name, name, 'deny', config);
     return <any>this;
+
   }
 
   /**

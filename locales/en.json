@@ -25,5 +25,6 @@
   "argument": "argument",
   "%s %s failed: %s (value: %s)": "%s %s failed: %s (value: %s)",
   "%s %s failed: %s (missing: %s)": "%s %s failed: %s (missing: %s)",
-  "%s %s failed: %s (exists: %s)": "%s %s failed: %s (exists: %s)"
+  "%s %s failed: %s (exists: %s)": "%s %s failed: %s (exists: %s)",
+  "%s %s failed: %s (%s: %s)": "%s %s failed: %s (%s: %s)"
 }

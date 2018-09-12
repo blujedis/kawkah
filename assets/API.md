@@ -275,6 +275,8 @@ Sets keys to demand when this option is present.
 
 ```ts
 kk.demandFor('order', 'toppings', 'drink');
+// Only demand crust & size if order's value is "pizza".
+kk.demandFor('order', ['crust', 'size'], /pizza/)
 ```
 
 ### .denyFor()
@@ -283,22 +285,8 @@ Sets keys to be denied when this option is present.
 
 ```ts
 kk.denyFor('toppings', 'drink');
-```
-
-### .demandIfFor()
-
-Demand keys if matches criteria.
-
-```ts
-kk.demandFor('order', ['toppings', 'drink'], /^pizza$/);
-```
-
-### .denyIfFor()
-
-Deny keys if matches criteria.
-
-```ts
-kk.denyFor('order', ['drink'], /^food$/);
+// Deny crust & size if order's value is of type not related to a pizza.
+kk.demandFor('order', ['crust', 'size'], /(drink|dessert)/)
 ```
 
 ### .defaultFor()

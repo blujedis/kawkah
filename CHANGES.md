@@ -2,6 +2,15 @@
 
 Changes in descending order.
 
+### 09.12.2018 (v1.0.12)
+
+<table>
+ <tr><td>middleware.demand(), kawkah.demand()</td><td>refactor to support demandIf features.</td></tr>
+ <tr><td>middleware.deny(), kawkah.deny()</td><td>refactor to support denyIf features.</td></tr>
+  <tr><td>middleware.demandIf()</td><td>DEPRECATE.</td></tr>
+  <tr><td>middleware.denyIf()</td><td>DEPRECATE.</td></tr>
+</table>
+
 ### 09.09.2018 (v1.0.8-v1.0.11)
 
 <table>
