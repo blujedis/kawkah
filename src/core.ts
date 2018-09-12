@@ -1051,7 +1051,7 @@ export class KawkahCore extends EventEmitter {
 
   log(type?: any, message?: any, ...args: any[]) {
 
-    this.assert('.log()', '[string|object] [any] [any...]', arguments);
+    this.assert('.log()', '[any] [any] [any...]', arguments);
 
     if (!this._logHandler) this.setLogHandler();
 
@@ -1079,12 +1079,12 @@ export class KawkahCore extends EventEmitter {
 
     }
 
+    // Ensure empty string for message.
+    message = message || '';
+
     // If not a known event type format.
     if (!knownType)
       message = this.utils.formatMessage(message, ...args);
-
-    // Ensure empty string for message.
-    message = message || '';
 
     // If error or help signal abort.
     if (includes(['error', 'help'], _type))

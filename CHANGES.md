@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 09.09.2018 (v1.0.8-v1.0.10)
+### 09.09.2018 (v1.0.8-v1.0.11)
 
 <table>
+  <tr><td>core.log()</td><td>log should allow empty message and values not of string or object.</td></tr>
   <tr><td>middleware.demandIf()</td><td>add feature to demand if matches criteria.</td></tr>
   <tr><td>middleware.denyIf()</td><td>add feature to deny if matches criteria.</td></tr>
   <tr><td>middleware.demand()</td><td>fix issue where args were not demanded properly.</td></tr>
