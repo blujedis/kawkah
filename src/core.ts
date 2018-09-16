@@ -2113,6 +2113,8 @@ export class KawkahCore extends EventEmitter {
       group.items = this.utils.arrayExtend(tmpItems || [], group.items);
       group.children = this.utils.arrayExtend(tmpChildren, group.children);
 
+      group.sort = isUndefined(group.sort) ? this.options.sortGroups : group.sort;
+
       this.groups[name] = group;
 
       return group;
@@ -2133,12 +2135,6 @@ export class KawkahCore extends EventEmitter {
 
         this.groupifyChildren(cmd);
 
-        // items = include === true ? keys(cmd.options) : <string[]>include;
-
-        // items = items.map(k => {
-        //   return `commands.${commandKey}.options.${k}`;
-        // });
-
       }
 
     }
@@ -2154,6 +2150,7 @@ export class KawkahCore extends EventEmitter {
     items = items.map(v => this.getGroupNamespace(v).ns);
 
     group.items = this.utils.arrayExtend(group.items || [], items);
+    group.sort = isUndefined(group.sort) ? this.options.sortGroups : group.sort;
 
     this.groups[name] = group;
 

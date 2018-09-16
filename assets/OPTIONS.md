@@ -53,7 +53,15 @@ The colorization theme to use for help.
   <tr><td>Type</td><td>string</td></tr>
   <tr><td>Default</td><td>'default'</td></tr>
   <tr><td>Values</td><td>default, dim, bright, null</td></tr>
+</table>
 
+### sortGroups
+
+Sets the default value for group.sort globally. When group.sort is undefined, the order of entry is respected.
+
+<table>
+  <tr><td>Type</td><td>boolean</td></tr>
+  <tr><td>Default</td><td>undefined</td></tr>
 </table>
 
 ### commands

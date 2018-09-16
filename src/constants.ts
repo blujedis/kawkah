@@ -131,7 +131,7 @@ export const DEFAULT_GROUP: IKawkahGroup = {
   items: [],              // array of items for the group.
   indent: 2,              // whether to indent the group items.
   enabled: true,          // toggles visibility.
-  sort: false,
+  sort: undefined,        // sort group items.
   children: []            // array of child groups to display.
 
 };
@@ -187,6 +187,7 @@ export const DEFAULT_OPTIONS: IKawkahOptions = {
   header: undefined,                 // header text.
   footer: undefined,                 // footer text.
   width: undefined,                  // specify width of the help menu, undefined is auto.
+  sortGroups: undefined,              // global override to default group items to be sorted.
   commands: undefined,               // object containing defined commands.
   examples: undefined,               // object containing example usage.
   stacktrace: false,                 // when true full stack traces are show for errors.

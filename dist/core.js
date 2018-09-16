@@ -1414,6 +1414,7 @@ class KawkahCore extends events_1.EventEmitter {
             group.items = group.items.map(v => this.getGroupNamespace(v).ns);
             group.items = this.utils.arrayExtend(tmpItems || [], group.items);
             group.children = this.utils.arrayExtend(tmpChildren, group.children);
+            group.sort = chek_1.isUndefined(group.sort) ? this.options.sortGroups : group.sort;
             this.groups[name] = group;
             return group;
         }
@@ -1426,10 +1427,6 @@ class KawkahCore extends events_1.EventEmitter {
             }
             if (this.commands[commandKey]) {
                 this.groupifyChildren(cmd);
-                // items = include === true ? keys(cmd.options) : <string[]>include;
-                // items = items.map(k => {
-                //   return `commands.${commandKey}.options.${k}`;
-                // });
             }
         }
         else {
@@ -1439,6 +1436,7 @@ class KawkahCore extends events_1.EventEmitter {
         }
         items = items.map(v => this.getGroupNamespace(v).ns);
         group.items = this.utils.arrayExtend(group.items || [], items);
+        group.sort = chek_1.isUndefined(group.sort) ? this.options.sortGroups : group.sort;
         this.groups[name] = group;
         return group;
     }

@@ -236,6 +236,7 @@ export interface IKawkahOptionsBase {
     header?: string;
     footer?: string;
     width?: number;
+    sortGroups?: boolean;
     colorize?: boolean;
     spread?: boolean;
     stacktrace?: boolean;

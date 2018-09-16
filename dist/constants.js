@@ -112,7 +112,7 @@ exports.DEFAULT_GROUP = {
     items: [],
     indent: 2,
     enabled: true,
-    sort: false,
+    sort: undefined,
     children: [] // array of child groups to display.
 };
 exports.DEFAULT_COMMAND = {
@@ -157,6 +157,7 @@ exports.DEFAULT_OPTIONS = {
     header: undefined,
     footer: undefined,
     width: undefined,
+    sortGroups: undefined,
     commands: undefined,
     examples: undefined,
     stacktrace: false,

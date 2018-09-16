@@ -308,6 +308,7 @@ export interface IKawkahOptionsBase {
   header?: string;
   footer?: string;
   width?: number;
+  sortGroups?: boolean; // default for IKawkahGroup.
   colorize?: boolean;
   spread?: boolean;
   stacktrace?: boolean;

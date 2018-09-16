@@ -2,6 +2,12 @@
 
 Changes in descending order.
 
+### 09.15.2018 (v1.0.16)
+
+<table>
+  <tr><td>options.sortGroups</td><td>allow global options to set default for sorting group items.</td></tr>
+</table>
+
 ### 09.12.2018 (v1.0.12-v1.0.15)
 
 <table>
