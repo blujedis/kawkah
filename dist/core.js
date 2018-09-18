@@ -967,7 +967,7 @@ class KawkahCore extends events_1.EventEmitter {
         }
         if (fn === true)
             fn = undefined;
-        this._catchHandler = fn || this.showHelp.bind(this);
+        this._catchHandler = fn || (() => { this.showHelp(); });
     }
     /**
      * Calls the catch handler which shows help.
@@ -2255,7 +2255,7 @@ class KawkahCore extends events_1.EventEmitter {
         if (event.isHelp)
             this.middleware.enable(...validationGroups);
         // Middlware successful no errors.
-        result = event.result;
+        this.result = result = event.result;
         if (commandName) {
             let actionArgs = [result, this];
             if (command.spread)
@@ -2271,7 +2271,10 @@ class KawkahCore extends events_1.EventEmitter {
         else if (actionOption) {
             actionOption.action(result, this);
         }
-        this.result = result;
+        // Check if catch handler is enabled.
+        else {
+            this.showCatch();
+        }
         return result;
     }
     abort(abort) {

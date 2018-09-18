@@ -2,10 +2,11 @@
 
 Changes in descending order.
 
-### 09.15.2018 (v1.0.16)
+### 09.15.2018 (v1.0.16-v1.0.17)
 
 <table>
   <tr><td>options.sortGroups</td><td>allow global options to set default for sorting group items.</td></tr>
+  <tr><td>core.listen</td><td>catch handler not being called.</td></tr>
 </table>
 
 ### 09.12.2018 (v1.0.12-v1.0.15)

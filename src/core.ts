@@ -4,6 +4,7 @@ import { readFileSync, lstatSync, readlinkSync } from 'fs';
 import { join, basename } from 'path';
 import { Tablur, TablurAlign, ITablurColumn } from 'tablur';
 import * as spawn from 'cross-spawn';
+import * as leven from 'fast-levenshtein';
 import { ChildProcess, SpawnOptions } from 'child_process';
 
 import { isString, toArray, isValue, isObject, isArray, toDefault, isBoolean, getType, isFunction, isPlainObject, last, isEmpty, keys, first, capitalize, get, isDebug, includes, isTruthy, isWindows, omit, pick, isUndefined, set, isError, noop, has, del } from 'chek';
@@ -1395,7 +1396,7 @@ export class KawkahCore extends EventEmitter {
     if (fn === true)
       fn = undefined;
 
-    this._catchHandler = <KawkahAction>fn || this.showHelp.bind(this);
+    this._catchHandler = <KawkahAction>fn || (() => { this.showHelp(); });
 
   }
 
@@ -3382,7 +3383,7 @@ export class KawkahCore extends EventEmitter {
       this.middleware.enable(...validationGroups);
 
     // Middlware successful no errors.
-    result = event.result;
+    this.result = result = event.result;
 
     if (commandName) {
 
@@ -3406,7 +3407,10 @@ export class KawkahCore extends EventEmitter {
       actionOption.action(result, this);
     }
 
-    this.result = result;
+    // Check if catch handler is enabled.
+    else {
+      this.showCatch();
+    }
 
     return result;
 
