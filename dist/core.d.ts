@@ -5,7 +5,6 @@ import { ChildProcess, SpawnOptions } from 'child_process';
 import { KawkahMiddleware } from './middleware';
 import { KawkahUtils } from './utils';
 import { IKawkahOptions, IKawkahMap, IKawkahOptionsInternal, IKawkahCommand, IKawkahCommandInternal, KawkahEvent, KawkahHelpHandler, KawkahCompletionsHandler, KawkahAction, IKawkahResult, IKawkahGroup, IKawkahOptionInternal, IKawkahCompletionQuery, KawkahCommandInternalKeys, KawkahOptionInternalKeys, KawkahLogHandler, IKawkahTheme, AnsiStyles, KawkahAnsiType, KawkahThemeKeys, IKawkahMiddlewareEventOption } from './interfaces';
-import { KawkahError } from './error';
 export declare class KawkahCore extends EventEmitter {
     private _logHandler;
     private _helpHandler;
@@ -221,39 +220,33 @@ export declare class KawkahCore extends EventEmitter {
      */
     log(type: string | KawkahEvent, message: any, ...args: any[]): KawkahCore;
     /**
-     * Dispatches an error.
+     * Dispatches an error message.
      *
-     * @param err the error to dispatch.
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
      */
-    error(err: Error | KawkahError): any;
+    error(message: any, ...args: any[]): void;
     /**
-     * Dispatches an error using a formatted message.
+     * Dispatches a warning message.
      *
-     * @param message the message to be formatted.
-     * @param args an array of arguments for formatting.
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
      */
-    error(message: string, ...args: any[]): any;
+    warning(message: any, ...args: any[]): void;
     /**
-     * Dispatches a warning using a formatted message.
+     * Dispatches a notification message.
      *
-     * @param message the message to be formatted.
-     * @param args an array of arguments for formatting.
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
      */
-    warning(message: string, ...args: any[]): void;
+    notify(message: any, ...args: any[]): void;
     /**
-     * Dispatches a notification using a formatted message.
-     *
-     * @param message the message to be formatted.
-     * @param args an array of arguments for formatting.
-     */
-    notify(message: string, ...args: any[]): void;
-    /**
-    * Dispatches an ok formatted message.
+    * Dispatches an ok message.
     *
-    * @param message the message to be formatted.
-    * @param args an array of arguments for formatting.
+    * @param message the message to be logged.
+    * @param args optional array of arguments for formatting.
     */
-    ok(message: string, ...args: any[]): void;
+    ok(message: any, ...args: any[]): void;
     /**
      * Gets or sets the application name overwriting generated value.
      *

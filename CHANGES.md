@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 09.15.2018 (v1.0.16-v1.0.17)
+### 09.15.2018 (v1.0.16-v1.0.18)
 
 <table>
+  <tr><td>core.ok, .notify, .warning, .error</td><td>should allow logging any type not just strings.</td></tr>
   <tr><td>options.sortGroups</td><td>allow global options to set default for sorting group items.</td></tr>
   <tr><td>core.listen</td><td>catch handler not being called.</td></tr>
 </table>

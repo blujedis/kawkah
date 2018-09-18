@@ -1121,8 +1121,8 @@ export class KawkahCore extends EventEmitter {
       this.abort();
 
     // If an error check if catch hanlder is enabled.
-    if (_type === 'error')
-      this.showCatch();
+    // if (_type === 'error')
+    //   this.showCatch();
 
     this._logHandler(_type, message, ...args);
 
@@ -1131,55 +1131,46 @@ export class KawkahCore extends EventEmitter {
   }
 
   /**
-   * Dispatches an error.
+   * Dispatches an error message.
    *
-   * @param err the error to dispatch.
+   * @param message the message to be logged.
+   * @param args optional array of arguments for formatting.
    */
-  error(err: Error | KawkahError);
-
-  /**
-   * Dispatches an error using a formatted message.
-   *
-   * @param message the message to be formatted.
-   * @param args an array of arguments for formatting.
-   */
-  error(message: string, ...args: any[]);
-
-  error(message: string | Error | KawkahError, ...args: any[]) {
-    this.assert('.error()', '<string|object> [any...]', arguments);
+  error(message: any, ...args: any[]) {
+    this.assert('.error()', '<any> [any...]', arguments);
     this.dispatch(KawkahEvent.Error, message, ...args);
   }
 
   /**
-   * Dispatches a warning using a formatted message.
+   * Dispatches a warning message.
    *
-   * @param message the message to be formatted.
-   * @param args an array of arguments for formatting.
+   * @param message the message to be logged.
+   * @param args optional array of arguments for formatting.
    */
-  warning(message: string, ...args: any[]) {
-    this.assert('.warning()', '<string> [any...]', arguments);
+  warning(message: any, ...args: any[]) {
+    this.assert('.warning()', '<any> [any...]', arguments);
     this.dispatch(KawkahEvent.Warning, message, ...args);
   }
 
   /**
-   * Dispatches a notification using a formatted message.
+   * Dispatches a notification message.
    *
-   * @param message the message to be formatted.
-   * @param args an array of arguments for formatting.
+   * @param message the message to be logged.
+   * @param args optional array of arguments for formatting.
    */
-  notify(message: string, ...args: any[]) {
-    this.assert('.notify()', '<string> [any...]', arguments);
+  notify(message: any, ...args: any[]) {
+    this.assert('.notify()', '<any> [any...]', arguments);
     this.dispatch(KawkahEvent.Notify, message, ...args);
   }
 
   /**
-  * Dispatches an ok formatted message.
+  * Dispatches an ok message.
   *
-  * @param message the message to be formatted.
-  * @param args an array of arguments for formatting.
+  * @param message the message to be logged.
+  * @param args optional array of arguments for formatting.
   */
-  ok(message: string, ...args: any[]) {
-    this.assert('.ok()', '<string> [any...]', arguments);
+  ok(message: any, ...args: any[]) {
+    this.assert('.ok()', '<any> [any...]', arguments);
     this.dispatch(KawkahEvent.Ok, message, ...args);
   }
 
@@ -3332,6 +3323,7 @@ export class KawkahCore extends EventEmitter {
     const actionKeys = this.actionKeys();
     const matches = this.utils.arrayMatch(actionKeys, truthyOptions);
 
+
     // Check if actionable global option was passed.
     let actionOption = matches[0] ? this.getOption(matches[0]) : null;
 
@@ -3346,6 +3338,8 @@ export class KawkahCore extends EventEmitter {
     // we'll use this to ignore middleware validations
     // that might otherwise fail.
     event.isHelp = parsed.help;
+
+
 
     // If is event help disable validation steps
     // we won't need them.
@@ -3387,18 +3381,22 @@ export class KawkahCore extends EventEmitter {
 
     if (commandName) {
 
+
       let actionArgs = [result, this];
 
       if (command.spread)
         actionArgs = [...result[RESULT_ARGS_KEY], ...actionArgs];
 
       // Have command but user wants help.
-      if (result.help)
+      if (result.help) {
+        console.log('hit help');
         this.showHelp(result[RESULT_COMMAND_KEY]);
+      }
 
       // If command action call it.
       else if (command.action)
         command.action(...actionArgs);
+
 
     }
 

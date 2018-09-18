@@ -771,43 +771,49 @@ class KawkahCore extends events_1.EventEmitter {
         if (chek_1.includes(['error', 'help'], _type))
             this.abort();
         // If an error check if catch hanlder is enabled.
-        if (_type === 'error')
-            this.showCatch();
+        // if (_type === 'error')
+        //   this.showCatch();
         this._logHandler(_type, message, ...args);
         return this;
     }
+    /**
+     * Dispatches an error message.
+     *
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
+     */
     error(message, ...args) {
-        this.assert('.error()', '<string|object> [any...]', arguments);
+        this.assert('.error()', '<any> [any...]', arguments);
         this.dispatch(interfaces_1.KawkahEvent.Error, message, ...args);
     }
     /**
-     * Dispatches a warning using a formatted message.
+     * Dispatches a warning message.
      *
-     * @param message the message to be formatted.
-     * @param args an array of arguments for formatting.
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
      */
     warning(message, ...args) {
-        this.assert('.warning()', '<string> [any...]', arguments);
+        this.assert('.warning()', '<any> [any...]', arguments);
         this.dispatch(interfaces_1.KawkahEvent.Warning, message, ...args);
     }
     /**
-     * Dispatches a notification using a formatted message.
+     * Dispatches a notification message.
      *
-     * @param message the message to be formatted.
-     * @param args an array of arguments for formatting.
+     * @param message the message to be logged.
+     * @param args optional array of arguments for formatting.
      */
     notify(message, ...args) {
-        this.assert('.notify()', '<string> [any...]', arguments);
+        this.assert('.notify()', '<any> [any...]', arguments);
         this.dispatch(interfaces_1.KawkahEvent.Notify, message, ...args);
     }
     /**
-    * Dispatches an ok formatted message.
+    * Dispatches an ok message.
     *
-    * @param message the message to be formatted.
-    * @param args an array of arguments for formatting.
+    * @param message the message to be logged.
+    * @param args optional array of arguments for formatting.
     */
     ok(message, ...args) {
-        this.assert('.ok()', '<string> [any...]', arguments);
+        this.assert('.ok()', '<any> [any...]', arguments);
         this.dispatch(interfaces_1.KawkahEvent.Ok, message, ...args);
     }
     /**
@@ -2261,8 +2267,10 @@ class KawkahCore extends events_1.EventEmitter {
             if (command.spread)
                 actionArgs = [...result[constants_1.RESULT_ARGS_KEY], ...actionArgs];
             // Have command but user wants help.
-            if (result.help)
+            if (result.help) {
+                console.log('hit help');
                 this.showHelp(result[constants_1.RESULT_COMMAND_KEY]);
+            }
             // If command action call it.
             else if (command.action)
                 command.action(...actionArgs);
