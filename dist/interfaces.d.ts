@@ -101,6 +101,7 @@ export interface IKawkahTheme {
     flag?: KawkahAnsiType;
     describe?: KawkahAnsiType;
     describeCommand?: KawkahAnsiType;
+    memo?: KawkahAnsiType;
     type?: KawkahAnsiType;
     variadic?: KawkahAnsiType;
     required?: KawkahAnsiType;
@@ -202,6 +203,7 @@ export interface IKawkahCommand {
     readonly usage?: string;
     readonly args?: string[];
     describe?: string;
+    memo?: string;
     alias?: string | string[];
     options?: IKawkahMap<string | IKawkahOption>;
     help?: string | boolean | KawkahHandler;
@@ -307,7 +309,7 @@ export interface IKawkahMiddlewareEventBase {
     completed?: number;
     elapsed?: number;
     result?: IKawkahResult;
-    isHelp?: boolean;
+    isActionOption?: boolean;
     command?: IKawkahCommandInternal;
 }
 export interface IKawkahMiddlewareEventResult extends IKawkahMiddlewareEventBase {

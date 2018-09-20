@@ -46,6 +46,10 @@ class Kawkah extends base_1.KawkahCommandBase {
         this.core.setLogHandler(fn);
         return this;
     }
+    configMemo(name = true, describe) {
+        this.assert('.configMemo()', '<string|array|boolean> [string]', [name, describe]);
+        this.core.setMemo(name, describe);
+    }
     name(name) {
         this.assert('.name()', '[string]', arguments);
         if (!name)

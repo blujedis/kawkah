@@ -374,6 +374,16 @@ class KawkahCommandBase {
         this.core.setExample(name, text);
         return this;
     }
+    /**
+    * Creates long description memo for the command.
+    *
+    * @param text the text to be displayed for the memo.
+    */
+    memo(text) {
+        this.assert('.memo()', '<string>', arguments);
+        this.core.setCommand(this._name, 'memo', text);
+        return this;
+    }
     // OPTION METHODS //
     /**
      * Sets the type for an option.

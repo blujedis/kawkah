@@ -652,6 +652,17 @@ export class KawkahCommandBase<T> {
     return <any>this;
   }
 
+  /**
+  * Creates long description memo for the command.
+  * 
+  * @param text the text to be displayed for the memo.
+  */
+  memo(text: string): T & KawkahCommandBase<T> {
+    this.assert('.memo()', '<string>', arguments);
+    this.core.setCommand(this._name, 'memo', text);
+    return <any>this;
+  }
+
   // OPTION METHODS //
 
   /**

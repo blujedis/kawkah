@@ -137,6 +137,7 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     * @param fn a log/event handler function.
     */
     configLogger(fn?: KawkahLogHandler): this;
+    configMemo(name?: string | string[] | boolean, describe?: string): void;
     /**
      * Sets the name of your cli app.
      */

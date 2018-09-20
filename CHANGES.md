@@ -2,6 +2,13 @@
 
 Changes in descending order.
 
+### 09.20.2018 (v1.0.19)
+
+<table>
+  <tr><td>console.log</td><td>remove console.log whoops.</td></tr>
+  <tr><td>command.memo</td><td>Add ability to include a long description for commands, run $ app commandName --memo to display. Call kawkah.configMemo() to configure. kawkah.memo('your long description here.')</td></tr>
+</table
+
 ### 09.15.2018 (v1.0.16-v1.0.18)
 
 <table>

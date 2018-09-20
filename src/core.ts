@@ -2392,11 +2392,11 @@ export class KawkahCore extends EventEmitter {
       return wrapValue(val, '[', ']');
     }
 
-    function validGroupItem(obj: any, name: string, key: string, type: string) {
-      if (obj) return true;
-      this.error(this.utils.__`${this.utils.__`Help group`} ${name} has invlaid or missing ${type}`);
-      return false;
-    }
+    // function validGroupItem(obj: any, name: string, key: string, type: string) {
+    //   if (obj) return true;
+    //   this.error(this.utils.__`${this.utils.__`Help group`} ${name} has invlaid or missing ${type}`);
+    //   return false;
+    // }
 
     // BUILD HELPER //
 
@@ -2533,24 +2533,25 @@ export class KawkahCore extends EventEmitter {
             table
               .break()
               .section(applyTheme('describeCommand', cmd.describe));
+
+            if (cmd.memo)
+              table
+                .break()
+                .section(applyTheme('memo', cmd.memo));
           }
 
         }
 
         else if (isOption) {
-
           const opt = this.getOption(k);
           if (!opt || !opt.help) continue;
           table.row(...buildOption(opt, group));
-
         }
 
         else if (isExample) {
-
           const exp = this.getExample(k);
           if (!exp) continue;
           table.row(...buildExample(exp, group));
-
         }
 
         else {
@@ -2695,7 +2696,7 @@ export class KawkahCore extends EventEmitter {
     if (name === false) {
       this.removeOption(DEFAULT_COMMAND_NAME, key);
       this._helpHandler = undefined;
-      return this;
+      return;
     }
 
     else if (name === true) {
@@ -2754,6 +2755,72 @@ export class KawkahCore extends EventEmitter {
     this.assert('.showHelp()', '[string...]', arguments);
     if (!this._helpHandler) return;
     this._helpHandler(groups, this);
+  }
+
+  /**
+   * Enables memo option/feature with defaults.
+   */
+  setMemo();
+
+  /**
+   * Enables or disables memo option/feature.
+   * 
+   * @param enabled boolean enable/disables memo.
+   */
+  setMemo(enabled: boolean);
+
+  /**
+   * Enables memo feature optionally sets the option and description to be used.
+   * 
+   * @param name the option name for displaying command memo.
+   * @param describe the option description to display in help.
+   */
+  setMemo(name: string | string[], describe?: string);
+
+
+  setMemo(name: string | string[] | boolean = true, describe?: string) {
+
+    this.assert('.setMemo()', '<string|array|boolean> [string]', [name, describe]);
+
+    const key = this.utils.__`memo`;
+
+    if (isBoolean(name)) {
+      if (name === false) {
+        this.removeOption(DEFAULT_COMMAND_NAME, key);
+        return;
+      }
+      else {
+        name = undefined;
+      }
+    }
+
+    describe = describe || this.utils.__`Displays command ${key}`;
+
+    const action: KawkahResultAction = (result) => {
+
+      if (this._aborting)
+        return;
+
+      const cmdName = result[RESULT_COMMAND_KEY];
+      const cmd = this.getCommand(cmdName);
+
+      if (!cmd)
+        return this.warning(this.utils.__`Cannot display ${key} for unknown command ${cmdName}`);
+
+      const memo = cmd.memo || this.utils.__`${capitalize(key)} not defined.`;
+
+      const str = this.utils.colorize(capitalize(cmdName), ...this.options.theme.label) + ':\n\n' + memo;
+      this.write(str, true);
+
+    };
+
+    return this.setOption(DEFAULT_COMMAND_NAME, key, {
+      type: 'boolean',
+      alias: <string[]>name,
+      describe: describe,
+      action: action.bind(this)
+    });
+
   }
 
   /**
@@ -3323,7 +3390,6 @@ export class KawkahCore extends EventEmitter {
     const actionKeys = this.actionKeys();
     const matches = this.utils.arrayMatch(actionKeys, truthyOptions);
 
-
     // Check if actionable global option was passed.
     let actionOption = matches[0] ? this.getOption(matches[0]) : null;
 
@@ -3334,17 +3400,16 @@ export class KawkahCore extends EventEmitter {
 
     const event: IKawkahMiddlewareEventBase = { start: Date.now(), result: parsed, command: command || defaultCommand };
 
-    // Set flag that help was requested
+    // Set flag that global action option was requested
     // we'll use this to ignore middleware validations
     // that might otherwise fail.
-    event.isHelp = parsed.help;
-
-
+    event.isActionOption = !!actionOption;
 
     // If is event help disable validation steps
     // we won't need them.
     const validationGroups = this.middleware.group(KawkahMiddlewareGroup.Validate);
-    if (event.isHelp)
+
+    if (event.isActionOption)
       this.middleware.disable(...validationGroups);
 
     let result = parsed;
@@ -3373,14 +3438,13 @@ export class KawkahCore extends EventEmitter {
     // This is only need when if using Kawkah
     // in a live terminal where the process doesn't
     // exit, otherwise the next run will have disabled groups.
-    if (event.isHelp)
+    if (event.isActionOption)
       this.middleware.enable(...validationGroups);
 
     // Middlware successful no errors.
     this.result = result = event.result;
 
     if (commandName) {
-
 
       let actionArgs = [result, this];
 
@@ -3389,14 +3453,16 @@ export class KawkahCore extends EventEmitter {
 
       // Have command but user wants help.
       if (result.help) {
-        console.log('hit help');
         this.showHelp(result[RESULT_COMMAND_KEY]);
+      }
+
+      else if (result.memo) {
+        actionOption.action(result, this);
       }
 
       // If command action call it.
       else if (command.action)
         command.action(...actionArgs);
-
 
     }
 

@@ -209,6 +209,11 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
     return this;
   }
 
+  configMemo(name: string | string[] | boolean = true, describe?: string) {
+    this.assert('.configMemo()', '<string|array|boolean> [string]', [name, describe]);
+    this.core.setMemo(<any>name, describe);
+  }
+
   // API //
 
   /**

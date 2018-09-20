@@ -565,6 +565,23 @@ export declare class KawkahCore extends EventEmitter {
      */
     showHelp(...groups: string[]): void;
     /**
+     * Enables memo option/feature with defaults.
+     */
+    setMemo(): any;
+    /**
+     * Enables or disables memo option/feature.
+     *
+     * @param enabled boolean enable/disables memo.
+     */
+    setMemo(enabled: boolean): any;
+    /**
+     * Enables memo feature optionally sets the option and description to be used.
+     *
+     * @param name the option name for displaying command memo.
+     * @param describe the option description to display in help.
+     */
+    setMemo(name: string | string[], describe?: string): any;
+    /**
      * Gets the header.
      */
     getHeader(): [string, TablurAlign];
