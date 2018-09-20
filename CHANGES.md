@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 09.20.2018 (v1.0.19-v1.0.20)
+### 09.20.2018 (v1.0.19-v1.0.21)
 
 <table>
+  <tr><td>core.getGroupNamespace</td><td>namespaces were getting polluted by Kawkah core properties.</td></tr>
   <tr><td>console.log</td><td>remove console.log whoops.</td></tr>
   <tr><td>core.listen()</td><td>Set validation skip for any global action memo for example --version wasn't working.</td></tr>
   <tr><td>command.about</td><td>Add ability to include a long description for commands, run $ app commandName --about to display. Call kawkah.configAbout() to configure. kawkah.about('your long description here.')</td></tr>

@@ -480,12 +480,12 @@ export class KawkahCore extends EventEmitter {
 
     // ADD COMMAND GROUPS //
 
-    let title = (command.name === DEFAULT_COMMAND_NAME ? command.alias[0] || DEFAULT_COMMAND_NAME : command.name) + ':';
+    let title = (command.name === DEFAULT_COMMAND_NAME ? capitalize(command.alias[0]) || DEFAULT_COMMAND_NAME : capitalize(command.name)) + ':';
 
     // Add command and all its options.
     this.setGroup(command.name, {
-      title: capitalize(title),
-      items: [command.name],
+      title: title,
+      items: [],
       children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
       isCommand: true
     });
@@ -1947,40 +1947,51 @@ export class KawkahCore extends EventEmitter {
    *
    * @param name the name to lookup and normalize.
    */
-  getGroupNamespace(name) {
+  getGroupNamespace(name: string) {
+
+    let _name = name;
+
+    const segments = name.split('.');
+
+    let item;
 
     // Check if is full namespace.
-    let item = get(this, name);
-    const orig = name;
-
-    if (item) {
-      return {
-        ns: name,
-        item
-      };
+    // Only check if more than one segment
+    // otherwise could get polluted by
+    // Kawkah property names.
+    if (segments.length > 1) {
+      item = get(this, name);
+      if (item) {
+        return {
+          name: _name,
+          ns: name,
+          item
+        };
+      }
     }
+
 
     // Check if is example
     item = get(this.examples, name);
 
     if (item) {
       return {
+        name: _name,
         ns: `examples.${name}`,
         item
       };
     }
 
     // Check if first key is command name or alias.
-    let nameSplit = name.split('.');
-    const nameAlias = this.commandAliasToKey(nameSplit.shift());
+    const nameAlias = this.commandAliasToKey(segments.shift());
 
     // If found update the name.
     if (nameAlias) {
-      nameSplit.unshift(nameAlias);
-      name = nameSplit.join('.');
+      segments.unshift(nameAlias);
+      name = segments.join('.');
     }
     else {
-      nameSplit.unshift(name);
+      segments.unshift(name);
     }
 
     // Check if name is only command.
@@ -1988,21 +1999,23 @@ export class KawkahCore extends EventEmitter {
 
     if (item && isPlainObject(item)) {
       return {
+        name: _name,
         ns: `commands.${name}`,
         item
       };
     }
 
     // Check if command.optionName shorthand.
-    if (nameSplit.length > 1) {
+    if (segments.length > 1) {
 
-      nameSplit.splice(1, 0, 'options');
-      name = nameSplit.join('.');
+      segments.splice(1, 0, 'options');
+      name = segments.join('.');
 
       item = get(this.commands, name);
 
       if (item && isPlainObject(item)) {
         return {
+          name: _name,
           ns: `commands.${name}`,
           item
         };
@@ -2017,6 +2030,7 @@ export class KawkahCore extends EventEmitter {
       item = <IKawkahOptionInternal>item;
 
       return {
+        name: _name,
         ns: `commands.${(item as IKawkahOptionInternal).command}.options.${name}`,
         item
       };
@@ -2025,7 +2039,8 @@ export class KawkahCore extends EventEmitter {
 
     // Probably a static string.
     return {
-      ns: orig,
+      name: _name,
+      ns: _name,
       item: name
     };
 
@@ -2101,7 +2116,15 @@ export class KawkahCore extends EventEmitter {
       group = Object.assign({}, group, config);
 
       // Ensure no duplicates in group items.
-      group.items = (group.items as string[]).map(v => this.getGroupNamespace(v).ns);
+      group.items = (group.items as string[]).reduce((a, c) => {
+        let ns = this.getGroupNamespace(c).ns;
+        // TODO: look into better way for now
+        // this ensures the "commands" global group
+        // isn't poluted with examples.
+        if (name === 'commands' && /^examples/.test(ns))
+          return a;
+        return [...a, ns];
+      }, []);
       group.items = this.utils.arrayExtend(tmpItems || [], group.items);
       group.children = this.utils.arrayExtend(tmpChildren, group.children);
 
@@ -2140,8 +2163,18 @@ export class KawkahCore extends EventEmitter {
     }
 
     items = items.map(v => this.getGroupNamespace(v).ns);
+    items = items.reduce((a, c) => {
+      let ns = this.getGroupNamespace(c).ns;
+      // TODO: look into better way for now
+      // this ensures the "commands" global group
+      // isn't poluted with examples.
+      if (name === 'commands' && /^examples/.test(ns))
+        return a;
+      return [...a, ns];
+    }, []);
 
     group.items = this.utils.arrayExtend(group.items || [], items);
+
     group.sort = isUndefined(group.sort) ? this.options.sortGroups : group.sort;
 
     this.groups[name] = group;
@@ -2490,7 +2523,7 @@ export class KawkahCore extends EventEmitter {
       indent = toDefault(indent, group.indent);
 
       // Run message through formatter
-      val = this.utils.formatMessage(val, this);
+      val = this.utils.formatMessage(val, { $0: this.$0 });
 
       // Colorize the static element.
       if (theme)
@@ -2533,11 +2566,6 @@ export class KawkahCore extends EventEmitter {
             table
               .break()
               .section(applyTheme('describeCommand', cmd.describe));
-
-            if (cmd.about)
-              table
-                .break()
-                .section(applyTheme('about', cmd.about));
           }
 
         }
@@ -2815,7 +2843,7 @@ export class KawkahCore extends EventEmitter {
       (examples.items as string[]).forEach((k, i) => {
         const example = this.getExample(k);
         if (example) {
-          exampleStr += this.utils.colorize(this.utils.formatMessage(example, this), ...this.options.theme.example);
+          exampleStr += this.utils.colorize(this.utils.formatMessage(example, { $0: this.$0 }), ...this.options.theme.example);
           if ((i - 1) < examples.items.length)
             exampleStr += '\n';
         }

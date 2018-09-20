@@ -421,8 +421,9 @@ export declare class KawkahCore extends EventEmitter {
      *
      * @param name the name to lookup and normalize.
      */
-    getGroupNamespace(name: any): {
-        ns: any;
+    getGroupNamespace(name: string): {
+        name: string;
+        ns: string;
         item: any;
     };
     getGroup(name: any, def?: IKawkahGroup): IKawkahGroup;
