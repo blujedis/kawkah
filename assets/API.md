@@ -209,6 +209,26 @@ Adds an example to be displayed in help.
 kk.example('install.simple', 'This is the simplest way to install');
 ```
 
+### .about()
+
+Adds a long description for the current command.
+
+```ts
+kk.about('Some very long description that would be helpful to user.');
+```
+
+Result:
+
+```sh
+CommandName:
+
+'A very long memo for CommandName'
+
+Examples:
+
+'List of command examples'
+```
+
 ## Option Methods
 
 This section contains API methods that are base methods for options on both the Kawkah instance and any KawkahCommand instance.
@@ -536,6 +556,26 @@ Configure a custom log handler to capture all log messages.
 kk.configLogger((type: string, message: string, ...args: any[]) => {
   // Handle
 });
+```
+
+### .configAbout() 
+
+Configure and/or enable the Memo feature which allows for long descriptions for commands.
+
+```ts
+kk.configAbout();
+```
+
+OR
+
+```ts
+kk.configAbout(false);
+```
+
+OR
+
+```ts
+kk.configAbout('custom-name', 'Option description');
 ```
 
 ### .middleware()

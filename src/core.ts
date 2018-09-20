@@ -2534,10 +2534,10 @@ export class KawkahCore extends EventEmitter {
               .break()
               .section(applyTheme('describeCommand', cmd.describe));
 
-            if (cmd.memo)
+            if (cmd.about)
               table
                 .break()
-                .section(applyTheme('memo', cmd.memo));
+                .section(applyTheme('about', cmd.about));
           }
 
         }
@@ -2758,31 +2758,31 @@ export class KawkahCore extends EventEmitter {
   }
 
   /**
-   * Enables memo option/feature with defaults.
+   * Enables about option/feature with defaults.
    */
-  setMemo();
+  setAbout();
 
   /**
-   * Enables or disables memo option/feature.
+   * Enables or disables about option/feature.
    * 
-   * @param enabled boolean enable/disables memo.
+   * @param enabled boolean enable/disables about.
    */
-  setMemo(enabled: boolean);
+  setAbout(enabled: boolean);
 
   /**
-   * Enables memo feature optionally sets the option and description to be used.
+   * Enables about feature optionally sets the option and description to be used.
    * 
-   * @param name the option name for displaying command memo.
+   * @param name the option name for displaying command about.
    * @param describe the option description to display in help.
    */
-  setMemo(name: string | string[], describe?: string);
+  setAbout(name: string | string[], describe?: string);
 
 
-  setMemo(name: string | string[] | boolean = true, describe?: string) {
+  setAbout(name: string | string[] | boolean = true, describe?: string) {
 
-    this.assert('.setMemo()', '<string|array|boolean> [string]', [name, describe]);
+    this.assert('.setAbout()', '<string|array|boolean> [string]', [name, describe]);
 
-    const key = this.utils.__`memo`;
+    const key = this.utils.__`about`;
 
     if (isBoolean(name)) {
       if (name === false) {
@@ -2807,9 +2807,24 @@ export class KawkahCore extends EventEmitter {
       if (!cmd)
         return this.warning(this.utils.__`Cannot display ${key} for unknown command ${cmdName}`);
 
-      const memo = cmd.memo || this.utils.__`${capitalize(key)} not defined.`;
+      let memo = this.utils.colorize(cmd.about || this.utils.__`${capitalize(key)} not defined.`, ...this.options.theme.about);
 
-      const str = this.utils.colorize(capitalize(cmdName), ...this.options.theme.label) + ':\n\n' + memo;
+      const examples = this.getGroup(cmdName + '.examples');
+      let exampleStr = '';
+
+      (examples.items as string[]).forEach((k, i) => {
+        const example = this.getExample(k);
+        if (example) {
+          exampleStr += this.utils.colorize(this.utils.formatMessage(example, this), ...this.options.theme.example);
+          if ((i - 1) < examples.items.length)
+            exampleStr += '\n';
+        }
+      });
+
+      if (exampleStr.length)
+        memo += (`\n\n${this.utils.colorize(this.utils.__`Examples:`, ...this.options.theme.label)}\n\n` + exampleStr);
+
+      const str = this.utils.colorize(capitalize(cmdName) + ':', ...this.options.theme.label) + '\n\n' + memo;
       this.write(str, true);
 
     };
@@ -3456,7 +3471,7 @@ export class KawkahCore extends EventEmitter {
         this.showHelp(result[RESULT_COMMAND_KEY]);
       }
 
-      else if (result.memo) {
+      else if (result.about) {
         actionOption.action(result, this);
       }
 

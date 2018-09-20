@@ -1713,10 +1713,10 @@ class KawkahCore extends events_1.EventEmitter {
                         table
                             .break()
                             .section(applyTheme('describeCommand', cmd.describe));
-                        if (cmd.memo)
+                        if (cmd.about)
                             table
                                 .break()
-                                .section(applyTheme('memo', cmd.memo));
+                                .section(applyTheme('about', cmd.about));
                     }
                 }
                 else if (isOption) {
@@ -1849,9 +1849,9 @@ class KawkahCore extends events_1.EventEmitter {
             return;
         this._helpHandler(groups, this);
     }
-    setMemo(name = true, describe) {
-        this.assert('.setMemo()', '<string|array|boolean> [string]', [name, describe]);
-        const key = this.utils.__ `memo`;
+    setAbout(name = true, describe) {
+        this.assert('.setAbout()', '<string|array|boolean> [string]', [name, describe]);
+        const key = this.utils.__ `about`;
         if (chek_1.isBoolean(name)) {
             if (name === false) {
                 this.removeOption(constants_1.DEFAULT_COMMAND_NAME, key);
@@ -1869,8 +1869,20 @@ class KawkahCore extends events_1.EventEmitter {
             const cmd = this.getCommand(cmdName);
             if (!cmd)
                 return this.warning(this.utils.__ `Cannot display ${key} for unknown command ${cmdName}`);
-            const memo = cmd.memo || this.utils.__ `${chek_1.capitalize(key)} not defined.`;
-            const str = this.utils.colorize(chek_1.capitalize(cmdName), ...this.options.theme.label) + ':\n\n' + memo;
+            let memo = this.utils.colorize(cmd.about || this.utils.__ `${chek_1.capitalize(key)} not defined.`, ...this.options.theme.about);
+            const examples = this.getGroup(cmdName + '.examples');
+            let exampleStr = '';
+            examples.items.forEach((k, i) => {
+                const example = this.getExample(k);
+                if (example) {
+                    exampleStr += this.utils.colorize(this.utils.formatMessage(example, this), ...this.options.theme.example);
+                    if ((i - 1) < examples.items.length)
+                        exampleStr += '\n';
+                }
+            });
+            if (exampleStr.length)
+                memo += (`\n\n${this.utils.colorize(this.utils.__ `Examples:`, ...this.options.theme.label)}\n\n` + exampleStr);
+            const str = this.utils.colorize(chek_1.capitalize(cmdName) + ':', ...this.options.theme.label) + '\n\n' + memo;
             this.write(str, true);
         };
         return this.setOption(constants_1.DEFAULT_COMMAND_NAME, key, {
@@ -2304,7 +2316,7 @@ class KawkahCore extends events_1.EventEmitter {
             if (result.help) {
                 this.showHelp(result[constants_1.RESULT_COMMAND_KEY]);
             }
-            else if (result.memo) {
+            else if (result.about) {
                 actionOption.action(result, this);
             }
             // If command action call it.

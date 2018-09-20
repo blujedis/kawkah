@@ -311,11 +311,11 @@ export declare class KawkahCommandBase<T> {
     */
     example(name: string, text: string): T & KawkahCommandBase<T>;
     /**
-    * Creates long description memo for the command.
+    * Creates long description about the command.
     *
-    * @param text the text to be displayed for the memo.
+    * @param text the text to be displayed about the command.
     */
-    memo(text: string): T & KawkahCommandBase<T>;
+    about(text: string): T & KawkahCommandBase<T>;
     /**
      * Sets the type for an option.
      *

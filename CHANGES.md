@@ -2,11 +2,12 @@
 
 Changes in descending order.
 
-### 09.20.2018 (v1.0.19)
+### 09.20.2018 (v1.0.19-v1.0.20)
 
 <table>
   <tr><td>console.log</td><td>remove console.log whoops.</td></tr>
-  <tr><td>command.memo</td><td>Add ability to include a long description for commands, run $ app commandName --memo to display. Call kawkah.configMemo() to configure. kawkah.memo('your long description here.')</td></tr>
+  <tr><td>core.listen()</td><td>Set validation skip for any global action memo for example --version wasn't working.</td></tr>
+  <tr><td>command.about</td><td>Add ability to include a long description for commands, run $ app commandName --about to display. Call kawkah.configAbout() to configure. kawkah.about('your long description here.')</td></tr>
 </table
 
 ### 09.15.2018 (v1.0.16-v1.0.18)

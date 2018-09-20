@@ -101,12 +101,30 @@ export interface IKawkahTheme {
     flag?: KawkahAnsiType;
     describe?: KawkahAnsiType;
     describeCommand?: KawkahAnsiType;
-    memo?: KawkahAnsiType;
+    about?: KawkahAnsiType;
     type?: KawkahAnsiType;
     variadic?: KawkahAnsiType;
     required?: KawkahAnsiType;
     footer?: KawkahAnsiType;
     example?: KawkahAnsiType;
+}
+export interface IKawkahThemeInternal {
+    header?: AnsiStyles[];
+    label?: AnsiStyles[];
+    command?: AnsiStyles[];
+    title?: AnsiStyles[];
+    usage?: AnsiStyles[];
+    alias?: AnsiStyles[];
+    argument?: AnsiStyles[];
+    flag?: AnsiStyles[];
+    describe?: AnsiStyles[];
+    describeCommand?: AnsiStyles[];
+    about?: AnsiStyles[];
+    type?: AnsiStyles[];
+    variadic?: AnsiStyles[];
+    required?: AnsiStyles[];
+    footer?: AnsiStyles[];
+    example?: AnsiStyles[];
 }
 export interface IKawkahThemes {
     default: IKawkahTheme;
@@ -203,7 +221,7 @@ export interface IKawkahCommand {
     readonly usage?: string;
     readonly args?: string[];
     describe?: string;
-    memo?: string;
+    about?: string;
     alias?: string | string[];
     options?: IKawkahMap<string | IKawkahOption>;
     help?: string | boolean | KawkahHandler;
@@ -262,20 +280,7 @@ export interface IKawkahOptions extends IKawkahOptionsBase, IKawkahCommand, IKaw
  * Internal options interface stripping out default command options.
  */
 export interface IKawkahOptionsInternal extends IKawkahOptionsBase, IKawkahParserOptions {
-    theme?: {
-        header?: AnsiStyles[];
-        label?: AnsiStyles[];
-        title?: AnsiStyles[];
-        usage?: AnsiStyles[];
-        alias?: AnsiStyles[];
-        argument?: AnsiStyles[];
-        option?: AnsiStyles[];
-        describe?: AnsiStyles[];
-        type?: AnsiStyles[];
-        variadic?: AnsiStyles[];
-        required?: AnsiStyles[];
-        footer?: AnsiStyles[];
-    };
+    theme?: IKawkahThemeInternal;
     styles?: {
         primary?: AnsiStyles[];
         accent?: AnsiStyles[];

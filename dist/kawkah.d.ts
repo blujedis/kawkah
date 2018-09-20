@@ -137,7 +137,23 @@ export declare class Kawkah extends KawkahCommandBase<Kawkah> {
     * @param fn a log/event handler function.
     */
     configLogger(fn?: KawkahLogHandler): this;
-    configMemo(name?: string | string[] | boolean, describe?: string): void;
+    /**
+   * Enables about option/feature with defaults.
+   */
+    configAbout(): any;
+    /**
+     * Enables or disables about option/feature.
+     *
+     * @param enabled boolean enable/disables about.
+     */
+    configAbout(enabled: boolean): any;
+    /**
+     * Enables about feature optionally sets the option and description to be used.
+     *
+     * @param name the option name for displaying command about.
+     * @param describe the option description to display in help.
+     */
+    configAbout(name: string | string[], describe?: string): any;
     /**
      * Sets the name of your cli app.
      */

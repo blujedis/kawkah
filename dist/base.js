@@ -375,13 +375,13 @@ class KawkahCommandBase {
         return this;
     }
     /**
-    * Creates long description memo for the command.
+    * Creates long description about the command.
     *
-    * @param text the text to be displayed for the memo.
+    * @param text the text to be displayed about the command.
     */
-    memo(text) {
-        this.assert('.memo()', '<string>', arguments);
-        this.core.setCommand(this._name, 'memo', text);
+    about(text) {
+        this.assert('.about()', '<string>', arguments);
+        this.core.setCommand(this._name, 'about', text);
         return this;
     }
     // OPTION METHODS //

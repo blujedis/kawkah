@@ -653,13 +653,13 @@ export class KawkahCommandBase<T> {
   }
 
   /**
-  * Creates long description memo for the command.
+  * Creates long description about the command.
   * 
-  * @param text the text to be displayed for the memo.
+  * @param text the text to be displayed about the command.
   */
-  memo(text: string): T & KawkahCommandBase<T> {
-    this.assert('.memo()', '<string>', arguments);
-    this.core.setCommand(this._name, 'memo', text);
+  about(text: string): T & KawkahCommandBase<T> {
+    this.assert('.about()', '<string>', arguments);
+    this.core.setCommand(this._name, 'about', text);
     return <any>this;
   }
 

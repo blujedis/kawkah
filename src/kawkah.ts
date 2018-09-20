@@ -209,9 +209,29 @@ export class Kawkah extends KawkahCommandBase<Kawkah> {
     return this;
   }
 
-  configMemo(name: string | string[] | boolean = true, describe?: string) {
-    this.assert('.configMemo()', '<string|array|boolean> [string]', [name, describe]);
-    this.core.setMemo(<any>name, describe);
+  /**
+ * Enables about option/feature with defaults.
+ */
+  configAbout();
+
+  /**
+   * Enables or disables about option/feature.
+   * 
+   * @param enabled boolean enable/disables about.
+   */
+  configAbout(enabled: boolean);
+
+  /**
+   * Enables about feature optionally sets the option and description to be used.
+   * 
+   * @param name the option name for displaying command about.
+   * @param describe the option description to display in help.
+   */
+  configAbout(name: string | string[], describe?: string);
+
+  configAbout(name: string | string[] | boolean = true, describe?: string) {
+    this.assert('.configAbout()', '<string|array|boolean> [string]', [name, describe]);
+    this.core.setAbout(<any>name, describe);
   }
 
   // API //
