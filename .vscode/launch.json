@@ -11,6 +11,7 @@
       "program": "${workspaceFolder}/src/debug.ts",
       "stopOnEntry": false,
       "args": [
+        "history",
         "--help"
       ],
       "cwd": "${workspaceFolder}",

@@ -485,7 +485,7 @@ export class KawkahCore extends EventEmitter {
     // Add command and all its options.
     this.setGroup(command.name, {
       title: title,
-      items: [],
+      items: [command.name],
       children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
       isCommand: true
     });
@@ -2121,7 +2121,7 @@ export class KawkahCore extends EventEmitter {
         // TODO: look into better way for now
         // this ensures the "commands" global group
         // isn't poluted with examples.
-        if (name === 'commands' && /^examples/.test(ns))
+        if ((name === 'commands' || group.isCommand) && /^examples/.test(ns))
           return a;
         return [...a, ns];
       }, []);
@@ -2168,7 +2168,7 @@ export class KawkahCore extends EventEmitter {
       // TODO: look into better way for now
       // this ensures the "commands" global group
       // isn't poluted with examples.
-      if (name === 'commands' && /^examples/.test(ns))
+      if ((name === 'commands' || group.isCommand) && /^examples/.test(ns))
         return a;
       return [...a, ns];
     }, []);
@@ -2615,7 +2615,7 @@ export class KawkahCore extends EventEmitter {
 
       const group = get<IKawkahGroup>(this.groups, k);
 
-      if (!group || !group.enabled || !group.items.length)
+      if (!group || !group.enabled)
         return;
 
       buildGroup(k, group);
@@ -3506,7 +3506,6 @@ export class KawkahCore extends EventEmitter {
       // If command action call it.
       else if (command.action)
         command.action(...actionArgs);
-
     }
 
     // An actionable option was passed.

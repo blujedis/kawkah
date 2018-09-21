@@ -311,7 +311,7 @@ class KawkahCore extends events_1.EventEmitter {
         // Add command and all its options.
         this.setGroup(command.name, {
             title: title,
-            items: [],
+            items: [command.name],
             children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
             isCommand: true
         });
@@ -1434,7 +1434,7 @@ class KawkahCore extends events_1.EventEmitter {
                 // TODO: look into better way for now
                 // this ensures the "commands" global group
                 // isn't poluted with examples.
-                if (name === 'commands' && /^examples/.test(ns))
+                if ((name === 'commands' || group.isCommand) && /^examples/.test(ns))
                     return a;
                 return [...a, ns];
             }, []);
@@ -1466,7 +1466,7 @@ class KawkahCore extends events_1.EventEmitter {
             // TODO: look into better way for now
             // this ensures the "commands" global group
             // isn't poluted with examples.
-            if (name === 'commands' && /^examples/.test(ns))
+            if ((name === 'commands' || group.isCommand) && /^examples/.test(ns))
                 return a;
             return [...a, ns];
         }, []);
@@ -1775,7 +1775,7 @@ class KawkahCore extends events_1.EventEmitter {
         };
         groups.forEach((k, i) => {
             const group = chek_1.get(this.groups, k);
-            if (!group || !group.enabled || !group.items.length)
+            if (!group || !group.enabled)
                 return;
             buildGroup(k, group);
             if (groups[i + 1]) {
