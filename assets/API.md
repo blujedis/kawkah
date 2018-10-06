@@ -314,7 +314,7 @@ kk.demandFor('order', ['crust', 'size'], /(drink|dessert)/)
 Sets a default value for an option.
 
 ```ts
-kk.defaultFor('toppings', ['cheese']);
+kk.defaultFor('toppings', 'cheese');
 ```
 
 ### .requiredFor()

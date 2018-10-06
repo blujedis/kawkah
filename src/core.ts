@@ -242,7 +242,7 @@ export class KawkahCore extends EventEmitter {
     }
 
     if (err && this.options.stacktrace) {
-      formatted = (err as KawkahError).stacktrace ? (err as KawkahError).stacktrace : err.stack;
+      formatted = err.stack; // (err as KawkahError).stacktrace ? (err as KawkahError).stacktrace : err.stack;
     }
 
     // Ensure string.
@@ -293,6 +293,10 @@ export class KawkahCore extends EventEmitter {
     // Always ensure the error handler.
     if (!this._logHandler) this.setLogHandler();
 
+    // Prevents unnecessary errors being logged if aborting.
+    if (this.options.terminate && this._aborting)
+      return;
+
     // Allow message as first arg.
     if (isString(event) && !KawkahEvent[<string>event]) {
       if (isValue(message))
@@ -316,6 +320,7 @@ export class KawkahCore extends EventEmitter {
     // If not a KawkahError convert it.
     if (!(err instanceof KawkahError)) {
       const tmpErr = new KawkahError(err.message, err.name, 1, this);
+
       tmpErr.generateStacktrace(err.stack);
       err = tmpErr;
     }
@@ -1013,15 +1018,21 @@ export class KawkahCore extends EventEmitter {
     // Check if should exit the process.
     if (this.options.terminate) {
 
-      if (!isDebug())
-        process.exit(code);
+      // If debugging flush lokales queue
+      // don't try to write out changes as
+      // it can corrupt the file.
+      if (isDebug())
+        this.utils.lokales.flush();
+
+      // if (!isDebug())
+      process.exit(code);
 
       // If debugging exit gracefully
       // so we don't clobber locales.
-      else
-        this.utils.lokales.onQueueEmpty(() => {
-          process.exit(code);
-        });
+      // else
+      //   this.utils.lokales.onQueueEmpty(() => {
+      //     process.exit(code);
+      //   });
 
     }
 

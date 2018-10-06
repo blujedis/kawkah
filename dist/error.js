@@ -48,9 +48,20 @@ class KawkahError extends Error {
         this.stack = stack;
         // Check if message contains line returns.
         const msgLines = this.message.match(/\n/g);
+        let start = undefined;
         // Split stack to array.
         let stacktrace = stack.split('\n');
+        stacktrace.forEach((s, i) => {
+            if (/^\s+at/.test(s) && typeof start === 'undefined')
+                start = i - 1;
+        });
+        start = start || 0;
+        let row;
+        if (start !== 0 && /\.js/.test(stacktrace[0]))
+            row = stacktrace[0];
+        stacktrace = stacktrace.slice(start);
         let message;
+        // let message;
         if (!msgLines) {
             message = stacktrace.shift();
         }
@@ -61,12 +72,14 @@ class KawkahError extends Error {
         // Purge rows from top of stack.
         if (purge > 0)
             stacktrace = stacktrace.slice(purge);
-        let match = stacktrace[0].match(exp);
-        let row = match[0];
+        if (!row) {
+            let match = stacktrace[0].match(exp);
+            row = match[0];
+        }
         row = row.replace(/\(|\)/g, '').split(':');
         this.filename = path_1.parse(row[0]).base;
         this.line = parseInt(row[1]);
-        this.column = parseInt(row[2]);
+        this.column = parseInt(row[2] || 0);
         // Ministack trace with offending file, line and column.
         this.ministack = `${this.filename}:${this.line}:${this.column}`;
         stacktrace.unshift(message);

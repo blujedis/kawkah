@@ -79,7 +79,7 @@ See [https://blujedis.github.io/kawkah/](https://blujedis.github.io/kawkah/)
 
 ## Change
 
-See [CHANGE.md](CHANGE.md)
+See [CHANGES.md](CHANGES.md)
 
 ## License
 
