@@ -1,6 +1,6 @@
 {
   "name": "kawkah",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "CLI argument parser with middleware support.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -87,6 +87,6 @@
     "kawkah-parser": "^1.0.0",
     "lokales": "^1.2.4",
     "read-pkg-up": "^4.0.0",
-    "tablur": "^1.0.8"
+    "tablur": "^1.2.0"
   }
 }

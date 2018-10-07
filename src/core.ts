@@ -51,10 +51,10 @@ export class KawkahCore extends EventEmitter {
   // TABLE //
 
   @nonenumerable
-  private _header: [string, TablurAlign];
+  private _header: [string, 'left' | 'center' | 'right'];
 
   @nonenumerable
-  private _footer: [string, TablurAlign];
+  private _footer: [string, 'left' | 'center' | 'right'];
 
   @nonenumerable
   private _events: { names: string[], max: number };
@@ -2262,10 +2262,11 @@ export class KawkahCore extends EventEmitter {
       return this.warning(this.utils.__`Failed to list groups of length 0.`);
 
     const tbl = new Tablur({
+      stream: this.options.output,
       colorize: this.options.colorize,
       width: 80,
       padding: 0,
-      sizes: [30]
+      // sizes: [30]
       // aligns: [null, null, TablurAlign.right]
     });
 
@@ -2279,11 +2280,11 @@ export class KawkahCore extends EventEmitter {
       let children: any = group.children as string[];
       items = !items.length ? 'none' : items.join(', ');
       children = !children.length ? 'none' : children.join(', ');
-      tbl.row(...['items:', items]);
-      tbl.row(...['children:', children]);
-      tbl.row(...['sort:', (group.sort || false) + '']);
-      tbl.row(...['isCommand:', (group.isCommand || false) + '']);
-      tbl.row(...['indent:', group.indent + '']);
+      tbl.row(['items:', items]);
+      tbl.row(['children:', children]);
+      tbl.row(['sort:', (group.sort || false) + '']);
+      tbl.row(['isCommand:', (group.isCommand || false) + '']);
+      tbl.row(['indent:', group.indent + '']);
       if (names[i + 1])
         tbl.break();
     });
@@ -2394,10 +2395,10 @@ export class KawkahCore extends EventEmitter {
     const width = this.options.width;
 
     const table = this.table || new Tablur({
+      stream: this.options.output,
       colorize: this.options.colorize,
       width: width,
-      padding: 0,
-      aligns: [null, null, TablurAlign.left]
+      padding: 0
     });
 
     // Clear ensure empty rows.
@@ -2570,7 +2571,7 @@ export class KawkahCore extends EventEmitter {
 
           const cmd = this.getCommand(k);
           if (!cmd || !cmd.help) continue;
-          table.row(...buildCommand(cmd, group));
+          table.row(buildCommand(cmd, group));
 
           // Need to add description below.
           if (group.isCommand && cmd.describe.length) {
@@ -2584,17 +2585,17 @@ export class KawkahCore extends EventEmitter {
         else if (isOption) {
           const opt = this.getOption(k);
           if (!opt || !opt.help) continue;
-          table.row(...buildOption(opt, group));
+          table.row(buildOption(opt, group));
         }
 
         else if (isExample) {
           const exp = this.getExample(k);
           if (!exp) continue;
-          table.row(...buildExample(exp, group));
+          table.row(buildExample(exp, group));
         }
 
         else {
-          table.row(...buildStatic(k, group));
+          table.row(buildStatic(k, group));
         }
 
       }
@@ -2622,6 +2623,10 @@ export class KawkahCore extends EventEmitter {
 
     };
 
+    // Add header if any.
+    if (this._header)
+      table.section(applyTheme('header', this._header[0]), this._header[1]);
+
     groups.forEach((k, i) => {
 
       const group = get<IKawkahGroup>(this.groups, k);
@@ -2642,15 +2647,11 @@ export class KawkahCore extends EventEmitter {
 
     });
 
-    // Add header if any.
-    if (this._header)
-      table.header(applyTheme('header', this._header[0]), this._header[1]);
-
     // Add footer if any.
     if (this._footer)
-      table.footer(applyTheme('footer', this._footer[0]), this._footer[1]);
+      table.section(applyTheme('footer', this._footer[0]), this._footer[1]);
 
-    return table.render();
+    return table.build();
 
   }
 
@@ -2880,8 +2881,8 @@ export class KawkahCore extends EventEmitter {
   /**
    * Gets the header.
    */
-  getHeader(): [string, TablurAlign] {
-    return this._footer;
+  getHeader(): [string, 'left' | 'center' | 'right'] {
+    return this._header;
   }
 
   /**
@@ -2891,13 +2892,13 @@ export class KawkahCore extends EventEmitter {
    */
   setHeader(header: string, align?: 'left' | 'center' | 'right') {
     this.assert('.setHeader()', '<string> [string]', arguments);
-    this._header = [header, <any>align || TablurAlign.left];
+    this._header = [header, <any>align || 'left'];
   }
 
   /**
    * Gets the footer.
    */
-  getFooter(): [string, TablurAlign] {
+  getFooter(): [string, 'left' | 'center' | 'right'] {
     return this._footer;
   }
 
@@ -2908,7 +2909,7 @@ export class KawkahCore extends EventEmitter {
    */
   setFooter(footer: string, align?: 'left' | 'center' | 'right') {
     this.assert('.setFooter()', '<string> [string]', arguments);
-    this._footer = [footer, <any>align || TablurAlign.left];
+    this._footer = [footer, <any>align || 'left'];
   }
 
   /**

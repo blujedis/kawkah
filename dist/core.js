@@ -1537,11 +1537,10 @@ class KawkahCore extends events_1.EventEmitter {
         if (!names.length)
             return this.warning(this.utils.__ `Failed to list groups of length 0.`);
         const tbl = new tablur_1.Tablur({
+            stream: this.options.output,
             colorize: this.options.colorize,
             width: 80,
             padding: 0,
-            sizes: [30]
-            // aligns: [null, null, TablurAlign.right]
         });
         names.forEach((k, i) => {
             const group = this.getGroup(k);
@@ -1554,11 +1553,11 @@ class KawkahCore extends events_1.EventEmitter {
             let children = group.children;
             items = !items.length ? 'none' : items.join(', ');
             children = !children.length ? 'none' : children.join(', ');
-            tbl.row(...['items:', items]);
-            tbl.row(...['children:', children]);
-            tbl.row(...['sort:', (group.sort || false) + '']);
-            tbl.row(...['isCommand:', (group.isCommand || false) + '']);
-            tbl.row(...['indent:', group.indent + '']);
+            tbl.row(['items:', items]);
+            tbl.row(['children:', children]);
+            tbl.row(['sort:', (group.sort || false) + '']);
+            tbl.row(['isCommand:', (group.isCommand || false) + '']);
+            tbl.row(['indent:', group.indent + '']);
             if (names[i + 1])
                 tbl.break();
         });
@@ -1620,10 +1619,10 @@ class KawkahCore extends events_1.EventEmitter {
         this.assert('.buildHelp()', '<array>', arguments);
         const width = this.options.width;
         const table = this.table || new tablur_1.Tablur({
+            stream: this.options.output,
             colorize: this.options.colorize,
             width: width,
-            padding: 0,
-            aligns: [null, null, tablur_1.TablurAlign.left]
+            padding: 0
         });
         // Clear ensure empty rows.
         table.clear();
@@ -1744,7 +1743,7 @@ class KawkahCore extends events_1.EventEmitter {
                     const cmd = this.getCommand(k);
                     if (!cmd || !cmd.help)
                         continue;
-                    table.row(...buildCommand(cmd, group));
+                    table.row(buildCommand(cmd, group));
                     // Need to add description below.
                     if (group.isCommand && cmd.describe.length) {
                         table
@@ -1756,16 +1755,16 @@ class KawkahCore extends events_1.EventEmitter {
                     const opt = this.getOption(k);
                     if (!opt || !opt.help)
                         continue;
-                    table.row(...buildOption(opt, group));
+                    table.row(buildOption(opt, group));
                 }
                 else if (isExample) {
                     const exp = this.getExample(k);
                     if (!exp)
                         continue;
-                    table.row(...buildExample(exp, group));
+                    table.row(buildExample(exp, group));
                 }
                 else {
-                    table.row(...buildStatic(k, group));
+                    table.row(buildStatic(k, group));
                 }
             }
             // Get each child group and build.
@@ -1781,6 +1780,9 @@ class KawkahCore extends events_1.EventEmitter {
                 });
             }
         };
+        // Add header if any.
+        if (this._header)
+            table.section(applyTheme('header', this._header[0]), this._header[1]);
         groups.forEach((k, i) => {
             const group = chek_1.get(this.groups, k);
             if (!group || !group.enabled)
@@ -1795,13 +1797,10 @@ class KawkahCore extends events_1.EventEmitter {
                 }
             }
         });
-        // Add header if any.
-        if (this._header)
-            table.header(applyTheme('header', this._header[0]), this._header[1]);
         // Add footer if any.
         if (this._footer)
-            table.footer(applyTheme('footer', this._footer[0]), this._footer[1]);
-        return table.render();
+            table.section(applyTheme('footer', this._footer[0]), this._footer[1]);
+        return table.build();
     }
     /**
      * Gets help if enabled.
@@ -1929,7 +1928,7 @@ class KawkahCore extends events_1.EventEmitter {
      * Gets the header.
      */
     getHeader() {
-        return this._footer;
+        return this._header;
     }
     /**
      * Sets the header.
@@ -1938,7 +1937,7 @@ class KawkahCore extends events_1.EventEmitter {
      */
     setHeader(header, align) {
         this.assert('.setHeader()', '<string> [string]', arguments);
-        this._header = [header, align || tablur_1.TablurAlign.left];
+        this._header = [header, align || 'left'];
     }
     /**
      * Gets the footer.
@@ -1953,7 +1952,7 @@ class KawkahCore extends events_1.EventEmitter {
      */
     setFooter(footer, align) {
         this.assert('.setFooter()', '<string> [string]', arguments);
-        this._footer = [footer, align || tablur_1.TablurAlign.left];
+        this._footer = [footer, align || 'left'];
     }
     /**
      * Sets a theme for styling help.

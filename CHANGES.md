@@ -2,20 +2,21 @@
 
 Changes in descending order.
 
-### 10.06.2018 (v1.0.24)
+### 10.06.2018 (v1.0.23-v1.0.24)
 
 <table>
+ <tr><td>Tablur</td><td>upgrade to Tablur 1.2.0.</td></tr>
   <tr><td>exit</td><td>flush queue for lokales when debugging rather than waiting to empty.</td></tr>
   <tr><td>core.dispatch</td><td>if terminate enabled and is aborting halt further dispatches.</td></tr>
 </table>
 
-### 09.22.2018 (v1.0.23)
+### 09.22.2018 (v1.0.22)
 
 <table>
   <tr><td>error</td><td>favor full stacktrace rather than pruned.</td></tr>
 </table>
 
-### 09.20.2018 (v1.0.19-v1.0.22)
+### 09.20.2018 (v1.0.19-v1.0.21)
 
 <table>
   <tr><td>core.setGroup</td><td>fix bug where generated groups polluted with example as command.</td></tr>

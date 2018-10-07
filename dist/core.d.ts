@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
-import { Tablur, TablurAlign } from 'tablur';
+import { Tablur } from 'tablur';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import { KawkahMiddleware } from './middleware';
 import { KawkahUtils } from './utils';
@@ -585,7 +585,7 @@ export declare class KawkahCore extends EventEmitter {
     /**
      * Gets the header.
      */
-    getHeader(): [string, TablurAlign];
+    getHeader(): [string, 'left' | 'center' | 'right'];
     /**
      * Sets the header.
      *
@@ -595,7 +595,7 @@ export declare class KawkahCore extends EventEmitter {
     /**
      * Gets the footer.
      */
-    getFooter(): [string, TablurAlign];
+    getFooter(): [string, 'left' | 'center' | 'right'];
     /**
      * Sets the footer.
      *
