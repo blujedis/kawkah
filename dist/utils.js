@@ -667,7 +667,10 @@ class KawkahUtils {
      * @param val the value to inspect.
      */
     hasTokens(val) {
-        return kawkah_parser_1.isArgAny(val) || kawkah_parser_1.isFlagAny(val);
+        const ARG_OPT_ANY = /\[.+\]/g;
+        const ARG_REQ_ANY = /\<.+\>/g;
+        const isAnyArg = ARG_OPT_ANY.test(val) || ARG_REQ_ANY.test(val);
+        return isAnyArg || kawkah_parser_1.isFlagAny(val);
     }
     /**
      * Strips tokens and ensures camelcase.

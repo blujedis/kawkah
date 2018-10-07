@@ -2,9 +2,10 @@
 
 Changes in descending order.
 
-### 10.06.2018 (v1.0.23-v1.0.24)
+### 10.06.2018 (v1.0.23-v1.0.25)
 
 <table>
+ <tr><td>utils.hasTokens</td><td>strange bug with RegExp added temp fix need to revisit.</td></tr>
  <tr><td>Tablur</td><td>upgrade to Tablur 1.2.0.</td></tr>
   <tr><td>exit</td><td>flush queue for lokales when debugging rather than waiting to empty.</td></tr>
   <tr><td>core.dispatch</td><td>if terminate enabled and is aborting halt further dispatches.</td></tr>

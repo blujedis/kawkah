@@ -10,7 +10,7 @@ import { configure as argsert, IArgsert } from 'argsert';
 
 import { isError, isString, isFunction, toArray, isValue, flatten, decamelcase, isArray, split, isObject, isWindows, isNumber, } from 'chek';
 
-import { isFlag, expandOptions, expandArgs, isArg, isArgDotNotation, isArgRequired, isFlagPrev, stripFlag, stripTokens, isArgVariadic, isArgVariadicRequired, isNegateFlag, isType, toType, isArgAny, isFlagAny, toCamelcase } from 'kawkah-parser';
+import { isFlag, expandOptions, expandArgs, isArg, isArgDotNotation, isArgRequired, isFlagPrev, stripFlag, stripTokens, isArgVariadic, isArgVariadicRequired, isNegateFlag, isType, toType, isArgAny, isFlagAny, toCamelcase, isArgOptionalAny, isArgRequiredAny } from 'kawkah-parser';
 
 import { KawkahStyleKeys, AnsiStyles, IKawkahMap, KawkahReduceCallback } from './interfaces';
 
@@ -862,7 +862,10 @@ export class KawkahUtils {
    * @param val the value to inspect.
    */
   hasTokens(val: string) {
-    return isArgAny(val) || isFlagAny(val);
+    const ARG_OPT_ANY = /\[.+\]/g;
+    const ARG_REQ_ANY = /\<.+\>/g;
+    const isAnyArg = ARG_OPT_ANY.test(val) || ARG_REQ_ANY.test(val);
+    return isAnyArg || isFlagAny(val);
   }
 
   /**
