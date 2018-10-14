@@ -2461,7 +2461,6 @@ export class KawkahCore extends EventEmitter {
       let aliases: any = !cmd.alias.length ? '' : (cmd.alias as string[]).join(', ');
       indent = toDefault(indent, group.indent);
 
-
       let describe = applyTheme('describe', cmd.describe || '');
 
       if (aliases.length) {
@@ -2565,6 +2564,7 @@ export class KawkahCore extends EventEmitter {
       if (!group.isCommand)
         table.section(applyTheme('title', group.title));
 
+
       for (const k of group.items) {
 
         const isOption = /options/g.test(k);
@@ -2582,6 +2582,11 @@ export class KawkahCore extends EventEmitter {
             table
               .break()
               .section(applyTheme('describeCommand', cmd.describe));
+
+            if (cmd.about)
+              table
+                .break()
+                .section(applyTheme('about', cmd.about));
           }
 
         }

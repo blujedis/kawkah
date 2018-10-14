@@ -1752,6 +1752,10 @@ class KawkahCore extends events_1.EventEmitter {
                         table
                             .break()
                             .section(applyTheme('describeCommand', cmd.describe));
+                        if (cmd.about)
+                            table
+                                .break()
+                                .section(applyTheme('about', cmd.about));
                     }
                 }
                 else if (isOption) {
