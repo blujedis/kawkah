@@ -316,7 +316,7 @@ class KawkahCore extends events_1.EventEmitter {
             title: title,
             items: [command.name],
             children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
-            isCommand: true
+            isCommand: command.name
         });
         // If default command and there are no aliases
         // no need to list in Commands group.
@@ -328,7 +328,8 @@ class KawkahCore extends events_1.EventEmitter {
             this.setGroup(groupKey, {
                 title: chek_1.capitalize(groupKey + ':'),
                 items: [command.name],
-                children: [interfaces_1.KawkahGroupType.Flags, interfaces_1.KawkahGroupType.Examples]
+                children: [interfaces_1.KawkahGroupType.Flags, interfaces_1.KawkahGroupType.Examples],
+                isCommand: ''
             });
         }
     }
@@ -1449,6 +1450,7 @@ class KawkahCore extends events_1.EventEmitter {
             group.items = this.utils.arrayExtend(tmpItems || [], group.items);
             group.children = this.utils.arrayExtend(tmpChildren, group.children);
             group.sort = chek_1.isUndefined(group.sort) ? this.options.sortGroups : group.sort;
+            group.isCommand = group.isCommand || '';
             this.groups[name] = group;
             return group;
         }
@@ -1480,6 +1482,7 @@ class KawkahCore extends events_1.EventEmitter {
         }, []);
         group.items = this.utils.arrayExtend(group.items || [], items);
         group.sort = chek_1.isUndefined(group.sort) ? this.options.sortGroups : group.sort;
+        group.isCommand = group.isCommand || '';
         this.groups[name] = group;
         return group;
     }
@@ -1556,7 +1559,7 @@ class KawkahCore extends events_1.EventEmitter {
             tbl.row(['items:', items]);
             tbl.row(['children:', children]);
             tbl.row(['sort:', (group.sort || false) + '']);
-            tbl.row(['isCommand:', (group.isCommand || false) + '']);
+            tbl.row(['isCommand:', (group.isCommand || '') + '']);
             tbl.row(['indent:', group.indent + '']);
             if (names[i + 1])
                 tbl.break();
@@ -1723,7 +1726,7 @@ class KawkahCore extends events_1.EventEmitter {
             // Colorize the static element.
             if (theme)
                 val = applyTheme('example', val);
-            return [indentValue(indent) + val, '', ''];
+            return [indentValue(indent) + val];
         };
         const buildStatic = (val, group, indent) => {
             indent = chek_1.toDefault(indent, group.indent);
@@ -1761,10 +1764,10 @@ class KawkahCore extends events_1.EventEmitter {
                     const exp = this.getExample(k);
                     if (!exp)
                         continue;
-                    table.row(buildExample(exp, group));
+                    table.section(buildExample(exp, group)[0]);
                 }
                 else {
-                    table.row(buildStatic(k, group));
+                    table.section(buildStatic(k, group)[0]);
                 }
             }
             // Get each child group and build.

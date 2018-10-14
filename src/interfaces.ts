@@ -232,7 +232,7 @@ export interface IKawkahAssert {
 
 export interface IKawkahGroup {
   title?: string;
-  isCommand?: boolean;
+  isCommand?: string;
   items?: string | string[];
   indent?: number;
   sort?: boolean;

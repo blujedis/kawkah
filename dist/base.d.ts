@@ -67,7 +67,7 @@ export declare class KawkahCommandBase<T> {
     /**
      * Adds multiple args to command from a string of arguments.
      *
-     * @example .args('<name> [directory] [other]');
+     * @ .args('<name> [directory] [other]');
      *
      * @param args array of args to add for command.
      */
@@ -75,7 +75,7 @@ export declare class KawkahCommandBase<T> {
     /**
      * Adds multiple args to command from an array.
      *
-     * @example .args('<name>', '[directory]', ...);
+     * @ .args('<name>', '[directory]', ...);
      *
      * @param args array of args to add for command.
      */
@@ -130,7 +130,7 @@ export declare class KawkahCommandBase<T> {
     /**
      * Adds multiple args to command from an array.
      *
-     * @example
+     * @
      * .flags('force', 'status', ...);
      * .flags('--tags [string]', '--age [number]');
      *
@@ -141,7 +141,7 @@ export declare class KawkahCommandBase<T> {
      * Adds multiple options using map of key and KawkahOption objects.
      * To specify an argument option set "index" to -1.
      *
-     * @example
+     * @
      * .options({ name: { type: 'string' } });
      * .options({ path: { type: 'string', index: true } });
      *
@@ -163,7 +163,7 @@ export declare class KawkahCommandBase<T> {
     /**
      * Toggles spreading action args in positional order, missing args are null.
      *
-     * @example { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
+     * @ { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
      *
      * @param spread bool value indicating if should spread args.
      */

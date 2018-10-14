@@ -2,6 +2,12 @@
 
 Changes in descending order.
 
+### 10.14.2018 (v1.0.26)
+
+<table>
+ <tr><td>.examples</td><td>fix issue where examples not displaying, adjust formatting.</td></tr>
+</table>
+
 ### 10.06.2018 (v1.0.23-v1.0.25)
 
 <table>

@@ -182,7 +182,7 @@ class KawkahCommandBase {
     /**
      * Adds multiple args to command from an array.
      *
-     * @example
+     * @
      * .flags('force', 'status', ...);
      * .flags('--tags [string]', '--age [number]');
      *
@@ -206,7 +206,7 @@ class KawkahCommandBase {
      * Adds multiple options using map of key and KawkahOption objects.
      * To specify an argument option set "index" to -1.
      *
-     * @example
+     * @
      * .options({ name: { type: 'string' } });
      * .options({ path: { type: 'string', index: true } });
      *
@@ -246,7 +246,7 @@ class KawkahCommandBase {
     /**
      * Toggles spreading action args in positional order, missing args are null.
      *
-     * @example { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
+     * @ { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
      *
      * @param spread bool value indicating if should spread args.
      */
@@ -370,7 +370,7 @@ class KawkahCommandBase {
         }
         // Create namespace if none provided.
         if (!name)
-            name = this._name + '.' + Date.now();
+            name = this._name + '.' + chek_1.uuid();
         this.core.setExample(name, text);
         return this;
     }

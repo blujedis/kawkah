@@ -126,6 +126,7 @@ describe('Kawkah', () => {
       indent: 2,
       enabled: true,
       sort: undefined,
+      isCommand: '',
       children: []
     };
 
@@ -141,6 +142,7 @@ describe('Kawkah', () => {
       indent: 2,
       enabled: false,
       sort: undefined,
+      isCommand: '',
       children: []
     };
 

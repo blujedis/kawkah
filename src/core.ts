@@ -492,7 +492,7 @@ export class KawkahCore extends EventEmitter {
       title: title,
       items: [command.name],
       children: [command.name + '.args', command.name + '.flags', command.name + '.examples'],
-      isCommand: true
+      isCommand: command.name
     });
 
     // If default command and there are no aliases
@@ -508,7 +508,8 @@ export class KawkahCore extends EventEmitter {
       this.setGroup(groupKey, {
         title: capitalize(groupKey + ':'),
         items: [command.name],
-        children: [KawkahGroupType.Flags, KawkahGroupType.Examples]
+        children: [KawkahGroupType.Flags, KawkahGroupType.Examples],
+        isCommand: ''
       });
 
     }
@@ -2141,6 +2142,8 @@ export class KawkahCore extends EventEmitter {
 
       group.sort = isUndefined(group.sort) ? this.options.sortGroups : group.sort;
 
+      group.isCommand = group.isCommand || '';
+
       this.groups[name] = group;
 
       return group;
@@ -2187,6 +2190,7 @@ export class KawkahCore extends EventEmitter {
     group.items = this.utils.arrayExtend(group.items || [], items);
 
     group.sort = isUndefined(group.sort) ? this.options.sortGroups : group.sort;
+    group.isCommand = group.isCommand || '';
 
     this.groups[name] = group;
 
@@ -2283,7 +2287,7 @@ export class KawkahCore extends EventEmitter {
       tbl.row(['items:', items]);
       tbl.row(['children:', children]);
       tbl.row(['sort:', (group.sort || false) + '']);
-      tbl.row(['isCommand:', (group.isCommand || false) + '']);
+      tbl.row(['isCommand:', (group.isCommand || '') + '']);
       tbl.row(['indent:', group.indent + '']);
       if (names[i + 1])
         tbl.break();
@@ -2541,7 +2545,7 @@ export class KawkahCore extends EventEmitter {
       if (theme)
         val = applyTheme('example', val);
 
-      return [indentValue(indent) + val, '', ''];
+      return [indentValue(indent) + val];
 
     };
 
@@ -2591,11 +2595,11 @@ export class KawkahCore extends EventEmitter {
         else if (isExample) {
           const exp = this.getExample(k);
           if (!exp) continue;
-          table.row(buildExample(exp, group));
+          table.section(buildExample(exp, group)[0]);
         }
 
         else {
-          table.row(buildStatic(k, group));
+          table.section(buildStatic(k, group)[0]);
         }
 
       }

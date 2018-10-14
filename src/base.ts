@@ -2,8 +2,9 @@ import { nonenumerable } from './decorators';
 import { KawkahCore } from './core';
 import { SpawnOptions } from 'child_process';
 import { KawkahHandler, IKawkahOption, KawkahOptionType, IKawkahOptionInternal, KawkahValidate, IKawkahValidateConfig, KawkahValidateHandler, KawkahAction, IKawkahResult, IKawkahMap, IKawkahOptions, KawkahResultAction, IKawkahCommandInternal, SpawnOptionKeys, IKawkahDemandDeny } from './interfaces';
-import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray, isString, isRegExp } from 'chek';
+import { isObject, isPlainObject, isValue, isBoolean, isFunction, toArray, isString, isRegExp, uuid } from 'chek';
 import { DEFAULT_COMMAND_NAME, ALIAS_TOKEN } from './constants';
+import { performance } from 'perf_hooks';
 
 export class KawkahCommandBase<T> {
 
@@ -240,7 +241,7 @@ export class KawkahCommandBase<T> {
   /**
    * Adds multiple args to command from a string of arguments.
    *
-   * @example .args('<name> [directory] [other]');
+   * @ .args('<name> [directory] [other]');
    *
    * @param args array of args to add for command.
    */
@@ -249,7 +250,7 @@ export class KawkahCommandBase<T> {
   /**
    * Adds multiple args to command from an array.
    *
-   * @example .args('<name>', '[directory]', ...);
+   * @ .args('<name>', '[directory]', ...);
    *
    * @param args array of args to add for command.
    */
@@ -345,7 +346,7 @@ export class KawkahCommandBase<T> {
   /**
    * Adds multiple args to command from an array.
    *
-   * @example
+   * @
    * .flags('force', 'status', ...);
    * .flags('--tags [string]', '--age [number]');
    *
@@ -370,7 +371,7 @@ export class KawkahCommandBase<T> {
    * Adds multiple options using map of key and KawkahOption objects.
    * To specify an argument option set "index" to -1.
    *
-   * @example
+   * @
    * .options({ name: { type: 'string' } });
    * .options({ path: { type: 'string', index: true } });
    *
@@ -413,7 +414,7 @@ export class KawkahCommandBase<T> {
   /**
    * Toggles spreading action args in positional order, missing args are null.
    *
-   * @example { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
+   * @ { _: ['file', 'dir', null ]} >> .action(file, dir, null, result) {}
    *
    * @param spread bool value indicating if should spread args.
    */
@@ -647,7 +648,7 @@ export class KawkahCommandBase<T> {
     }
     // Create namespace if none provided.
     if (!name)
-      name = this._name + '.' + Date.now();
+      name = this._name + '.' + uuid();
     this.core.setExample(name, text);
     return <any>this;
   }
